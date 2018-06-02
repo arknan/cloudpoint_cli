@@ -30,18 +30,23 @@ def main() :
 
 
     parser = argparse.ArgumentParser(description='CloudPoint CLI help')
+    subparser = parser.add_subparsers(dest="sc", help="Sub-Command Help")
 
-    #By default action="store" and type="string"
-    parser.add_argument("-g", "--get",help="Get information on some attribute.\
-    Allowed values are: {" +", ".join(sorted(get_arg_mappings.keys())) +"}", choices=sorted(get_arg_mappings.keys()), metavar='<option>')
+    parser_show = subparser.add_parser("show", help="show help")
+    parser_show.add_argument("sc_value", help="Get information on some attribute.\
+    Allowed values are: {" +", ".join(sorted(get_arg_mappings.keys())) +"}",\
+    metavar='<option>')
+    parser_show.add_argument("-i", "--id", \
+    help="Get information on some attribute with specific ID")
 
-    parser.add_argument("-a", "--authenticate", action="store_true",\
-        help="Login to CloudPoint ; Required for doing any other operation")
+    parser_auth = subparser.add_parser("authenticate", \
+    help="Login to CloudPoint ; Required for doing any other operation")
 
-    parser.add_argument("-c", "--create", metavar="<option>",\
+    parser_create = subparser.add_parser("create", \
     help="Create any information within CloudPoint")
 
     args = parser.parse_args()
+    print(args)
     if len(sys.argv) == 1 : 
         parser.print_help()
         sys.exit(1)
@@ -50,8 +55,11 @@ def main() :
 
 def interface(args) :
     x = api.Command()
-    if args.get :
-        x.gets(get_arg_mappings[args.get])
+    if args.sc :
+        if args.id :
+            x.gets(get_arg_mappings[args.sc_value] + '/' + args.id)
+        else :
+            x.gets(get_arg_mappings[args.sc_value])
     elif  args.create :
         x.posts()
     elif  args.authenticate :
