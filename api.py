@@ -4,42 +4,45 @@ import requests
 import json
 import getpass
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 class Command():
 
     def __init__(self) :
         self.endpoint = ''
-        self.base_url = 'https://127.0.0.1:/cloudpoint/api/v2'
+        self.ip = '127.0.0.1'
+        self.base_url = 'https://' + self.ip + ':/cloudpoint/api/v2'
         self.verify = False
+
         try :
             with open("/root/.cldpt_token", "r") as file_handle :
                 self.token = file_handle.readline()
         except FileNotFoundError :
             self.token = ''
+
         self.header = {'Content-Type': 'application/json',
                     'Authorization': 'Bearer {0}'.format(self.token)}
 
     def authenticate(self) :
-        self.token_endpoint = '/idm/login'
-        self.verify = False
         self.token_header = {'Content-Type': 'application/json'}
-        self.endpoint= self.base_url + self.token_endpoint
+        self.token_endpoint= self.base_url + '/idm/login'
         username = input("Username: ")
         passwd = getpass.getpass("Password: ")
         data = json.dumps({
             "email": username,
             "password": passwd})
             
-        response = requests.post(self.endpoint, \
+        response = requests.post(self.token_endpoint, \
                    verify=self.verify, headers=self.token_header, data=data)
         if response.status_code == 200 :
            self.token = ( (json.loads(\
                         response.content.decode('utf-8')))["accessToken"] )
+
            with open("/root/.cldpt_token", "w") as file_handle:
                file_handle.write(self.token)
+
         else :
             print( (json.loads(response.content.decode('utf-8'))["errorMessage"]))
 
@@ -71,7 +74,7 @@ class Command():
                "reportType": "snapshot",
                "columns": ["id", "name", "region", "ctime"]
         }"""
-        r = requests.post(api_url, data=data, verify=False, headers=self.header)
+        r = requests.post(api_url, data=data, verify=self.verify, headers=self.header)
         val = json.loads((r.content.decode('utf-8')))
         print(val['msg'])
 
