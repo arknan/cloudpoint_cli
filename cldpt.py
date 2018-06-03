@@ -76,25 +76,6 @@ at the end of that sub-command \n \nExamples : "cldpt create -h", \
 
     return parser_main
 
-def logic(args):
-
-    x = api.Command()
-    if args.command  == "show":
-        if (args.snapshots) :
-            if (args.id is None) :
-                print(EXIT_1)
-                sys.exit(1)
-            else :
-                x.gets(gets_dict[args.show_subc] + '/' + args.id + '/snapshots')
-        elif args.id :
-            x.gets(gets_dict[args.show_subc] + '/' + args.id)
-        else :
-            x.gets(gets_dict[args.show_subc])
-    elif  args.command == "create" :
-        x.posts()
-    elif  args.command == "authenticate" :
-        x.authenticate()
-
 def interface(args) :
 
     def check_attr(args, attr) :
@@ -154,8 +135,6 @@ def interface(args) :
         print(EXIT_3)
         sys.exit(5)
         
-    #print(endpoint)
-
 def main() :
     parser = create_parser()
     argcomplete.autocomplete(parser)
