@@ -1,0 +1,7 @@
+1) Implement all GET, POST, PUT methods 
+2) Implement a Database to secure user names and password 
+3) Add a configuration file for different configuration parameters for CLI
+4) Implement Python Logger to output to console and access logs + cli logs (info + error)
+5) See if Multi-threading is applicable
+6) See if daemonizing the program is beneficial 
+7) Package the solution and provide a simple install script
