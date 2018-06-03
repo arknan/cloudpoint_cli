@@ -2,12 +2,12 @@
 
 # PYTHON_ARGCOMPLETE_OK
 
+import sys
 import argparse
 import argcomplete
 import api
-import sys
 
-gets_dict = {
+GETS_DICT = {
     "ad-config": "idm/config/ad",
     "agents": "agents/",
     "assets": "assets/",
@@ -102,14 +102,14 @@ def interface(args):
 
     if args.command == "show":
         if args.sub_command == "assets":
-            endpoint.append(gets_dict[args.sub_command])
-            if (check_attr(args, 'asset_id')):
+            endpoint.append(GETS_DICT[args.sub_command])
+            if check_attr(args, 'asset_id'):
                 endpoint.append(args.asset_id)
             if (check_attr(args, 'asset_command')) and\
                (args.asset_command == "snapshots"):
-                if (check_attr(args, 'asset_id')):
+                if check_attr(args, 'asset_id'):
                     endpoint.append(args.asset_command)
-                    if (check_attr(args, 'snap_id')):
+                    if check_attr(args, 'snap_id'):
                         endpoint.append(args.snap_id)
                 else:
                     print(EXIT_1)
@@ -119,15 +119,15 @@ def interface(args):
                 if (check_attr(args, 'asset_id')) and\
                    (check_attr(args, 'snap_id')):
                     endpoint.append(args.snapshot_command + '/')
-                    if (check_attr(args, 'granule_id')):
+                    if check_attr(args, 'granule_id'):
                         endpoint.append(args.granule_id)
                 else:
                     print(EXIT_2)
                     sys.exit(3)
 
         elif args.sub_command == "reports":
-            endpoint.append(gets_dict[args.sub_command])
-            if (check_attr(args, 'report_id')):
+            endpoint.append(GETS_DICT[args.sub_command])
+            if check_attr(args, 'report_id'):
                 endpoint.append(args.report_id)
         else:
             print(EXIT_4)
