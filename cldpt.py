@@ -29,11 +29,11 @@ gets_dict = {
 }
 
 EXIT_1 = "\nERROR : Argument 'snapshots' requires -i flag for 'ASSET_ID'\n\
-Expected Command Format : cldpt show assets <ASSET_ID> snapshots\n"
+Expected Command Format : cldpt show assets -i <ASSET_ID> snapshots\n"
 
 EXIT_2 = "\nERROR : Granules can only be listed for asset snapshots\n\
 Please enter a valid 'SNAP_ID' and 'ASSET_ID'\nExpected Command Format : \
-cldpt show assets <ASSET_ID> snapshots <SNAP_ID> granules\n"
+cldpt show assets -i <ASSET_ID> snapshots -i <SNAP_ID> granules\n"
 
 EXIT_3 = "\nERROR : Unknown option passed\n"
 
@@ -51,21 +51,21 @@ at the end of that sub-command \n \nExamples : "cldpt create -h", \
     subparser_s = parser_s.add_subparsers(dest="sub_command")
 
     parser_s_r = subparser_s.add_parser("reports")
-    parser_s_r.add_argument("--report-id", dest="report_id",\
+    parser_s_r.add_argument("-i", "--id", dest="report_id",\
     help="Get information on a specific report ID")
 
     parser_s_a = subparser_s.add_parser("assets")
-    parser_s_a.add_argument("--asset-id", dest="asset_id",\
+    parser_s_a.add_argument("-i", "--id", dest="asset_id",\
     help="Get information on a specific asset ID")
 
     subparser_s_a = parser_s_a.add_subparsers(dest="asset_command")
     parser_s_a_s = subparser_s_a.add_parser ("snapshots")
-    parser_s_a_s.add_argument("--snap-id", dest="snap_id",\
+    parser_s_a_s.add_argument("-i","--id", dest="snap_id",\
     help="Get information on a specific snapshot ID")
 
     subparser_s_a_s = parser_s_a_s.add_subparsers(dest="snapshot_command")
     parser_s_a_s_g = subparser_s_a_s.add_parser("granules")
-    parser_s_a_s_g.add_argument("--granule-id", dest="granule_id",\
+    parser_s_a_s_g.add_argument("-i", "--id", dest="granule_id",\
     help="Get information on a specific snapshot granule ID")
 
     parser_a = subparser_main.add_parser("authenticate", \
@@ -96,66 +96,65 @@ def logic(args):
         x.authenticate()
 
 def interface(args) :
+
+    def check_attr(args, attr) :
+        try :
+            if hasattr(args, attr) :
+                if getattr(args, attr) :
+                    return True
+        except NameError:
+            return False
+        else :
+            return False
+
     method_dict = {
         "show" : "gets",
-        "create" : "puts",
+        "create" : "posts",
         "authenticate" : "authenticate"
     }
 
     endpoint = []
-    try :
-        if args.command == "show" :
-            if args.sub_command == "assets" :
-                if args.snapshot_command == "granules" :
-                    if (args.snap_id is None) or (args.asset_id is None) :
-                        print(EXIT_2)
-                        sys.exit(2)
-                    else :
-                        if args.asset_command != "snapshots" :
-                            print(EXIT_2)
-                            sys.exit(3)
-                    endpoint.append(gets_dict[args.sub_command])
-                    endpoint.append(args.asset_id)
+    
+    if args.command == "show" :
+        if args.sub_command == "assets" :
+            endpoint.append(gets_dict[args.sub_command])
+            if (check_attr(args, 'asset_id')):
+                endpoint.append(args.asset_id)
+            if (check_attr(args, 'asset_command') ) and (args.asset_command == "snapshots") :
+                if (check_attr(args, 'asset_id')) :
                     endpoint.append(args.asset_command)
-                    endpoint.append(args.snap_id)
-                    endpoint.append(args.snapshot_command+'/')
-                    if args.granule_id :
-                        endpoint.append(args.granule_id)
-                elif args.asset_command == "snapshots" :
-                    if args.asset_id :
-                        endpoint.append(gets_dict[args.sub_command])
-                        endpoint.append(args.asset_id)
-                        endpoint.append(args.asset_command)
-                        if args.snap_id :
-                            endpoint.append(args.snap_id)
-                    else :
-                        print(EXIT_1)
-                        sys.exit(4)
-                elif args.asset_id :
-                    endpoint.append(gets_dict[args.sub_command])
-                    endpoint.append(args.asset_id)
+                    if (check_attr(args, 'snap_id')) :
+                        endpoint.append(args.snap_id)
                 else :
-                    endpoint.append(gets_dict[args.sub_command])
+                    print(EXIT_1)
+                    sys.exit(2)
+            if (check_attr(args, 'snapshot_command') ) and (args.snapshot_command == "granules") :
+                if (check_attr(args, 'asset_id')) and (check_attr(args, 'snap_id')) :
+                    endpoint.append(args.snapshot_command + '/')
+                    if (check_attr(args, 'granule_id')) :
+                        endpoint.append(args.granule_id)
+                else :
+                    print(EXIT_2)
+                    sys.exit(3)
 
-            elif args.sub_command == "reports" :
-                endpoint.append(gets_dict[args.sub_command])
-                if args.report_id :
-                    endpoint.append(args.report_id)
-        elif args.command == "authenticate" :
-            getattr(api.Command(), method_dict[args.command]) ()
-            sys.exit(6)
+        elif args.sub_command == "reports" :
+            endpoint.append(gets_dict[args.sub_command])
+            if (check_attr(args, 'report_id')) :
+                endpoint.append(args.report_id)
 
-        elif args.command == "create" :
-            pass
-        else :
-            print(EXIT_3)
-            sys.exit(5)
-            
-    except AttributeError :
-        pass
+        getattr(api.Command(), method_dict[args.command]) ('/'.join(endpoint))
 
-    print(endpoint)
-    #getattr(api.Command(), method_dict[args.command]) ('/'.join(endpoint))
+    elif args.command == "authenticate" :
+        getattr(api.Command(), method_dict[args.command]) ()
+        sys.exit(4)
+
+    elif args.command == "create" :
+        getattr(api.Command(), method_dict[args.command]) ()
+    else :
+        print(EXIT_3)
+        sys.exit(5)
+        
+    #print(endpoint)
 
 def main() :
     parser = create_parser()
@@ -163,7 +162,7 @@ def main() :
     args = parser.parse_args(sys.argv[1:])
     if len(sys.argv) == 1 :
         parser.print_help()
-        sys.exit(1)
+        sys.exit(-1)
     else :
         interface(args)
 
