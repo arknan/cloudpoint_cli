@@ -37,6 +37,9 @@ cldpt show assets -i <ASSET_ID> snapshots -i <SNAP_ID> granules\n"
 
 EXIT_3 = "\nERROR : Unknown option passed\n"
 
+EXIT_4 = "\nERROR : You need to provide an argument to SHOW\n\
+Expected Command Format : cldpt show assets ; cldpt show reports\n"
+
 def create_parser() :
 
 
@@ -122,6 +125,9 @@ def interface(args) :
             endpoint.append(gets_dict[args.sub_command])
             if (check_attr(args, 'report_id')) :
                 endpoint.append(args.report_id)
+        else :
+            print(EXIT_4)
+            sys.exit(100)
 
         getattr(api.Command(), method_dict[args.command]) ('/'.join(endpoint))
 
