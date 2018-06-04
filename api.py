@@ -38,18 +38,18 @@ class Command():
             "email": username,
             "password": passwd})
 
-        re = requests.post(self.token_endpoint, verify=self.verify,
+        response = requests.post(self.token_endpoint, verify=self.verify,
                            headers=self.token_header, data=data)
-        if re.status_code == 200:
+        if response.status_code == 200:
             self.token = (
-                (json.loads(re.content.decode('utf-8')))["accessToken"])
+                (json.loads(response.content.decode('utf-8')))["accessToken"])
 
             with open("/root/.cldpt_token", "w") as file_handle:
                 file_handle.write(self.token)
 
         else:
             print(
-                (json.loads(re.content.decode('utf-8'))["errorMessage"]))
+                (json.loads(response.content.decode('utf-8'))["errorMessage"]))
 
     def gets(self, endpoint):
         self.endpoint = endpoint
@@ -58,14 +58,14 @@ class Command():
             exit()
 
         api_url = '{}/{}'.format(self.base_url, self.endpoint)
-        re = requests.get(api_url, headers=self.header, verify=self.verify)
+        response = requests.get(api_url, headers=self.header, verify=self.verify)
 
-        if re.status_code == 200:
-            print(re.content.decode('utf-8'))
+        if response.status_code == 200:
+            print(response.content.decode('utf-8'))
         else:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format
-                  (re.status_code, api_url))
-            print("\n\nDETAILS : \n ", re.content.decode('utf-8'))
+                  (response.status_code, api_url))
+            print("\n\nDETAILS : \n ", response.content.decode('utf-8'))
 
     def posts(self):
         if not self.token:
@@ -78,7 +78,7 @@ class Command():
                "reportType": "snapshot",
                "columns": ["id", "name", "region", "ctime"]
         }"""
-        re = requests.post(api_url, data=data, verify=self.verify,
+        response = requests.post(api_url, data=data, verify=self.verify,
                            headers=self.header)
-        val = json.loads((re.content.decode('utf-8')))
+        val = json.loads((response.content.decode('utf-8')))
         print(val['msg'])

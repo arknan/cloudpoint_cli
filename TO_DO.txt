@@ -7,3 +7,4 @@
 7) Package the solution and provide a simple install script
 8) Write Test cases using UnitTest
 9) Write docstrings
+10) GET on classification needs a server with internet access (inbound + outbound) :( need to test that
