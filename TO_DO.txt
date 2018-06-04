@@ -5,3 +5,5 @@
 5) See if Multi-threading is applicable
 6) See if daemonizing the program is beneficial 
 7) Package the solution and provide a simple install script
+8) Write Test cases using UnitTest
+9) Write docstrings
