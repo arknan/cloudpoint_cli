@@ -6,6 +6,7 @@ import sys
 import argparse
 import argcomplete
 import api
+import decider
 
 GETS_DICT = {
     "ad-config": "idm/config/ad",
@@ -51,16 +52,6 @@ Expected Command Format : cldpt show assets ; cldpt show reports\n"
 EXIT_5 = "\nERROR : Argument 'plugins' requires -i flag for 'AGENT_ID'\n\
 Expected Command Format : cldpt show agents -i <AGENT_ID> plugins\n"
 
-def check_attr(args, attr):
-    try:
-        if hasattr(args, attr):
-            if getattr(args, attr):
-                return True
-    except NameError:
-        return False
-    else:
-        return False
-
 
 def create_parser():
 
@@ -75,44 +66,56 @@ def create_parser():
     parser_show = subparser_main.add_parser("show", help="show operations")
     subparser_show = parser_show.add_subparsers(dest="sub_command")
 
-    parser_show_reports = subparser_show.add_parser("reports")
+    parser_show_reports = subparser_show.add_parser("reports", 
+        help="Get information on reports")
     parser_show_reports.add_argument("-i", "--report-id", dest="report_id",
         help="Get information on a specific report ID")
 
-    parser_show_assets = subparser_show.add_parser("assets")
+    parser_show_assets = subparser_show.add_parser("assets",
+        help="Get information on assets")
     parser_show_assets.add_argument("-i", "--asset-id", dest="asset_id",
         help="Get information on a specific asset ID")
 
     subparser_show_assets = parser_show_assets.add_subparsers(dest="asset_command")
-    parser_show_assets_snapshots = subparser_show_assets.add_parser("snapshots")
+    parser_show_assets_snapshots = subparser_show_assets.add_parser("snapshots",
+        help="Get information on snapshots of an asset")
     parser_show_assets_snapshots.add_argument("-i", "--snap-id", dest="snap_id",
         help="Get information on a snapshot ID")
 
-    subparser_show_assets_snapshots = parser_show_assets_snapshots.add_subparsers(dest="snapshot_command")
-    parser_show_assets_snapshots_granules = subparser_show_assets_snapshots.add_parser("granules")
+    subparser_show_assets_snapshots =\
+        parser_show_assets_snapshots.add_subparsers(dest="snapshot_command")
+    parser_show_assets_snapshots_granules =\
+        subparser_show_assets_snapshots.add_parser("granules",
+        help="Get information on granules for a snapshot of an asset")
     parser_show_assets_snapshots_granules.add_argument("-i", "--granule-id", dest="granule_id",
-        help="Get information on a specific snapshot granule ID")
+        help="Get information on a specific granule for a specific snapshot")
 
-    parser_show_privileges = subparser_show.add_parser("privileges")
+    parser_show_privileges = subparser_show.add_parser("privileges",
+        help="Get information on privileges")
     parser_show_privileges.add_argument("-i", "--privilege-id", dest="privilege_id",
         help="Get information on a specific privilege ID")
 
-    parser_show_roles = subparser_show.add_parser("roles")
+    parser_show_roles = subparser_show.add_parser("roles",
+        help="Get information on roles")
     parser_show_roles.add_argument("-i", "--role-id", dest="role_id",
         help="Get information on a specific role ID")
 
-    parser_show_email_config = subparser_show.add_parser("email-config")
-    parser_show_users = subparser_show.add_parser("users")
+    parser_show_email_config = subparser_show.add_parser("email-config",
+         help="Get information on email server configuration")
+    parser_show_users = subparser_show.add_parser("users",
+        help="Get information on users")
     parser_show_users.add_argument("-i", "--user-id", dest="user_id",
         help="Get information on a specific user ID")
 
-    parser_show_agents = subparser_show.add_parser("agents")
+    parser_show_agents = subparser_show.add_parser("agents",
+        help="Get information on agents")
     parser_show_agents.add_argument("-i", "--agent-id", dest="agent_id",
         help="Get information on a specific agent ID")
     subparser_show_agents = parser_show_agents.add_subparsers(dest="agent_command")
-    parser_show_agents_plugins = subparser_show_agents.add_parser("plugins")
+    parser_show_agents_plugins = subparser_show_agents.add_parser("plugins",
+        help="Get information on plugins for a specific agent")
     parser_show_agents_plugins.add_argument("-n", "--plugin-name", dest="plugin_name",
-        help="Get information on a specific plugin name")
+        help="Get information on a specific plugin name for a specific agent")
 
     parser_authenticate = subparser_main.add_parser("authenticate",
         help="Login to CloudPoint ; Required for doing any operation")
@@ -122,70 +125,21 @@ def create_parser():
 
     return parser_main
 
-
 def interface(args):
 
     endpoint = []
+    common_list = ["reports", "privileges", "roles", "email-config", "users"]
 
     if args.command == "show":
-        if args.sub_command == "assets":
-            endpoint.append(GETS_DICT[args.sub_command])
-            if check_attr(args, 'asset_id'):
-                endpoint.append(args.asset_id)
-            if (check_attr(args, 'asset_command')) and\
-               (args.asset_command == "snapshots"):
-                if check_attr(args, 'asset_id'):
-                    endpoint.append(args.asset_command)
-                    if check_attr(args, 'snap_id'):
-                        endpoint.append(args.snap_id)
-                else:
-                    print(EXIT_1)
-                    sys.exit(2)
-            if (check_attr(args, 'snapshot_command')) and\
-               (args.snapshot_command == "granules"):
-                if (check_attr(args, 'asset_id')) and\
-                   (check_attr(args, 'snap_id')):
-                    endpoint.append(args.snapshot_command + '/')
-                    if check_attr(args, 'granule_id'):
-                        endpoint.append(args.granule_id)
-                else:
-                    print(EXIT_2)
-                    sys.exit(3)
-
-        elif args.sub_command == "reports":
-            endpoint.append(GETS_DICT[args.sub_command])
-            if check_attr(args, 'report_id'):
-                endpoint.append(args.report_id)
-        elif args.sub_command == "privileges":
-            endpoint.append(GETS_DICT[args.sub_command])
-            if check_attr(args, 'privilege_id'):
-                endpoint.append(args.privilege_id)
-        elif args.sub_command == "roles":
-            endpoint.append(GETS_DICT[args.sub_command])
-            if check_attr(args, 'role_id'):
-                endpoint.append(args.role_id)
-        elif args.sub_command == "email-config":
-            endpoint.append(GETS_DICT[args.sub_command])
-        elif args.sub_command == "users":
-            endpoint.append(GETS_DICT[args.sub_command])
-            if check_attr(args, "user_id"):
-                endpoint.append(args.user_id)
-        elif args.sub_command == "agents":
-            endpoint.append(GETS_DICT[args.sub_command])
-            if check_attr(args, "agent_id"):
-                endpoint.append(args.agent_id)
-            if args.agent_command == "plugins":
-                if check_attr(args, "agent_id"):
-                    endpoint.append(GETS_DICT[args.agent_command])
-                else :
-                    print(EXIT_5)
-                    sys.exit(101)
-                if check_attr(args, "plugin_name"):
-                    endpoint.append(args.plugin_name)
-
-        else:
+        if args.sub_command is None:
             print(EXIT_4)
             sys.exit(100)
+
+        endpoint.append(GETS_DICT[args.sub_command])
+        if args.sub_command in common_list:
+            endpoint = decider.common_paths(endpoint, args)
+        elif args.sub_command in ["assets", "agents"]:
+            endpoint = getattr(decider, args.sub_command)(endpoint, args)
 
         getattr(api.Command(), METHOD_DICT[args.command])('/'.join(endpoint))
 
