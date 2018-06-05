@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+import sys
+
+EXIT_6 = "\nERROR : Argument 'description' requires -i flag for 'PLUGIN_NAME'\n\
+Expected Command Format : cldpt show plugins -i <PLUGIN_NAME> description\n"
 
 def check_attr(args, attr):
     try:
@@ -60,7 +64,24 @@ def agents(endpoint, args):
         else :
             print(EXIT_5)
             sys.exit(101)
-        if check_attr(args, "plugin_name"):
+        if check_attr(args, "configured_plugin_name"):
             endpoint.append(args.plugin_name)
+
+    return endpoint 
+
+
+def plugins(endpoint, args):
+
+    detail = 'available_plugin_name'
+    if check_attr(args, detail):
+        endpoint.append(getattr(args, detail))
+	
+    if (check_attr(args, 'plugin_command')) and \
+       (args.plugin_command == "description"):
+        if check_attr(args, detail):
+            endpoint.append("description")
+        else :
+            print(EXIT_6)
+            sys.exit(102)
 
     return endpoint 

@@ -114,8 +114,17 @@ def create_parser():
     subparser_show_agents = parser_show_agents.add_subparsers(dest="agent_command")
     parser_show_agents_plugins = subparser_show_agents.add_parser("plugins",
         help="Get information on plugins for a specific agent")
-    parser_show_agents_plugins.add_argument("-n", "--plugin-name", dest="plugin_name",
-        help="Get information on a specific plugin name for a specific agent")
+    parser_show_agents_plugins.add_argument("-i", "--plugin-name", dest="configured_plugin_name",
+        metavar="PLUGIN_NAME", help="Get information on a specific plugin name for a specific agent")
+
+    parser_show_plugins = subparser_show.add_parser("plugins",
+        help="Get information on plugins")
+    parser_show_plugins.add_argument("-i", "--plugin-name", dest="available_plugin_name",
+        metavar="PLUGIN_NAME", help="Get information on a specific available plugin")
+    subparser_show_plugins = parser_show_plugins.add_subparsers(dest="plugin_command")
+    parser_show_plugins_description = subparser_show_plugins.add_parser("description",
+        help="Get information on plugin description for a specific plugin name")
+
 
     parser_authenticate = subparser_main.add_parser("authenticate",
         help="Login to CloudPoint ; Required for doing any operation")
@@ -138,7 +147,7 @@ def interface(args):
         endpoint.append(GETS_DICT[args.sub_command])
         if args.sub_command in common_list:
             endpoint = decider.common_paths(endpoint, args)
-        elif args.sub_command in ["assets", "agents"]:
+        elif args.sub_command in ["assets", "agents", "plugins"]:
             endpoint = getattr(decider, args.sub_command)(endpoint, args)
 
         getattr(api.Command(), METHOD_DICT[args.command])('/'.join(endpoint))
