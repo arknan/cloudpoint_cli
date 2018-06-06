@@ -66,64 +66,49 @@ def create_parser():
     parser_show = subparser_main.add_parser("show", help="show operations")
     subparser_show = parser_show.add_subparsers(dest="sub_command")
 
-    parser_show_reports = subparser_show.add_parser("reports",
-        help="Get information on reports")
-    parser_show_reports.add_argument("-i", "--report-id", dest="report_id",
-        help="Get information on a specific report ID")
+    show_parser_dict = {
+    "parser_show_reports": "reports",
+    "parser_show_privileges": "privileges",
+    "parser_show_assets": "assets",
+    "parser_show_assets_snapshots": "snapshots",
+    "parser_show_assets_snapshots_granules": "granules",
+    "parser_show_roles": "roles",
+    "parser_show_users": "users",
+    "parser_show_agents": "agents",
 
-    parser_show_assets = subparser_show.add_parser("assets",
-        help="Get information on assets")
-    parser_show_assets.add_argument("-i", "--asset-id", dest="asset_id",
-        help="Get information on a specific asset ID")
 
+    }
+    exception_list = ["ad-config", "email-configuration", "description", "privileges", "report-types", "telemetry", "version"]
+
+    def create_args(sub_parser_name, parser_name, command_name):
+        globals()[parser_name]= sub_parser_name.add_parser(command_name, help="Get information on "+command_name)
+        if command_name not in exception_list :
+            globals()[parser_name].add_argument("-i", '--'+command_name[:-1]+'-id',
+                help="Get information on a specific "+ command_name[:-1]+' ID')
+
+    create_args(subparser_show, "parser_show_assets", "assets")
     subparser_show_assets = parser_show_assets.add_subparsers(dest="asset_command")
-    parser_show_assets_snapshots = subparser_show_assets.add_parser("snapshots",
-        help="Get information on snapshots of an asset")
-    parser_show_assets_snapshots.add_argument("-i", "--snap-id", dest="snap_id",
-        help="Get information on a snapshot ID")
-
+    create_args(subparser_show_assets, "parser_show_assets_snapshots", "snapshots")
     subparser_show_assets_snapshots =\
         parser_show_assets_snapshots.add_subparsers(dest="snapshot_command")
-    parser_show_assets_snapshots_granules =\
-        subparser_show_assets_snapshots.add_parser("granules",
-        help="Get information on granules for a snapshot of an asset")
-    parser_show_assets_snapshots_granules.add_argument("-i", "--granule-id", dest="granule_id",
-        help="Get information on a specific granule for a specific snapshot")
+    create_args(subparser_show_assets_snapshots, "parser_show_assets_snapshots_granules", "granules")
 
-    parser_show_privileges = subparser_show.add_parser("privileges",
-        help="Get information on privileges")
-    parser_show_privileges.add_argument("-i", "--privilege-id", dest="privilege_id",
-        help="Get information on a specific privilege ID")
-
-    parser_show_roles = subparser_show.add_parser("roles",
-        help="Get information on roles")
-    parser_show_roles.add_argument("-i", "--role-id", dest="role_id",
-        help="Get information on a specific role ID")
-
-    parser_show_email_config = subparser_show.add_parser("email-config",
-         help="Get information on email server configuration")
-    parser_show_users = subparser_show.add_parser("users",
-        help="Get information on users")
-    parser_show_users.add_argument("-i", "--user-id", dest="user_id",
-        help="Get information on a specific user ID")
-
-    parser_show_agents = subparser_show.add_parser("agents",
-        help="Get information on agents")
-    parser_show_agents.add_argument("-i", "--agent-id", dest="agent_id",
-        help="Get information on a specific agent ID")
+    create_args(subparser_show, "parser_show_agents", "agents")
     subparser_show_agents = parser_show_agents.add_subparsers(dest="agent_command")
     parser_show_agents_plugins = subparser_show_agents.add_parser("plugins",
         help="Get information on plugins for a specific agent")
     parser_show_agents_plugins.add_argument("-i", "--plugin-name", dest="configured_plugin_name",
         metavar="PLUGIN_NAME", help="Get information on a specific plugin name for a specific agent")
 
-    parser_show_plugins = subparser_show.add_parser("plugins",
-        help="Get information on plugins")
-    parser_show_plugins.add_argument("-i", "--plugin-name", dest="available_plugin_name",
-        metavar="PLUGIN_NAME", help="Get information on a specific available plugin")
+    create_args(subparser_show, "parser_show_plugins", "plugins")
     subparser_show_plugins = parser_show_plugins.add_subparsers(dest="plugin_command")
-    parser_show_plugins_description = subparser_show_plugins.add_parser("description",
-        help="Get information on plugin description for a specific plugin name")
+    create_args(subparser_show_plugins, "parser_show_plugins_description", "description")
+
+    create_args(subparser_show, "parser_show_reports", "reports")
+    create_args(subparser_show, "parser_show_privileges", "privileges")
+    create_args(subparser_show, "parser_show_roles", "roles")
+    create_args(subparser_show, "parser_show_email-configuration", "email-configuration")
+    create_args(subparser_show, "parser_show_users", "users")
 
 
     parser_authenticate = subparser_main.add_parser("authenticate",
@@ -150,7 +135,9 @@ def interface(args):
         elif args.sub_command in ["assets", "agents", "plugins"]:
             endpoint = getattr(decider, args.sub_command)(endpoint, args)
 
-        getattr(api.Command(), METHOD_DICT[args.command])('/'.join(endpoint))
+        print(endpoint)
+        output = getattr(api.Command(), METHOD_DICT[args.command])('/'.join(endpoint))
+        return output
 
     elif args.command == "authenticate":
         getattr(api.Command(), METHOD_DICT[args.command])()
@@ -163,8 +150,20 @@ def interface(args):
         sys.exit(5)
 
 
-def main():
+def run(pass_args=None):
 
+    parser = create_parser()
+    argcomplete.autocomplete(parser)
+    args = parser.parse_args(pass_args)
+    print(args)
+    if len(pass_args) == 1:
+        parser.print_help()
+    else:
+        output = interface(args)
+        return output
+
+
+if __name__ == "__main__":
     parser = create_parser()
     argcomplete.autocomplete(parser)
     args = parser.parse_args(sys.argv[1:])
@@ -173,8 +172,4 @@ def main():
         parser.print_help()
         sys.exit(-1)
     else:
-        interface(args)
-
-
-if __name__ == "__main__":
-    main()
+        print(interface(args))

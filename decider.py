@@ -41,8 +41,8 @@ def assets(endpoint, args):
         (args.asset_command == "snapshots"):
         if check_attr(args, 'asset_id'):
             endpoint.append(args.asset_command)
-            if check_attr(args, 'snap_id'):
-                endpoint.append(args.snap_id)
+            if check_attr(args, 'snapshot_id'):
+                endpoint.append(args.snapshot_id)
         else:
             print(EXIT_1)
             sys.exit(2)
@@ -50,7 +50,7 @@ def assets(endpoint, args):
         if (check_attr(args, 'snapshot_command')) and\
            (args.snapshot_command == "granules"):
             if (check_attr(args, 'asset_id')) and\
-               (check_attr(args, 'snap_id')):
+               (check_attr(args, 'snapshot_id')):
                 endpoint.append(args.snapshot_command + '/')
                 if check_attr(args, 'granule_id'):
                     endpoint.append(args.granule_id)
@@ -75,7 +75,7 @@ def agents(endpoint, args):
             print(EXIT_5)
             sys.exit(101)
         if check_attr(args, "configured_plugin_name"):
-            endpoint.append(args.plugin_name)
+            endpoint.append(args.configured_plugin_name)
 
     return endpoint
 

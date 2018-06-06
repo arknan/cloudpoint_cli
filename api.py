@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
+
 import json
 import getpass
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 
 class Command():
@@ -61,7 +62,7 @@ class Command():
         response = requests.get(api_url, headers=self.header, verify=self.verify)
 
         if response.status_code == 200:
-            print(response.content.decode('utf-8'))
+            return(response.content.decode('utf-8'))
         else:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format
                   (response.status_code, api_url))
