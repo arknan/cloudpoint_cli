@@ -66,7 +66,7 @@ def create_parser():
     parser_show = subparser_main.add_parser("show", help="show operations")
     subparser_show = parser_show.add_subparsers(dest="sub_command")
 
-    parser_show_reports = subparser_show.add_parser("reports", 
+    parser_show_reports = subparser_show.add_parser("reports",
         help="Get information on reports")
     parser_show_reports.add_argument("-i", "--report-id", dest="report_id",
         help="Get information on a specific report ID")
