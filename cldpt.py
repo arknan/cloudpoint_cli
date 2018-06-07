@@ -8,12 +8,13 @@ import argcomplete
 import api
 import decider
 
+
 GETS_DICT = {
     "ad-config": "idm/config/ad",
     "agents": "agents/",
     "assets": "assets/",
     "classification-tags": "classifications/tags",
-    "email-config": "email/config",
+    "email setup": "email/config",
     "granules": "granules",
     "jointokens": "jointokens/",
     "licenses": "licenses/",
@@ -55,60 +56,54 @@ Expected Command Format : cldpt show agents -i <AGENT_ID> plugins\n"
 
 def create_parser():
 
+
     parser_main = \
         argparse.ArgumentParser(epilog="""\n \nFor help information\
  related to each sub-command/positional argument, \nUse "-h" or "--help"\
  at the end of that sub-command \n \nExamples : "cldpt create -h",\
  "cldpt show assets -i <ASSET_ID> --help" \n """,
                                 formatter_class=argparse.RawTextHelpFormatter)
-    subparser_main = parser_main.add_subparsers(dest='command')
+    subparser_main = parser_main.add_subparsers(dest='command', metavar='<option>')
 
-    parser_show = subparser_main.add_parser("show", help="show operations")
-    subparser_show = parser_show.add_subparsers(dest="sub_command")
+    parser_show = subparser_main.add_parser("show", help="show operations") 
+    subparser_show = parser_show.add_subparsers(dest="sub_command", metavar='<option>', help="Please provide any one of the following options : ") 
 
-    show_parser_dict = {
-    "parser_show_reports": "reports",
-    "parser_show_privileges": "privileges",
-    "parser_show_assets": "assets",
-    "parser_show_assets_snapshots": "snapshots",
-    "parser_show_assets_snapshots_granules": "granules",
-    "parser_show_roles": "roles",
-    "parser_show_users": "users",
-    "parser_show_agents": "agents",
-
-
-    }
-    exception_list = ["ad-config", "email-configuration", "description", "privileges", "report-types", "telemetry", "version"]
+    exception_list = ["ad-config", "email setup", "description", "report-types", "telemetry", "version"]
 
     def create_args(sub_parser_name, parser_name, command_name):
-        globals()[parser_name]= sub_parser_name.add_parser(command_name, help="Get information on "+command_name)
+        globals()[parser_name]= sub_parser_name.add_parser(command_name, help="Get information on "+command_name) 
         if command_name not in exception_list :
             globals()[parser_name].add_argument("-i", '--'+command_name[:-1]+'-id',
                 help="Get information on a specific "+ command_name[:-1]+' ID')
 
     create_args(subparser_show, "parser_show_assets", "assets")
-    subparser_show_assets = parser_show_assets.add_subparsers(dest="asset_command")
+    subparser_show_assets = parser_show_assets.add_subparsers(dest="asset_command", metavar='<option>')
     create_args(subparser_show_assets, "parser_show_assets_snapshots", "snapshots")
     subparser_show_assets_snapshots =\
-        parser_show_assets_snapshots.add_subparsers(dest="snapshot_command")
+        parser_show_assets_snapshots.add_subparsers(dest="snapshot_command", metavar='<option>')
     create_args(subparser_show_assets_snapshots, "parser_show_assets_snapshots_granules", "granules")
 
     create_args(subparser_show, "parser_show_agents", "agents")
-    subparser_show_agents = parser_show_agents.add_subparsers(dest="agent_command")
+    subparser_show_agents = parser_show_agents.add_subparsers(dest="agent_command", metavar='<option>')
     parser_show_agents_plugins = subparser_show_agents.add_parser("plugins",
         help="Get information on plugins for a specific agent")
     parser_show_agents_plugins.add_argument("-i", "--plugin-name", dest="configured_plugin_name",
         metavar="PLUGIN_NAME", help="Get information on a specific plugin name for a specific agent")
 
     create_args(subparser_show, "parser_show_plugins", "plugins")
-    subparser_show_plugins = parser_show_plugins.add_subparsers(dest="plugin_command")
+    subparser_show_plugins = parser_show_plugins.add_subparsers(dest="plugin_command", metavar='<option>')
     create_args(subparser_show_plugins, "parser_show_plugins_description", "description")
 
-    create_args(subparser_show, "parser_show_reports", "reports")
-    create_args(subparser_show, "parser_show_privileges", "privileges")
-    create_args(subparser_show, "parser_show_roles", "roles")
-    create_args(subparser_show, "parser_show_email-configuration", "email-configuration")
-    create_args(subparser_show, "parser_show_users", "users")
+    show_parser_dict = {
+    "parser_show_reports": "reports",
+    "parser_show_privileges": "privileges",
+    "parser_show_roles": "roles",
+    "parser_show_users": "users",
+    "parser_show_email setup": "email setup"
+    }
+
+    for k,v in sorted(show_parser_dict.items()):
+        create_args(subparser_show, k, v)
 
 
     parser_authenticate = subparser_main.add_parser("authenticate",
@@ -122,7 +117,7 @@ def create_parser():
 def interface(args):
 
     endpoint = []
-    common_list = ["reports", "privileges", "roles", "email-config", "users"]
+    common_list = ["reports", "privileges", "roles", "email setup", "users"]
 
     if args.command == "show":
         if args.sub_command is None:
@@ -135,7 +130,6 @@ def interface(args):
         elif args.sub_command in ["assets", "agents", "plugins"]:
             endpoint = getattr(decider, args.sub_command)(endpoint, args)
 
-        print(endpoint)
         output = getattr(api.Command(), METHOD_DICT[args.command])('/'.join(endpoint))
         return output
 
@@ -155,7 +149,6 @@ def run(pass_args=None):
     parser = create_parser()
     argcomplete.autocomplete(parser)
     args = parser.parse_args(pass_args)
-    print(args)
     if len(pass_args) == 1:
         parser.print_help()
     else:
@@ -167,7 +160,6 @@ if __name__ == "__main__":
     parser = create_parser()
     argcomplete.autocomplete(parser)
     args = parser.parse_args(sys.argv[1:])
-    print(args)
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(-1)
