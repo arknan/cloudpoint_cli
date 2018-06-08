@@ -28,7 +28,7 @@ def check_attr(args, attr):
 
 def common_paths(endpoint, args):
 
-    detail = (args.sub_command)[:-1] + '_id'
+    detail = (args.show_command)[:-1] + '_id'
     if check_attr(args, detail):
         endpoint.append(getattr(args, detail))
 
@@ -37,21 +37,21 @@ def common_paths(endpoint, args):
 def assets(endpoint, args):
     if check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
-    if (check_attr(args, 'asset_command')) and\
-        (args.asset_command == "snapshots"):
+    if (check_attr(args, 'assets_command')) and\
+        (args.assets_command == "snapshots"):
         if check_attr(args, 'asset_id'):
-            endpoint.append(args.asset_command)
+            endpoint.append(args.assets_command)
             if check_attr(args, 'snapshot_id'):
                 endpoint.append(args.snapshot_id)
         else:
             print(EXIT_1)
             sys.exit(2)
 
-        if (check_attr(args, 'snapshot_command')) and\
-           (args.snapshot_command == "granules"):
+        if (check_attr(args, 'snapshots_command')) and\
+           (args.snapshots_command == "granules"):
             if (check_attr(args, 'asset_id')) and\
                (check_attr(args, 'snapshot_id')):
-                endpoint.append(args.snapshot_command + '/')
+                endpoint.append(args.snapshots_command + '/')
                 if check_attr(args, 'granule_id'):
                     endpoint.append(args.granule_id)
             else:
@@ -63,12 +63,12 @@ def assets(endpoint, args):
 def agents(endpoint, args):
 
 
-    detail = (args.sub_command)[:-1] + '_id'
+    detail = (args.show_command)[:-1] + '_id'
     if check_attr(args, detail):
         endpoint.append(getattr(args, detail))
 
-    if (check_attr(args, 'agent_command')) and \
-       (args.agent_command == "plugins"):
+    if (check_attr(args, 'agents_command')) and \
+       (args.agents_command == "plugins"):
         if check_attr(args, detail):
             endpoint.append("plugins/")
         else:
@@ -82,13 +82,12 @@ def agents(endpoint, args):
 
 def plugins(endpoint, args):
 
-    detail = 'available_plugin_name'
-    if check_attr(args, detail):
-        endpoint.append(getattr(args, detail))
+    if check_attr(args, 'plugin_name'):
+        endpoint.append(getattr(args, 'plugin_name'))
 
-    if (check_attr(args, 'plugin_command')) and \
-       (args.plugin_command == "description"):
-        if check_attr(args, detail):
+    if (check_attr(args, 'plugins_command')) and \
+       (args.plugins_command == "description"):
+        if check_attr(args, 'plugin_name'):
             endpoint.append("description")
         else:
             print(EXIT_6)
