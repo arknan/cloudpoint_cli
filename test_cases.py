@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 
 import unittest
-import json
-import cldpt 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings()
+import cldpt
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+IMPLEMENTED = ["reports", "privileges", "assets", "agents"]
 
-implemented = ["reports", "privileges", "assets", "agents"]
 
 class MyTests(unittest.TestCase):
 
     def setUp(self):
         self.maxDiff = None
         self.endpoint = ''
-        self.ip = '127.0.0.1'
-        self.base_url = 'https://' + self.ip + ':/cloudpoint/api/v2'
+        self.ip_addr = '127.0.0.1'
+        self.base_url = 'https://' + self.ip_addr + ':/cloudpoint/api/v2'
         self.verify = False
         try:
             with open("/root/.cldpt_token", "r") as file_handle:
@@ -27,28 +26,18 @@ class MyTests(unittest.TestCase):
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}
 
-
     def test_reports(self):
-        for k,v in cldpt.GETS_DICT.items():
-            if k in implemented : 
-                self.endpoint = v
+        for key, value in cldpt.GETS_DICT.items():
+            if key in IMPLEMENTED:
+                self.endpoint = value
                 api_url = '{}/{}'.format(self.base_url, self.endpoint)
-                response = requests.get(api_url, headers=self.header, verify=self.verify)
+                response = requests.get(api_url, headers=self.header,
+                                        verify=self.verify)
                 expected_result = response.content.decode('utf-8')
-                result = cldpt.run(["show", k])
-                with self.subTest(k=k):
+                result = cldpt.run(["show", key])
+                with self.subTest(key=key):
                     self.assertEqual(result, expected_result)
 
-    def prib(self):
-        result = cldpt.run(["show", "privileges"])
-        expected_result = getattr(api.Command(), 'gets')('/authorization/privilege')
-
-        self.assertEqual(result, expected_result)
-
-        result = cldpt.run(["show", "privileges", "-i", "e560b949-5f8b-42a5-8489-0e98368b2498"])
-        expected_result = getattr(api.Command(), 'gets')('/authorization/privilege/e560b949-5f8b-42a5-8489-0e98368b2498')
-
-        self.assertEqual(result, expected_result)
 
 if __name__ == '__main__':
     unittest.main()

@@ -12,10 +12,12 @@ cldpt show assets -i <ASSET_ID> snapshots -i <SNAP_ID> granules\n"
 EXIT_5 = "\nERROR : Argument 'plugins' requires -i flag for 'AGENT_ID'\n\
 Expected Command Format : cldpt show agents -i <AGENT_ID> plugins\n"
 
-EXIT_6 = "\nERROR : Argument 'description' requires -i flag for 'PLUGIN_NAME'\n\
+EXIT_6 = "\nERROR:Argument 'description' requires -i flag for 'PLUGIN_NAME'\n\
 Expected Command Format : cldpt show plugins -i <PLUGIN_NAME> description\n"
 
+
 def check_attr(args, attr):
+
     try:
         if hasattr(args, attr):
             if getattr(args, attr):
@@ -34,11 +36,14 @@ def common_paths(endpoint, args):
 
     return endpoint
 
+
 def assets(endpoint, args):
+
     if check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
+
     if (check_attr(args, 'assets_command')) and\
-        (args.assets_command == "snapshots"):
+       (args.assets_command == "snapshots"):
         if check_attr(args, 'asset_id'):
             endpoint.append(args.assets_command)
             if check_attr(args, 'snapshot_id'):
@@ -60,8 +65,8 @@ def assets(endpoint, args):
 
     return endpoint
 
-def agents(endpoint, args):
 
+def agents(endpoint, args):
 
     detail = (args.show_command)[:-1] + '_id'
     if check_attr(args, detail):
