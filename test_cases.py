@@ -6,8 +6,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import cldpt
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-IMPLEMENTED = ["reports", "privileges", "assets", "agents", "replication", "licenses", "policies",
-               "smtp-settings", "users", "roles", "tasks"]
+IMPLEMENTED = ["report-types", "schedules", "granules"]
 
 
 class MyTests(unittest.TestCase):
@@ -27,15 +26,20 @@ class MyTests(unittest.TestCase):
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}
 
-    def test_reports(self):
+    def test_gets(self):
         for key, value in cldpt.GETS_DICT.items():
-            if key in IMPLEMENTED:
+            if key not in IMPLEMENTED:
                 self.endpoint = value
                 api_url = '{}/{}'.format(self.base_url, self.endpoint)
                 response = requests.get(api_url, headers=self.header,
                                         verify=self.verify)
                 expected_result = response.content.decode('utf-8')
-                result = cldpt.run(["show", key])
+                if key == 'smtp':
+                    result = cldpt.run(["show", 'settings', 'smtp'])
+                elif key == 'ad':
+                    result = cldpt.run(["show", 'settings', 'ad'])
+                else:
+                    result = cldpt.run(["show", key])
                 with self.subTest(key=key):
                     self.assertEqual(result, expected_result)
 

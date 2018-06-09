@@ -10,13 +10,13 @@ import decider
 
 
 GETS_DICT = {
-    "ad-config": "idm/config/ad",
+    "ad": "idm/config/ad",
     "agents": "agents/",
     "assets": "assets/",
-    "classification-tags": "classifications/tags",
-    "smtp-settings": "email/config",
+#    "classification-tags": "classifications/tags",
+    "smtp": "email/config",
     "granules": "granules",
-    "jointokens": "jointokens/",
+#    "jointokens": "jointokens/",
     "licenses": "licenses/",
     "plugins": "plugins/",
     "policies": "policies/",
@@ -26,6 +26,7 @@ GETS_DICT = {
     "reports": "reports/",
     "roles": "authorization/role",
     "schedules": "schedules/",
+    "settings": "/",
     "tasks": "tasks/",
     "telemetry": "telemetry/",
     "users": "idm/user/",
@@ -53,9 +54,10 @@ Expected Command Format : cldpt show assets ; cldpt show reports\n"
 EXIT_5 = "\nERROR : Argument 'plugins' requires -i flag for 'AGENT_ID'\n\
 Expected Command Format : cldpt show agents -i <AGENT_ID> plugins\n"
 
-EXCEPTION_LIST = ["ad-config", "email setup", "report-types", "telemetry",
-                  "version", "show", "description"]
+#EXCEPTION_LIST = ["ad-config", "email setup", "report-types", "telemetry",
+#                  "version", "show", "description"]
 
+EXCEPTION_LIST = []
 
 def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
 
@@ -73,7 +75,7 @@ def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
 
     if command_name[0] not in EXCEPTION_LIST:
         if arguments:
-            for key, value in arguments.items():
+            for key, value in sorted(arguments.items()):
                 if value is None:
             #        describer = parser_name.split('_')[-2]
                     globals()[parser_name].add_argument(key)
@@ -93,7 +95,7 @@ def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
         globals()['sub_'+parser_name] = globals()[parser_name].add_subparsers(
             dest=command_name[0] + '_command', metavar='<option>')
 
-        for key, value in add_subparsers.items():
+        for key, value in sorted(add_subparsers.items()):
             if key[0] == "Null":
                 break
             if value[0]:
@@ -122,32 +124,49 @@ def create_parser():
     parser_add("parser_show", ["show", "show operations"], {},
                {("Null",): (None,)})
     parser_add("parser_show_agents", ["agents"], {"-i": ["--agent-id"]},
-               {("plugins",): ("-i", ("--plugin-name",))})
-    parser_add("parser_show_plugins", ["plugins"], {"-i": ["--plugin-name"]},
-               {("description",): (None,)})
+               {("plugins",): ("-i", ("--plugin-name",)), ("summary",
+               "Show summary information for agents"): (None,)})
     parser_add("parser_show_assets", ["assets"], {"-i": ["--asset-id"]},
                {("snapshots",): ("-i", ("--snapshot-id",), "nested"),
-                ("policies",): (None,)})
+                ("policies",): (None,), ("summary", ): (None,)})
     parser_add("parser_show_assets_snapshots_granules", ["granules"],
                {"-i": ["--granule-id"]})
-    parser_add("parser_show_reports", ["reports"], {"-i": ["--report-id"]})
-    parser_add("parser_show_privileges", ["privileges"],
-               {"-i": ["--privilege-id"]})
-    parser_add("parser_show_roles", ["roles"], {"-i": ["--role-id"]})
-    parser_add("parser_show_users", ["users"], {"-i": ["--user-id"]})
-    parser_add("parser_show_smtp-settings", ["smtp-settings",
-               "Get information on smtp settings"])
-    parser_add("parser_show_policies", ["policies"],
-               {"-i": ["--policy-id"]})
-    parser_add("parser_show_replication", ["replication", 
-               "Get replication rules"])
     parser_add("parser_show_licenses", ["licenses", "Get licensing information"],
                {"-i": ["--license-id"]}, {("active", 
                "Get information on active licenses"): (None, ), ("features",
                "Get information on all licensed features"): (None, )})
+    parser_add("parser_show_plugins", ["plugins"], {"-i": ["--plugin-name"]},
+               {("description",): (None,), ("summary", "Show summary\
+               information for plugins"): (None,)})
+    parser_add("parser_show_policies", ["policies"],
+               {"-i": ["--policy-id"]})
+    parser_add("parser_show_privileges", ["privileges"],
+               {"-i": ["--privilege-id"]})
+    parser_add("parser_show_replication", ["replication", 
+               "Get replication rules"])
+    parser_add("parser_show_reports", ["reports"], {"-i": ["--report-id"]}, {
+               ("report-data", "Show data collected by a specific report"): (
+               None,), ("preview", "Show first 10 lines of the report data"):(
+               None,)} )
+    parser_add("parser_show_roles", ["roles"], {"-i": ["--role-id"]})
+    parser_add("parser_show_settings", ["settings"], {}, {("ad",
+               "Get information on Active-Directory/LDAP settings"): (None,), (
+               "smtp", "Get information on smtp settings"): (None,)})
     parser_add("parser_show_tasks", ["tasks"], {"-i": ["--task-id"],
-               "-f": ["--filter", "Filter on fields"]}, {("summary",
-               "Get summary information of snapshot tasks"): (None,)})
+               "-s": ["--status", "Filter on status, valid values for status are :\
+               ['running', 'successful', 'failed']"], "-r": ["--run-since", 
+               "Filter on tasks started in the last <RUN_SINCE> number of hours"],
+               "-t": ["--taskType", "Filter on task type, valid values for \
+               task types are : ['create-snapshot', 'create-group-snapshot',\
+               'delete-snapshot', 'delete-group-snapshots', 'delete-snapshot',\
+               'restore']"], "-l": ["--limit", "Limit number of results"]},
+               {("summary", "Get summary information of snapshot tasks"): (
+               None,)})
+    parser_add("parser_show_users", ["users"], {"-i": ["--user-id"]})
+    parser_add("parser_show_telemetry", ["telemetry",
+               "Get information on Telemetry status"])
+    parser_add("parser_show_version", ["version",
+               "Get current CloudPoint version"])
 
     parser_add("parser_login", ["login",
                "Login to CloudPoint ; Required for doing any operation"])
@@ -160,7 +179,7 @@ def create_parser():
 def interface(arguments):
 
     endpoint = []
-    common_list = ["reports", "privileges", "roles", "email setup", "users", "policies"]
+    common_list = ["privileges", "roles",  "users", "policies"]
     print(arguments)
 
     if arguments.command == "show":
@@ -171,7 +190,8 @@ def interface(arguments):
         endpoint.append(GETS_DICT[arguments.show_command])
         if arguments.show_command in common_list:
             endpoint = decider.common_paths(endpoint, arguments)
-        elif arguments.show_command in ["assets", "agents", "plugins", "licenses", "tasks"]:
+        elif arguments.show_command in ["assets", "agents", "plugins",
+            "licenses", "tasks", "reports", "settings"]:
             endpoint = getattr(decider,
                                arguments.show_command)(endpoint, arguments)
 

@@ -72,6 +72,13 @@ def assets(endpoint, args):
         else :
             print("\nFor policies, you need to enter an asset_id \n\n")
             sys.exit(4)
+    elif (check_attr(args, 'assets_command')) and\
+         (args.assets_command == "summary"): 
+         if check_attr(args, 'asset_id'):
+             print("\nSummary cannot be provided for a specifc asset id\n")
+             sys.exit(10)
+         else:
+             endpoint.append(args.assets_command)
 
     return endpoint
 
@@ -91,6 +98,13 @@ def agents(endpoint, args):
             sys.exit(101)
         if check_attr(args, "configured_plugin_name"):
             endpoint.append(args.configured_plugin_name)
+    elif (check_attr(args, 'agents_command')) and \
+         (args.agents_command == "summary"):
+         if check_attr(args, detail):
+             print("\nSummary cannot be provided for a specific agent\n")
+             sys.exit(11)
+         else:
+             endpoint.append("/summary")
 
     return endpoint
 
@@ -107,6 +121,13 @@ def plugins(endpoint, args):
         else:
             print(EXIT_6)
             sys.exit(102)
+    elif (check_attr(args, 'plugins_command')) and \
+         (args.plugins_command == "summary"):
+         if check_attr(args, 'plugin_name'):
+             print("\nSummary cannot be provided for a specific plugin\n")
+             sys.exit(12)
+         else:
+             endpoint.append("/summary")
 
     return endpoint
 
@@ -128,8 +149,57 @@ def licenses(endpoint, args):
 
 def tasks(endpoint, args):
 
+
     if check_attr(args, 'task_id'):
+        if check_attr(args, 'tasks_command'):
+            print("\nYou cannot print summary of a task_id\n")
+            sys.exit(8)
         endpoint.append(getattr(args, 'task_id'))
 
+
+    elif check_attr(args, 'tasks_command'):
+        endpoint.append('/summary')
+
+    else :
+        filters = []
+        temp_endpoint = []
+        for i in 'run_since', 'limit', 'status', 'taskType' :
+            if check_attr(args, i):
+                filters.append(i)
+
+        if len(filters) != 0:
+            temp_endpoint.append('?' + filters[0] + '=' + getattr(args, filters[0]))
+            if len(filters) > 1:
+                for j in filters[1:]:
+                    temp_endpoint.append('&' + j + '=' + getattr(args, j))
+        endpoint.append(''.join(temp_endpoint))
+
+    return endpoint
+
+
+def reports(endpoint, args):
+
+    if check_attr(args, 'report_id'):
+        endpoint.append(getattr(args, 'report_id'))
+
+    if (check_attr(args, 'reports_command')):
+        if check_attr(args, 'report_id'):
+            if getattr(args, 'reports_command') == "preview":
+                endpoint.append('/preview')
+            else :
+                endpoint.append('/data')
+        else:
+            print("\nSpecify a REPORT_ID for getting",
+                  getattr(args, 'reports_command'), "\n")
+            sys.exit(9)
+
+    return endpoint
+
+def settings(endpoint, args):
+    if check_attr(args, 'settings_command') :
+        if getattr(args, 'settings_command') == "ad" :
+            endpoint.append("idm/config/ad")
+        elif getattr(args, 'settings_command') == "smtp":
+            endpoint.append("email/config")
 
     return endpoint
