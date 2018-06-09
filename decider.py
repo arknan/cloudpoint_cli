@@ -30,7 +30,10 @@ def check_attr(args, attr):
 
 def common_paths(endpoint, args):
 
-    detail = (args.show_command)[:-1] + '_id'
+    if args.show_command == "policies":
+        detail = "policy_id"
+    else :
+        detail = (args.show_command)[:-1] + '_id'
     if check_attr(args, detail):
         endpoint.append(getattr(args, detail))
 
@@ -62,6 +65,13 @@ def assets(endpoint, args):
             else:
                 print(EXIT_2)
                 sys.exit(3)
+    elif (check_attr(args, 'assets_command')) and\
+         (args.assets_command == "policies"):
+        if check_attr(args, 'asset_id'):
+            endpoint.append(args.assets_command)
+        else :
+            print("\nFor policies, you need to enter an asset_id \n\n")
+            sys.exit(4)
 
     return endpoint
 
@@ -97,5 +107,29 @@ def plugins(endpoint, args):
         else:
             print(EXIT_6)
             sys.exit(102)
+
+    return endpoint
+
+
+def licenses(endpoint, args):
+
+    if check_attr(args, 'licenses_command'):
+        if args.licenses_command == "active":
+            endpoint.append('/?IsLicenseActive=true')
+        elif args.licenses_command == "features":
+             endpoint.append('/all/features')
+
+    if check_attr(args, 'license_id'):
+        endpoint.append(getattr(args, 'license_id'))
+
+
+    return endpoint
+
+
+def tasks(endpoint, args):
+
+    if check_attr(args, 'task_id'):
+        endpoint.append(getattr(args, 'task_id'))
+
 
     return endpoint

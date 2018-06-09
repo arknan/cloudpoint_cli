@@ -21,7 +21,7 @@ GETS_DICT = {
     "plugins": "plugins/",
     "policies": "policies/",
     "privileges": "/authorization/privilege/",
-    "replication": "replication/",
+    "replication": "replication/default/rules",
     "report-types": "report-types/",
     "reports": "reports/",
     "roles": "authorization/role",
@@ -75,13 +75,13 @@ def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
         if arguments:
             for key, value in arguments.items():
                 if value is None:
-                    describer = parser_name.split('_')[-2]
-                    globals()[parser_name].add_argument(key, help="Get" + key +
-                                                        "on a" + describer)
+            #        describer = parser_name.split('_')[-2]
+                    globals()[parser_name].add_argument(key)
                 else:
                     if len(value) == 1:
-                        my_help = "Get information on a specific " + \
-                                   value[0].replace('-', '', 2)
+                        describer = value[0].replace('-', '', 2)
+                        describer = describer.replace('-', '_').upper()
+                        my_help = "Get information on a specific " + describer
                     else:
                         my_help = value[1]
                     metavalue = value[0].replace('-', '', 2)
@@ -126,7 +126,8 @@ def create_parser():
     parser_add("parser_show_plugins", ["plugins"], {"-i": ["--plugin-name"]},
                {("description",): (None,)})
     parser_add("parser_show_assets", ["assets"], {"-i": ["--asset-id"]},
-               {("snapshots",): ("-i", ("--snapshot-id",), "nested")})
+               {("snapshots",): ("-i", ("--snapshot-id",), "nested"),
+                ("policies",): (None,)})
     parser_add("parser_show_assets_snapshots_granules", ["granules"],
                {"-i": ["--granule-id"]})
     parser_add("parser_show_reports", ["reports"], {"-i": ["--report-id"]})
@@ -136,6 +137,18 @@ def create_parser():
     parser_add("parser_show_users", ["users"], {"-i": ["--user-id"]})
     parser_add("parser_show_smtp-settings", ["smtp-settings",
                "Get information on smtp settings"])
+    parser_add("parser_show_policies", ["policies"],
+               {"-i": ["--policy-id"]})
+    parser_add("parser_show_replication", ["replication", 
+               "Get replication rules"])
+    parser_add("parser_show_licenses", ["licenses", "Get licensing information"],
+               {"-i": ["--license-id"]}, {("active", 
+               "Get information on active licenses"): (None, ), ("features",
+               "Get information on all licensed features"): (None, )})
+    parser_add("parser_show_tasks", ["tasks"], {"-i": ["--task-id"],
+               "-f": ["--filter", "Filter on fields"]}, {("summary",
+               "Get summary information of snapshot tasks"): (None,)})
+
     parser_add("parser_login", ["login",
                "Login to CloudPoint ; Required for doing any operation"])
     parser_add("parser_create",
@@ -147,7 +160,7 @@ def create_parser():
 def interface(arguments):
 
     endpoint = []
-    common_list = ["reports", "privileges", "roles", "email setup", "users"]
+    common_list = ["reports", "privileges", "roles", "email setup", "users", "policies"]
     print(arguments)
 
     if arguments.command == "show":
@@ -158,7 +171,7 @@ def interface(arguments):
         endpoint.append(GETS_DICT[arguments.show_command])
         if arguments.show_command in common_list:
             endpoint = decider.common_paths(endpoint, arguments)
-        elif arguments.show_command in ["assets", "agents", "plugins"]:
+        elif arguments.show_command in ["assets", "agents", "plugins", "licenses", "tasks"]:
             endpoint = getattr(decider,
                                arguments.show_command)(endpoint, arguments)
 

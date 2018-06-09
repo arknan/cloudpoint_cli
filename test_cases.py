@@ -6,7 +6,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import cldpt
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-IMPLEMENTED = ["reports", "privileges", "assets", "agents"]
+IMPLEMENTED = ["reports", "privileges", "assets", "agents", "replication", "licenses", "policies",
+               "smtp-settings", "users", "roles", "tasks"]
 
 
 class MyTests(unittest.TestCase):
