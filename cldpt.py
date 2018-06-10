@@ -82,6 +82,8 @@ def create_parser():
                 ("policies",): (None,), ("summary", ): (None,)})
     parser_add("parser_show_assets_snapshots_granules", ["granules"],
                {"-i": ["--granule-id"]})
+    # parser_add("parser_show_join-tokens", ["join-tokens",
+    # "Show current join-tokens"])
     parser_add("parser_show_licenses", ["licenses",
                "Get licensing information"], {"-i": ["--license-id"]}, {(
                "active", "Get information on active licenses"): (None, ), (
@@ -104,6 +106,7 @@ def create_parser():
     parser_add("parser_show_settings", ["settings"], {}, {("ad",
                "Get information on Active-Directory/LDAP settings"): (None,), (
                "smtp", "Get information on smtp settings"): (None,)})
+    parser_add("parser_show_tags", ["tags", "Get classification tags"])
     parser_add("parser_show_tasks", ["tasks"], {"-i": ["--task-id"], "-s": [
                "--status", "Filter on status, valid values for status are :\
                ['running', 'successful', 'failed']"], "-r": ["--run-since",
