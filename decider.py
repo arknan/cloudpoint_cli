@@ -92,7 +92,7 @@ def agents(endpoint, args):
              print("\nSummary cannot be provided for a specific agent\n")
              sys.exit(11)
          else:
-             endpoint.append("/summary")
+             endpoint.append("summary")
 
     return endpoint
 
@@ -115,7 +115,7 @@ def plugins(endpoint, args):
              print("\nSummary cannot be provided for a specific plugin\n")
              sys.exit(12)
          else:
-             endpoint.append("/summary")
+             endpoint.append("summary")
 
     return endpoint
 

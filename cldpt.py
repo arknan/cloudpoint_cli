@@ -8,7 +8,6 @@ import argcomplete
 import api
 import decider
 from constants import GETS_DICT, METHOD_DICT, EXCEPTION_LIST, COMMON_DECIDER_PATHS, DECIDER_PATHS
-from pretty_print import my_print
 
 
 def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
@@ -131,7 +130,6 @@ def create_parser():
 def interface(arguments):
 
     endpoint = []
-    print(arguments)
 
     if arguments.command == "show":
         if arguments.show_command is None:
@@ -145,7 +143,7 @@ def interface(arguments):
             endpoint = getattr(decider,
                                arguments.show_command)(endpoint, arguments)
 
-        print(endpoint)
+        #print(endpoint)
         output = getattr(api.Command(),
                          METHOD_DICT[arguments.command])('/'.join(endpoint))
         return (output, endpoint)
@@ -184,8 +182,3 @@ if __name__ == '__main__':
     else:
         output, endpoint = (interface(args))
         print(output)
-        try :
-            my_print(output, endpoint)
-        except:
-            print("\n\nCouldn't pretty print :( \n\n")
-            sys.exit(9)

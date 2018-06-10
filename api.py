@@ -67,7 +67,6 @@ class Command():
         else:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format
                   (response.status_code, api_url))
-            print("\n\nDETAILS : \n ", response.content.decode('utf-8'))
             return response.content.decode('utf-8')
 
     def posts(self):
