@@ -7,7 +7,7 @@ import argparse
 import argcomplete
 import api
 import decider
-from constants import GETS_DICT, METHOD_DICT, EXCEPTION_LIST, COMMON_DECIDER_PATHS, DECIDER_PATHS
+import constants as co
 
 
 def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
@@ -24,11 +24,11 @@ def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
         globals()[parser_name] = globals()[subparser_name].add_parser(
             command_name[0], help=command_name[1])
 
-    if command_name[0] not in EXCEPTION_LIST:
+    if command_name[0] not in co.EXCEPTION_LIST:
         if arguments:
             for key, value in sorted(arguments.items()):
                 if value is None:
-            #        describer = parser_name.split('_')[-2]
+                    # describer = parser_name.split('_')[-2]
                     globals()[parser_name].add_argument(key)
                 else:
                     if len(value) == 1:
@@ -82,10 +82,11 @@ def create_parser():
                 ("policies",): (None,), ("summary", ): (None,)})
     parser_add("parser_show_assets_snapshots_granules", ["granules"],
                {"-i": ["--granule-id"]})
-    parser_add("parser_show_licenses", ["licenses", "Get licensing information"],
-               {"-i": ["--license-id"]}, {("active", 
-               "Get information on active licenses"): (None, ), ("features",
-               "Get information on all licensed features"): (None, )})
+    parser_add("parser_show_licenses", ["licenses",
+               "Get licensing information"], {"-i": ["--license-id"]}, {(
+               "active", "Get information on active licenses"): (None, ), (
+               "features", "Get information on all licensed features"): (
+               None, )})
     parser_add("parser_show_plugins", ["plugins"], {"-i": ["--plugin-name"]},
                {("description",): (None,), ("summary", "Show summary\
                information for plugins"): (None,)})
@@ -93,20 +94,20 @@ def create_parser():
                {"-i": ["--policy-id"]})
     parser_add("parser_show_privileges", ["privileges"],
                {"-i": ["--privilege-id"]})
-    parser_add("parser_show_replication", ["replication", 
+    parser_add("parser_show_replication", ["replication",
                "Get replication rules"])
     parser_add("parser_show_reports", ["reports"], {"-i": ["--report-id"]}, {
                ("report-data", "Show data collected by a specific report"): (
-               None,), ("preview", "Show first 10 lines of the report data"):(
-               None,)} )
+               None,), ("preview", "Show first 10 lines of the report data"): (
+               None,)})
     parser_add("parser_show_roles", ["roles"], {"-i": ["--role-id"]})
     parser_add("parser_show_settings", ["settings"], {}, {("ad",
                "Get information on Active-Directory/LDAP settings"): (None,), (
                "smtp", "Get information on smtp settings"): (None,)})
-    parser_add("parser_show_tasks", ["tasks"], {"-i": ["--task-id"],
-               "-s": ["--status", "Filter on status, valid values for status are :\
-               ['running', 'successful', 'failed']"], "-r": ["--run-since", 
-               "Filter on tasks started in the last <RUN_SINCE> number of hours"],
+    parser_add("parser_show_tasks", ["tasks"], {"-i": ["--task-id"], "-s": [
+               "--status", "Filter on status, valid values for status are :\
+               ['running', 'successful', 'failed']"], "-r": ["--run-since",
+               "Filter on tasks started in the last <RUN_SINCE> no. of hours"],
                "-t": ["--taskType", "Filter on task type, valid values for \
                task types are : ['create-snapshot', 'create-group-snapshot',\
                'delete-snapshot', 'delete-group-snapshots', 'delete-snapshot',\
@@ -136,24 +137,24 @@ def interface(arguments):
             globals()['parser_show'].print_help()
             sys.exit(100)
 
-        endpoint.append(GETS_DICT[arguments.show_command])
-        if arguments.show_command in COMMON_DECIDER_PATHS:
+        endpoint.append(co.GETS_DICT[arguments.show_command])
+        if arguments.show_command in co.COMMON_DECIDER_PATHS:
             endpoint = decider.common_paths(endpoint, arguments)
-        elif arguments.show_command in DECIDER_PATHS:
+        elif arguments.show_command in co.DECIDER_PATHS:
             endpoint = getattr(decider,
                                arguments.show_command)(endpoint, arguments)
 
-        #print(endpoint)
-        output = getattr(api.Command(),
-                         METHOD_DICT[arguments.command])('/'.join(endpoint))
-        return (output, endpoint)
+        # print(endpoint)
+        response = getattr(api.Command(),
+                         co.METHOD_DICT[arguments.command])('/'.join(endpoint))
+        return (response, endpoint)
 
     elif arguments.command == "login":
-        getattr(api.Command(), METHOD_DICT[arguments.command])()
+        getattr(api.Command(), co.METHOD_DICT[arguments.command])()
         sys.exit(4)
 
     elif arguments.command == "create":
-        getattr(api.Command(), METHOD_DICT[arguments.command])()
+        getattr(api.Command(), co.METHOD_DICT[arguments.command])()
     else:
         parser_main.print_help()
         sys.exit(5)
@@ -180,5 +181,5 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(-1)
     else:
-        output, endpoint = (interface(args))
+        output, endpoint = interface(args)
         print(output)

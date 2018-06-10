@@ -1,13 +1,13 @@
-# Global Settings 
+# Global Settings
 
 GETS_DICT = {
     "ad": "idm/config/ad",
     "agents": "agents/",
     "assets": "assets/",
-#    "classification-tags": "classifications/tags",
+    # "classification-tags": "classifications/tags",
     "smtp": "email/config",
     "granules": "granules",
-#    "jointokens": "jointokens/",
+    # "jointokens": "jointokens/",
     "licenses": "licenses/",
     "plugins": "plugins/",
     "policies": "policies/",
@@ -30,9 +30,9 @@ METHOD_DICT = {
     "login": "authenticate"
 }
 EXCEPTION_LIST = []
-COMMON_DECIDER_PATHS = ["privileges", "roles",  "users", "policies"]
+COMMON_DECIDER_PATHS = ["privileges", "roles", "users", "policies"]
 DECIDER_PATHS = ["assets", "agents", "plugins",
-            "licenses", "tasks", "reports", "settings"]
+                 "licenses", "tasks", "reports", "settings"]
 
 EXIT_1 = "\nERROR : Argument 'snapshots' requires -i flag for 'ASSET_ID'\n\
 Expected Command Format : cldpt show assets -i <ASSET_ID> snapshots\n"
