@@ -3,6 +3,7 @@
 import unittest
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from constants import GETS_DICT
 import cldpt
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -27,7 +28,7 @@ class MyTests(unittest.TestCase):
                        'Authorization': 'Bearer {0}'.format(self.token)}
 
     def test_gets(self):
-        for key, value in cldpt.GETS_DICT.items():
+        for key, value in GETS_DICT.items():
             if key not in IMPLEMENTED:
                 self.endpoint = value
                 api_url = '{}/{}'.format(self.base_url, self.endpoint)
