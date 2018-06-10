@@ -8,6 +8,7 @@ import argcomplete
 import api
 import decider
 from constants import GETS_DICT, METHOD_DICT, EXCEPTION_LIST, COMMON_DECIDER_PATHS, DECIDER_PATHS
+from pretty_print import my_print
 
 
 def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
@@ -147,7 +148,7 @@ def interface(arguments):
         print(endpoint)
         output = getattr(api.Command(),
                          METHOD_DICT[arguments.command])('/'.join(endpoint))
-        return output
+        return (output, endpoint)
 
     elif arguments.command == "login":
         getattr(api.Command(), METHOD_DICT[arguments.command])()
@@ -168,7 +169,7 @@ def run(pass_args=None):
     if len(pass_args) == 1:
         parser.print_help()
     else:
-        output = interface(args)
+        output, endpoint = interface(args)
         return output
 
 
@@ -181,4 +182,10 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(-1)
     else:
-        print(interface(args))
+        output, endpoint = (interface(args))
+        print(output)
+        try :
+            my_print(output, endpoint)
+        except:
+            print("\n\nCouldn't pretty print :( \n\n")
+            sys.exit(9)
