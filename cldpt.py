@@ -148,9 +148,10 @@ Examples : "cldpt create -h", \
         "parser_create", [
             "create", "Create any information within CloudPoint"], None,
         {("Null",): (None,)})
-    parser_add(
-        "parser_create_roles", ["roles", "Create a new role"],
-        {"-f": ["--file-name", "JSON formatted file with role details"]})
+    parser_add("parser_create_role-assignments", [
+        "role_assignments", "Assign an existing role to an existing user"])
+
+    # ("-f", ("--file-name", "JSON formatted file with role details"))})
 
     return parser_main
 
@@ -184,9 +185,11 @@ def interface(arguments):
     elif arguments.command == "create":
         if arguments.create_command is None:
             globals()['parser_create'].print_help()
-        elif arguments.create_command == "roles":
+        elif arguments.create_command == "role_assignments":
             endpoint.append('/authorization/role')
-        data = getattr(create_decider, arguments.create_command)(arguments)
+        else:
+            print("That is not a valid endpoint to fetch\n")
+        data = getattr(create_decider, arguments.create_command)()
         return (getattr(api.Command(), co.METHOD_DICT[arguments.command])(
             '/'.join(endpoint), data), endpoint)
     else:
@@ -202,7 +205,7 @@ def run(pass_args=None):
     if len(pass_args) == 1:
         parser.print_help()
     else:
-        output, endpoint = interface(args)
+        output = interface(args)[0]
         return output
 
 

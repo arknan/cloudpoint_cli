@@ -1,5 +1,8 @@
 # Global Settings
 
+"""
+This module hosts all the global constants that are used in every other module
+"""
 
 def check_attr(args, attr):
 
