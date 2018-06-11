@@ -5,17 +5,6 @@ import json
 import constants as co
 
 
-def common_paths(endpoint, args):
-
-    if args.show_command == "policies":
-        detail = "policy_id"
-    else:
-        detail = (args.show_command)[:-1] + '_id'
-    if co.check_attr(args, detail):
-        endpoint.append(getattr(args, detail))
-
-    return endpoint
-
 
 def roles(args):
 
