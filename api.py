@@ -2,6 +2,7 @@
 
 
 import json
+import sys
 import getpass
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -69,18 +70,43 @@ class Command():
                   (response.status_code, api_url))
             return response.content.decode('utf-8')
 
-    def posts(self):
+    def posts(self, endpoint, data):
+        self.endpoint = endpoint
+        self.header = {'Content-Type': 'application/json',
+                       'Authorization': 'Bearer {0}'.format(self.token)}
+        self.data = data
         if not self.token:
             print("Please authenticate first !")
             exit()
 
-        api_url = '{}/reports/'.format(self.base_url)
-        data = """{
+        api_url = '{}{}'.format(self.base_url, self.endpoint)
+        print(api_url)
+        self.data = """{
+			 "name": "my_role_3",
+			 "privileges": [{
+				"name": "ROLE_MANAGEMENT",
+				"uri": "/api/v2/authorization/privilege/9999"
+			 }],
+			 "subjects": [{
+			 "name": "suser@exmple.com",
+			 "uri": "/api/idm/user/44262d7-842d-43ec-aa59-a262e6352d39"
+			 }]
+		  }"""
+ 
+        rdata = """{
                "reportId": "pypy",
                "reportType": "snapshot",
                "columns": ["id", "name", "region", "ctime"]
         }"""
-        response = requests.post(api_url, data=data, verify=self.verify,
-                                 headers=self.header)
+        print(type(self.data))
+        if isinstance(self.data, str):
+            response = requests.post(api_url, data=self.data, verify=self.verify,
+                                     headers=self.header)
+        elif isinstance(self.data, dict):
+             response = requests.post(api_url, json=self.data, verify=self.verify,
+                                      headers=self.header)
+        else:
+            print("Data must either be a string or a dictionary !!")
+            sys.exit(-99)
         val = json.loads((response.content.decode('utf-8')))
-        print(val['msg'])
+        print(val)

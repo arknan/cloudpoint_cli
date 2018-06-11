@@ -6,7 +6,8 @@ import sys
 import argparse
 import argcomplete
 import api
-import decider
+import show_decider
+import create_decider
 import constants as co
 
 
@@ -125,8 +126,12 @@ def create_parser():
 
     parser_add("parser_login", ["login",
                "Login to CloudPoint ; Required for doing any operation"])
-    parser_add("parser_create",
-               ["create", "Create any information within CloudPoint"])
+
+    parser_add("parser_create", ["create", 
+               "Create any information within CloudPoint"], {}, {("Null",): (
+               None,)})
+    parser_add("parser_create_roles", ["roles", "Create a new role"], {
+               "-f": ["--file-name", "JSON formatted file with role details"]})
 
     return parser_main
 
@@ -142,12 +147,12 @@ def interface(arguments):
 
         endpoint.append(co.GETS_DICT[arguments.show_command])
         if arguments.show_command in co.COMMON_DECIDER_PATHS:
-            endpoint = decider.common_paths(endpoint, arguments)
+            endpoint = show_decider.common_paths(endpoint, arguments)
         elif arguments.show_command in co.DECIDER_PATHS:
-            endpoint = getattr(decider,
+            endpoint = getattr(show_decider,
                                arguments.show_command)(endpoint, arguments)
 
-        # print(endpoint)
+        print(endpoint)
         response = getattr(api.Command(),
                          co.METHOD_DICT[arguments.command])('/'.join(endpoint))
         return (response, endpoint)
@@ -157,7 +162,13 @@ def interface(arguments):
         sys.exit(4)
 
     elif arguments.command == "create":
-        getattr(api.Command(), co.METHOD_DICT[arguments.command])()
+        if arguments.create_command is None:
+            globals()['parser_create'].print_help()
+        elif arguments.create_command == "roles":
+            endpoint.append('/authorization/role')
+        data = getattr(create_decider, arguments.create_command)(arguments)
+        getattr(api.Command(), co.METHOD_DICT[arguments.command])('/'.join(endpoint), data)
+        return ("True", "True")
     else:
         parser_main.print_help()
         sys.exit(5)
@@ -184,5 +195,6 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(-1)
     else:
+        print(args)
         output, endpoint = interface(args)
         print(output)
