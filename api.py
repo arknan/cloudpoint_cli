@@ -19,6 +19,7 @@ class Command():
         self.verify = False
         self.token_header = ''
         self.token_endpoint = ''
+        self.data = ''
 
         try:
             with open("/root/.cldpt_token", "r") as file_handle:
@@ -35,12 +36,12 @@ class Command():
         self.token_endpoint = self.base_url + '/idm/login'
         username = input("Username: ")
         passwd = getpass.getpass("Password: ")
-        data = json.dumps({
+        self.data = json.dumps({
             "email": username,
             "password": passwd})
 
         response = requests.post(self.token_endpoint, verify=self.verify,
-                                 headers=self.token_header, data=data)
+                                 headers=self.token_header, data=self.data)
         if response.status_code == 200:
             self.token = (
                 (json.loads(response.content.decode('utf-8')))["accessToken"])
@@ -63,12 +64,13 @@ class Command():
                                 headers=self.header, verify=self.verify)
 
         if response.status_code == 200:
-            return response.content.decode('utf-8')
+            pass
 
         else:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format
                   (response.status_code, api_url))
-            return response.content.decode('utf-8')
+
+        return response.content.decode('utf-8')
 
     def posts(self, endpoint, data):
         self.endpoint = endpoint
@@ -80,33 +82,21 @@ class Command():
             exit()
 
         api_url = '{}{}'.format(self.base_url, self.endpoint)
-        print(api_url)
-        self.data = """{
-			 "name": "my_role_3",
-			 "privileges": [{
-				"name": "ROLE_MANAGEMENT",
-				"uri": "/api/v2/authorization/privilege/9999"
-			 }],
-			 "subjects": [{
-			 "name": "suser@exmple.com",
-			 "uri": "/api/idm/user/44262d7-842d-43ec-aa59-a262e6352d39"
-			 }]
-		  }"""
- 
-        rdata = """{
-               "reportId": "pypy",
-               "reportType": "snapshot",
-               "columns": ["id", "name", "region", "ctime"]
-        }"""
-        print(type(self.data))
-        if isinstance(self.data, str):
-            response = requests.post(api_url, data=self.data, verify=self.verify,
-                                     headers=self.header)
-        elif isinstance(self.data, dict):
-             response = requests.post(api_url, json=self.data, verify=self.verify,
-                                      headers=self.header)
+# if isinstance(self.data, str):
+#    response = requests.post(api_url, data=self.data, verify=self.verify,
+#    headers=self.header)
+        if isinstance(self.data, dict):
+            response = requests.post(api_url, json=self.data,
+                                     verify=self.verify, headers=self.header)
+            if response.status_code == 200:
+                pass
+
+            else:
+                print('[!]ERROR : HTTP {0} calling [{1}]'.format
+                      (response.status_code, api_url))
+
+            return response.content.decode('utf-8')
+
         else:
-            print("Data must either be a string or a dictionary !!")
+            print("Data must a dictionary !!")
             sys.exit(-99)
-        val = json.loads((response.content.decode('utf-8')))
-        print(val)

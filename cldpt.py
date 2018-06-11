@@ -11,7 +11,7 @@ import create_decider
 import constants as co
 
 
-def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
+def parser_add(parser_name, command_name, arguments=None, add_subparsers=None):
 
     split_var = parser_name.split('_')
     subparser_name = 'sub'
@@ -56,82 +56,101 @@ def parser_add(parser_name, command_name, arguments={}, add_subparsers={}):
                                {value[0]: value[1]}, {("Null",): (None,)})
                 else:
                     parser_add(parser_name + '_' + key[0], key,
-                               {value[0]: value[1]}, {})
+                               {value[0]: value[1]}, None)
             else:
-                parser_add(parser_name + '_' + key[0], key, {}, {})
+                parser_add(parser_name + '_' + key[0], key, None, None)
 
 
 def create_parser():
 
     global parser_main
-    parser_main = \
-        argparse.ArgumentParser(epilog="""\n \nFor help information\
- related to each sub-command/positional argument, \nUse "-h" or "--help"\
- at the end of that sub-command \n \nExamples : "cldpt create -h",\
- "cldpt show assets -i <ASSET_ID> --help" \n """,
-                                formatter_class=argparse.RawTextHelpFormatter)
+    parser_main = argparse.ArgumentParser(
+        epilog="""
+        \n \nFor help information related to each sub-command/positional\
+ argument, \nUse "-h" or "--help" at the end of that sub-command \n \n
+Examples : "cldpt create -h", \
+"cldpt show assets -i <ASSET_ID> --help" \n """,
+        formatter_class=argparse.RawTextHelpFormatter)
+
     global sub_parser
     sub_parser = parser_main.add_subparsers(dest='command', metavar='<option>')
 
-    parser_add("parser_show", ["show", "show operations"], {},
-               {("Null",): (None,)})
-    parser_add("parser_show_agents", ["agents"], {"-i": ["--agent-id"]},
-               {("plugins",): ("-i", ("--plugin-name",)), ("summary",
-               "Show summary information for agents"): (None,)})
-    parser_add("parser_show_assets", ["assets"], {"-i": ["--asset-id"]},
-               {("snapshots",): ("-i", ("--snapshot-id",), "nested"),
-                ("policies",): (None,), ("summary", ): (None,)})
-    parser_add("parser_show_assets_snapshots_granules", ["granules"],
-               {"-i": ["--granule-id"]})
+    parser_add(
+        "parser_show", ["show", "show operations"], None, {("Null",): (None,)})
+    parser_add(
+        "parser_show_agents", ["agents"], {"-i": ["--agent-id"]},
+        {("plugins",): ("-i", ("--plugin-name",)),
+         ("summary", "Show summary information for agents"): (None,)})
+    parser_add(
+        "parser_show_assets", ["assets"], {"-i": ["--asset-id"]},
+        {("snapshots",): ("-i", ("--snapshot-id",), "nested"),
+         ("policies",): (None,), ("summary", ): (None,)})
+    parser_add(
+        "parser_show_assets_snapshots_granules", ["granules"],
+        {"-i": ["--granule-id"]})
     # parser_add("parser_show_join-tokens", ["join-tokens",
     # "Show current join-tokens"])
-    parser_add("parser_show_licenses", ["licenses",
-               "Get licensing information"], {"-i": ["--license-id"]}, {(
-               "active", "Get information on active licenses"): (None, ), (
-               "features", "Get information on all licensed features"): (
-               None, )})
-    parser_add("parser_show_plugins", ["plugins"], {"-i": ["--plugin-name"]},
-               {("description",): (None,), ("summary", "Show summary\
-               information for plugins"): (None,)})
-    parser_add("parser_show_policies", ["policies"],
-               {"-i": ["--policy-id"]})
-    parser_add("parser_show_privileges", ["privileges"],
-               {"-i": ["--privilege-id"]})
-    parser_add("parser_show_replication", ["replication",
-               "Get replication rules"])
-    parser_add("parser_show_reports", ["reports"], {"-i": ["--report-id"]}, {
-               ("report-data", "Show data collected by a specific report"): (
-               None,), ("preview", "Show first 10 lines of the report data"): (
-               None,)})
+    parser_add(
+        "parser_show_licenses", ["licenses", "Get licensing information"],
+        {"-i": ["--license-id"]},
+        {("active", "Get information on active licenses"): (None, ),
+         ("features", "Get information on all licensed features"):
+         (None, )})
+    parser_add(
+        "parser_show_plugins", ["plugins"], {"-i": ["--plugin-name"]},
+        {("description",): (None,),
+         ("summary", "Show summary information for plugins"): (None,)})
+    parser_add("parser_show_policies", ["policies"], {"-i": ["--policy-id"]})
+    parser_add(
+        "parser_show_privileges", ["privileges"], {"-i": ["--privilege-id"]})
+    parser_add(
+        "parser_show_replication", ["replication", "Get replication rules"])
+    parser_add(
+        "parser_show_reports", ["reports"], {"-i": ["--report-id"]},
+        {("report-data", "Show data collected by a specific report"):
+         (None,), ("preview", "Show first 10 lines of the report data"):
+         (None,)})
     parser_add("parser_show_roles", ["roles"], {"-i": ["--role-id"]})
-    parser_add("parser_show_settings", ["settings"], {}, {("ad",
-               "Get information on Active-Directory/LDAP settings"): (None,), (
-               "smtp", "Get information on smtp settings"): (None,)})
+    parser_add(
+        "parser_show_settings", ["settings"], None,
+        {("ad", "Get information on Active-Directory/LDAP settings"):
+         (None,), ("smtp", "Get information on smtp settings"): (None,)})
     parser_add("parser_show_tags", ["tags", "Get classification tags"])
-    parser_add("parser_show_tasks", ["tasks"], {"-i": ["--task-id"], "-s": [
-               "--status", "Filter on status, valid values for status are :\
-               ['running', 'successful', 'failed']"], "-r": ["--run-since",
-               "Filter on tasks started in the last <RUN_SINCE> no. of hours"],
-               "-t": ["--taskType", "Filter on task type, valid values for \
-               task types are : ['create-snapshot', 'create-group-snapshot',\
-               'delete-snapshot', 'delete-group-snapshots', 'delete-snapshot',\
-               'restore']"], "-l": ["--limit", "Limit number of results"]},
-               {("summary", "Get summary information of snapshot tasks"): (
-               None,)})
+    parser_add(
+        "parser_show_tasks", ["tasks"], {
+            "-i": ["--task-id"], "-s": [
+                "--status", "Filter on status, valid values for status are :\
+                ['running', 'successful', 'failed']"],
+            "-r": [
+                "--run-since",
+                "Filter on tasks started in last <RUN_SINCE> no. of hours"],
+            "-t": [
+                "--taskType", "Filter on task type, valid values for \
+                task types are : ['create-snapshot', 'create-group-snapshot',\
+                'delete-snapshot', 'delete-group-snapshots', 'restore',\
+                'delete-snapshot']"],
+            "-l": ["--limit", "Limit number of results"]},
+        {("summary", "Get summary information of snapshot tasks"): (None,)})
     parser_add("parser_show_users", ["users"], {"-i": ["--user-id"]})
-    parser_add("parser_show_telemetry", ["telemetry",
-               "Get information on Telemetry status"])
-    parser_add("parser_show_version", ["version",
-               "Get current CloudPoint version"])
+    parser_add(
+        "parser_show_telemetry",
+        ["telemetry", "Get information on Telemetry status"])
+    parser_add(
+        "parser_show_version",
+        ["version", "Get current CloudPoint version"])
 
-    parser_add("parser_login", ["login",
-               "Login to CloudPoint ; Required for doing any operation"])
+    parser_add(
+        "parser_login", [
+            "login",
+            "Login to CloudPoint ; Required for doing any operation"])
 
-    parser_add("parser_create", ["create", 
-               "Create any information within CloudPoint"], {}, {("Null",): (
-               None,)})
-    parser_add("parser_create_roles", ["roles", "Create a new role"], {
-               "-f": ["--file-name", "JSON formatted file with role details"]})
+    parser_add(
+        "parser_create", [
+            "create", "Create any information within CloudPoint"], None,
+        {("Null",): (None,)})
+    parser_add(
+        "parser_create_roles", ["roles", "Create a new role"],
+        {"-f": ["--file-name", "JSON formatted file with role details"]})
 
     return parser_main
 
@@ -149,12 +168,13 @@ def interface(arguments):
         if arguments.show_command in co.COMMON_DECIDER_PATHS:
             endpoint = show_decider.common_paths(endpoint, arguments)
         elif arguments.show_command in co.DECIDER_PATHS:
-            endpoint = getattr(show_decider,
-                               arguments.show_command)(endpoint, arguments)
+            endpoint = getattr(
+                show_decider, arguments.show_command)(endpoint, arguments)
 
         print(endpoint)
-        response = getattr(api.Command(),
-                         co.METHOD_DICT[arguments.command])('/'.join(endpoint))
+        response = getattr(
+            api.Command(), co.METHOD_DICT[arguments.command])(
+                '/'.join(endpoint))
         return (response, endpoint)
 
     elif arguments.command == "login":
@@ -167,8 +187,8 @@ def interface(arguments):
         elif arguments.create_command == "roles":
             endpoint.append('/authorization/role')
         data = getattr(create_decider, arguments.create_command)(arguments)
-        getattr(api.Command(), co.METHOD_DICT[arguments.command])('/'.join(endpoint), data)
-        return ("True", "True")
+        return (getattr(api.Command(), co.METHOD_DICT[arguments.command])(
+            '/'.join(endpoint), data), endpoint)
     else:
         parser_main.print_help()
         sys.exit(5)

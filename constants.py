@@ -1,5 +1,17 @@
 # Global Settings
 
+
+def check_attr(args, attr):
+
+    try:
+        if hasattr(args, attr):
+            if getattr(args, attr):
+                return True
+    except NameError:
+        return False
+    else:
+        return False
+
 GETS_DICT = {
     "ad": "idm/config/ad",
     "agents": "agents/",
@@ -51,3 +63,9 @@ Expected Command Format : cldpt show agents -i <AGENT_ID> plugins\n"
 
 EXIT_6 = "\nERROR:Argument 'description' requires -i flag for 'PLUGIN_NAME'\n\
 Expected Command Format : cldpt show plugins -i <PLUGIN_NAME> description\n"
+
+
+VALID_PRIVILEGES = ["REPLICATION_POLICY_MANAGEMENT", "REPORT_MANAGEMENT",
+                    "SNAPSHOT_POLICY_MANAGEMENT", "ROLE_MANAGEMENT",
+                    "CLASSIFICATION_POLICY_MANAGEMENT", "USER_MANAGEMENT",
+                    "CLOUD_AND_ARRAY_MANAGEMENT", "ADMINISTRATOR"]
