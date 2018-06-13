@@ -17,15 +17,15 @@ class Command():
         self.ip_addr = '127.0.0.1'
         self.base_url = 'https://' + self.ip_addr + ':/cloudpoint/api/v2'
         self.verify = False
-        self.token_header = ''
-        self.token_endpoint = ''
-        self.data = ''
+        self.token_header = None
+        self.token_endpoint = None
+        self.data = None
 
         try:
             with open("/root/.cldpt_token", "r") as file_handle:
                 self.token = file_handle.readline()
         except FileNotFoundError:
-            self.token = ''
+            self.token = None
 
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}
@@ -55,6 +55,7 @@ class Command():
 
     def gets(self, endpoint):
         self.endpoint = endpoint
+        print(endpoint)
         if not self.token:
             print("\nPlease authenticate first !\n")
             exit()
@@ -64,7 +65,7 @@ class Command():
                                 headers=self.header, verify=self.verify)
 
         if response.status_code == 200:
-            pass
+            print (response.content.decode('utf-8'))
 
         else:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format

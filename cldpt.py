@@ -150,6 +150,7 @@ Examples : "cldpt create -h", \
         {("Null",): (None,)})
     parser_add("parser_create_role-assignments", [
         "role_assignments", "Assign an existing role to an existing user"])
+    #parser_add("parser_create_privilege")
 
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
 
@@ -173,10 +174,9 @@ def interface(arguments):
                 show_decider, arguments.show_command)(endpoint, arguments)
 
         print(endpoint)
-        response = getattr(
-            api.Command(), co.METHOD_DICT[arguments.command])(
-                '/'.join(endpoint))
-        return (response, endpoint)
+        return getattr(api.Command(), co.METHOD_DICT[
+            arguments.command])('/'.join(endpoint))
+
 
     elif arguments.command == "login":
         getattr(api.Command(), co.METHOD_DICT[arguments.command])()
@@ -190,6 +190,7 @@ def interface(arguments):
         else:
             print("That is not a valid endpoint to fetch\n")
         data = getattr(create_decider, arguments.create_command)()
+
         return (getattr(api.Command(), co.METHOD_DICT[arguments.command])(
             '/'.join(endpoint), data), endpoint)
     else:
@@ -219,5 +220,4 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         print(args)
-        output, endpoint = interface(args)
-        print(output)
+        print(interface(args))
