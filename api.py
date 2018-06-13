@@ -65,13 +65,12 @@ class Command():
                                 headers=self.header, verify=self.verify)
 
         if response.status_code == 200:
-            print (response.content.decode('utf-8'))
+            return (response.content.decode('utf-8'))
 
         else:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format
                   (response.status_code, api_url))
-
-        return response.content.decode('utf-8')
+            return response.content.decode('utf-8')
 
     def posts(self, endpoint, data):
         self.endpoint = endpoint

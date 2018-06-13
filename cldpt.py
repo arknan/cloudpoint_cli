@@ -206,8 +206,7 @@ def run(pass_args=None):
     if len(pass_args) == 1:
         parser.print_help()
     else:
-        output = interface(args)[0]
-        return output
+        return interface(args)
 
 
 if __name__ == '__main__':
