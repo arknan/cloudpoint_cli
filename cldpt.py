@@ -9,6 +9,7 @@ import api
 import show_decider
 import create_decider
 import constants as co
+from pretty_printer import print_nested as pp
 
 
 def parser_add(parser_name, command_name, arguments=None, add_subparsers=None):
@@ -219,4 +220,4 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         print(args)
-        print(interface(args))
+        pp(interface(args))
