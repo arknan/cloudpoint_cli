@@ -24,34 +24,55 @@ def maxlengths(value):
 
     return len_val
 
-def print_it(data, col_len=0):
+def print_it_assets(data, endpoint):
+    endpt_len = len(endpoint)
+    if endpt_len == 1:
+        print_it_general(data["items"])
+    elif endpt_len == 2:
+        print_it_general(data)
 
-    if isinstance(data, dict):
+def print_it_general(data, col_len=0, nested=False):
+
+    if (isinstance(data, dict)):
+        #row_count = len(data.keys())
         col_len = maxlengths(sorted(data))
         for k, v in sorted(data.items()):
             if k.startswith('_'):
                 pass
             else:
                 print('{1}{0:<{2}}{1}'.format(k, '|', col_len), end='')
-                if isinstance(v, dict):
+                if (isinstance(v, dict)) and (v):
                     print('\n', ' '*col_len, end='')
-                    print_it(v, col_len)
+                    print_it_general(v, col_len, True)
                 else:
                     clean_value = str(v).replace(' ', '')
                     print('{0}\n'.format(clean_value), end='')
-
+        #if (not nested) and (row_count > 1):
+        if (not nested):
+            print()
+            print('=' * columns)
+            #row_count -= 1
+            
     elif isinstance(data, list):
         for i in data:
             if isinstance(i, dict):
-                print_it(i)
+                print_it_general(i)
             else:
                 print(i)
     else:
         print("FAIL")
 
-def print_nested(data):
+def print_nested(data, endpoint):
+
     clean_data = chomp(data)
-    final = json.loads(clean_data)
-    cover()
-    print_it(final)
-    cover()
+    final = None
+    try:
+        final = json.loads(clean_data)
+        cover()
+        if "assets/" in endpoint:
+            print_it_assets(final, endpoint)
+        else:
+            print_it_general(final)
+        cover()
+    except:
+        print(clean_data)

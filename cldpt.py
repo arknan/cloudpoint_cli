@@ -175,8 +175,8 @@ def interface(arguments):
                 show_decider, arguments.show_command)(endpoint, arguments)
 
         print(endpoint)
-        return getattr(api.Command(), co.METHOD_DICT[
-            arguments.command])('/'.join(endpoint))
+        return (getattr(api.Command(), co.METHOD_DICT[
+            arguments.command])('/'.join(endpoint)), endpoint)
 
 
     elif arguments.command == "login":
@@ -207,7 +207,8 @@ def run(pass_args=None):
     if len(pass_args) == 1:
         parser.print_help()
     else:
-        return interface(args)
+        output, endpoint = interface(args)
+        return output
 
 
 if __name__ == '__main__':
@@ -220,4 +221,6 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         print(args)
-        pp(interface(args))
+        print(interface(args)[0])
+        output, endpoint = interface(args)
+        pp(output, endpoint)
