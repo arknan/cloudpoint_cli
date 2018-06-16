@@ -31,33 +31,43 @@ def print_it_assets(data, endpoint):
     elif endpt_len == 2:
         print_it_general(data)
 
+dont_print = ['_links', 'links']
 def print_it_general(data, col_len=0, nested=False):
 
     if (isinstance(data, dict)):
-        #row_count = len(data.keys())
         col_len = maxlengths(sorted(data))
         for k, v in sorted(data.items()):
-            if k.startswith('_'):
+            #if k.startswith(dont_print):
+            if k in dont_print:
                 pass
             else:
-                print('{1}{0:<{2}}{1}'.format(k, '|', col_len), end='')
+                if nested:
+                    print('{1:>{2}}{0:<{2}}{1}'.format(k, '|', col_len), end='')
+                else:
+                    print('{1}{0:<{2}}{1}'.format(k, '|', col_len), end='')
+
                 if (isinstance(v, dict)) and (v):
-                    print('\n', ' '*col_len, end='')
+                    print('\n')
                     print_it_general(v, col_len, True)
+                #elif isinstance(v, list):
+                #    print('\n')
+                #    print_it_general(v, col_len, True)
                 else:
                     clean_value = str(v).replace(' ', '')
                     print('{0}\n'.format(clean_value), end='')
-        #if (not nested) and (row_count > 1):
+                print('-' * columns)
         if (not nested):
             print()
             print('=' * columns)
-            #row_count -= 1
+            print()
             
     elif isinstance(data, list):
         for i in data:
             if isinstance(i, dict):
                 print_it_general(i)
             else:
+                #print('{1:>{2}}{0:<{2}}'.format(
+                #    i, '|', (col_len+2)))
                 print(i)
     else:
         print("FAIL")
