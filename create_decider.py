@@ -2,8 +2,9 @@
 
 import sys
 import json
-import cldpt
+from getpass import getpass
 import constants as co
+import cldpt
 
 
 def role_assignments():
@@ -45,6 +46,60 @@ with this role")
         "subjects": [{
             "name": user_email
         }]
+    }
+
+    return data
+
+
+def email_config():
+
+    # This doesn't seem to work currently,
+    # maybe the data format is wrong ! need to check with ENGG
+    print("\nPlease enter the IP address of SMTP server")
+    smtp_ip = input("IP Address : ")
+    print("\nPlease enter the port used by SMTP")
+    smtp_port = input("Port (25) : ")
+    if not smtp_port:
+        smtp_port = 25
+    print("\nPlease enter SMTP credentials [skip if anonymous authentication]")
+    smtp_user = input("User name : ")
+    smtp_passwd = None
+    auth = False
+    if smtp_user:
+        auth = True
+        smtp_passwd = getpass("Password: ")
+    print("\nPlease enter the smtp sender email address")
+    smtp_email = input("Sender Email : ")
+
+    data = {
+        "type": "smtp",
+        "senderEmail": smtp_email,
+        "data": {
+            "host": smtp_ip,
+            "port": smtp_port,
+            "authentication": "false"
+        }
+    }
+    if auth:
+        data["data"]["username"] = smtp_user
+        data["data"]["password"] = smtp_passwd
+        data["data"]["authentication"] = "true"
+
+    return data
+
+
+def user():
+
+    print("\nPlease note that users must be accessible by both ", end='')
+    print("LDAP[Name] and SMTP[email address]")
+    first_name = input("Firstname : ")
+    last_name = input("Lastname : ")
+    email_addr = input("Email : ")
+
+    data = {
+        "lastName": last_name,
+        "email": email_addr,
+        "firstName": first_name
     }
 
     return data

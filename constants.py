@@ -4,6 +4,11 @@
 This module hosts all the global constants that are used in every other module
 """
 
+import os
+
+ROWS, COLUMNS = os.popen('stty size', 'r').read().split()
+COLUMNS = int(COLUMNS)
+
 def check_attr(args, attr):
 
     try:
@@ -14,6 +19,7 @@ def check_attr(args, attr):
         return False
     else:
         return False
+
 
 GETS_DICT = {
     "ad": "idm/config/ad",
@@ -39,15 +45,25 @@ GETS_DICT = {
     "version": "version"
 }
 
+POST_DICT = {
+    "role_assignments": "/authorization/role",
+    "user": "/idm/user",
+    # PUTS DICT
+    "email_config": "/email/config",
+    "reset_password": "/idm/user/forgotPassword"
+}
+
 METHOD_DICT = {
     "show": "gets",
     "create": "posts",
-    "login": "authenticate"
+    "login": "authenticate",
+    "modify": "puts"
 }
-EXCEPTION_LIST = []
+PUTS_LIST = ["email_config", "reset_password"]
 COMMON_DECIDER_PATHS = ["privileges", "roles", "users", "policies"]
 DECIDER_PATHS = ["assets", "agents", "plugins",
                  "licenses", "tasks", "reports", "settings"]
+DONT_PRINT = ['_links', 'links']
 
 EXIT_1 = "\nERROR : Argument 'snapshots' requires -i flag for 'ASSET_ID'\n\
 Expected Command Format : cldpt show assets -i <ASSET_ID> snapshots\n"

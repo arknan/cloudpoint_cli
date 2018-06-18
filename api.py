@@ -3,7 +3,7 @@
 
 import json
 import sys
-import getpass
+from getpass import getpass
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -35,7 +35,7 @@ class Command():
         self.token_header = {'Content-Type': 'application/json'}
         self.token_endpoint = self.base_url + '/idm/login'
         username = input("Username: ")
-        passwd = getpass.getpass("Password: ")
+        passwd = getpass("Password: ")
         self.data = json.dumps({
             "email": username,
             "password": passwd})
@@ -100,3 +100,27 @@ class Command():
         else:
             print("Data must a dictionary !!")
             sys.exit(-99)
+
+    def puts(self, endpoint, data):
+        self.endpoint = endpoint
+        self.header = {'Content-Type': 'application/json',
+                       'Authorization': 'Bearer {0}'.format(self.token)}
+        self.data = data
+        if not self.token:
+            print("Please authenticate first !")
+            exit()
+
+        api_url = '{}{}'.format(self.base_url, self.endpoint)
+        if isinstance(self.data, dict):
+            response = requests.put(
+                api_url, json=self.data, verify=self.verify,
+                headers=self.header)
+        else:
+            print("Data must a dictionary !!")
+            sys.exit(-99)
+
+        if response.status_code != 200:
+            print('[!]ERROR : HTTP {0} calling [{1}]'.format
+                  (response.status_code, api_url))
+
+        return response.content.decode('utf-8')

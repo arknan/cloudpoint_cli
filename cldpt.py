@@ -8,6 +8,7 @@ import argcomplete
 import api
 import show_decider
 import create_decider
+import modify_decider
 import constants as co
 from pretty_printer import print_nested as pp
 
@@ -26,23 +27,23 @@ def parser_add(parser_name, command_name, arguments=None, add_subparsers=None):
         globals()[parser_name] = globals()[subparser_name].add_parser(
             command_name[0], help=command_name[1])
 
-    if command_name[0] not in co.EXCEPTION_LIST:
-        if arguments:
-            for key, value in sorted(arguments.items()):
-                if value is None:
-                    # describer = parser_name.split('_')[-2]
-                    globals()[parser_name].add_argument(key)
+    # if command_name[0] not in co.EXCEPTION_LIST:
+    if arguments:
+        for key, value in sorted(arguments.items()):
+            if value is None:
+                # describer = parser_name.split('_')[-2]
+                globals()[parser_name].add_argument(key)
+            else:
+                if len(value) == 1:
+                    describer = value[0].replace('-', '', 2)
+                    describer = describer.replace('-', '_').upper()
+                    my_help = "Get information on a specific " + describer
                 else:
-                    if len(value) == 1:
-                        describer = value[0].replace('-', '', 2)
-                        describer = describer.replace('-', '_').upper()
-                        my_help = "Get information on a specific " + describer
-                    else:
-                        my_help = value[1]
-                    metavalue = value[0].replace('-', '', 2)
-                    metavalue = metavalue.replace('-', '_').upper()
-                    globals()[parser_name].add_argument(
-                        key, value[0], metavar=metavalue, help=my_help)
+                    my_help = value[1]
+                metavalue = value[0].replace('-', '', 2)
+                metavalue = metavalue.replace('-', '_').upper()
+                globals()[parser_name].add_argument(
+                    key, value[0], metavar=metavalue, help=my_help)
 
     if add_subparsers:
         globals()['sub_'+parser_name] = globals()[parser_name].add_subparsers(
@@ -151,9 +152,19 @@ Examples : "cldpt create -h", \
         {("Null",): (None,)})
     parser_add("parser_create_role-assignments", [
         "role_assignments", "Assign an existing role to an existing user"])
-    #parser_add("parser_create_privilege")
-
+    parser_add("parser_create_email-config", [
+        "email_config", "Integrate SMTP"])
+    parser_add("parser_create_user", [
+        "user", "Creates a new user within CloudPoint"])
+    # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
+
+    parser_add(
+        "parser_modify", [
+            "modify", "Modify any information within CloudPoint"], None,
+        {("Null",): (None,)})
+    parser_add("parser_modify_reset-password", [
+        "reset_password", "Reset a user's password"])
 
     return parser_main
 
@@ -178,7 +189,6 @@ def interface(arguments):
         return (getattr(api.Command(), co.METHOD_DICT[
             arguments.command])('/'.join(endpoint)), endpoint)
 
-
     elif arguments.command == "login":
         getattr(api.Command(), co.METHOD_DICT[arguments.command])()
         sys.exit(4)
@@ -186,14 +196,38 @@ def interface(arguments):
     elif arguments.command == "create":
         if arguments.create_command is None:
             globals()['parser_create'].print_help()
-        elif arguments.create_command == "role_assignments":
-            endpoint.append('/authorization/role')
+            sys.exit(100)
+        # elif arguments.create_command == "role_assignments":
+        #    endpoint.append('/authorization/role')
+        elif arguments.create_command in co.POST_DICT:
+            endpoint.append(co.POST_DICT[arguments.create_command])
         else:
             print("That is not a valid endpoint to fetch\n")
+
         data = getattr(create_decider, arguments.create_command)()
+
+        if arguments.create_command in co.PUTS_LIST:
+            return (getattr(api.Command(), "puts")(
+                '/'.join(endpoint), data), endpoint)
 
         return (getattr(api.Command(), co.METHOD_DICT[arguments.command])(
             '/'.join(endpoint), data), endpoint)
+
+    elif arguments.command == "modify":
+        if arguments.modify_command is None:
+            globals()['parser_modify'].print_help()
+            sys.exit(100)
+        elif arguments.modify_command in co.POST_DICT:
+            endpoint.append(co.POST_DICT[arguments.modify_command])
+        else:
+            print("That is not a valid endpoint to fetch\n")
+
+        data = getattr(modify_decider, arguments.modify_command)()
+
+        if arguments.modify_command in co.PUTS_LIST:
+            return (getattr(api.Command(), "puts")(
+                '/'.join(endpoint), data), endpoint)
+
     else:
         parser_main.print_help()
         sys.exit(5)
@@ -221,6 +255,6 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         print(args)
-        print(interface(args)[0])
         output, endpoint = interface(args)
+        print(output, endpoint)
         pp(output, endpoint)
