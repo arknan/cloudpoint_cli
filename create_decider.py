@@ -2,12 +2,13 @@
 
 import sys
 import json
+from re import findall
 from getpass import getpass
 import constants as co
 import cldpt
 
 
-def role_assignments():
+def role_assignments(args, endpoint):
 
     """
     data = None
@@ -48,10 +49,10 @@ with this role")
         }]
     }
 
-    return data
+    return (data, endpoint)
 
 
-def email_config():
+def email_config(args, endpoin):
 
     # This doesn't seem to work currently,
     # maybe the data format is wrong ! need to check with ENGG
@@ -68,7 +69,7 @@ def email_config():
     if smtp_user:
         auth = True
         smtp_passwd = getpass("Password: ")
-    print("\nPlease enter the smtp sender email address")
+    rint("\nPlease enter the smtp sender email address")
     smtp_email = input("Sender Email : ")
 
     data = {
@@ -85,10 +86,10 @@ def email_config():
         data["data"]["password"] = smtp_passwd
         data["data"]["authentication"] = "true"
 
-    return data
+    return (data, endpoint)
 
 
-def user():
+def user(args, endpoint):
 
     print("\nPlease note that users must be accessible by both ", end='')
     print("LDAP[Name] and SMTP[email address]")
@@ -102,4 +103,36 @@ def user():
         "firstName": first_name
     }
 
-    return data
+    return (data, endpoint)
+
+def snapshot(args, endpoint):
+
+    if co.check_attr(args, "asset_id"):
+       endpoint.append('/assets/')
+       endpoint.append(args.asset_id)
+       endpoint.append('/snapshots/')
+    else:
+        print("\nPlease mention an ASSET_ID for taking snapshot\n")
+        sys.exit(-1)
+
+    snap_types = json.loads(cldpt.run(["show", "assets", "-i", args.asset_id]))["snapMethods"]
+    print("\nPlease enter a snapshot type")
+    print("Valid types for this asset include :", snap_types)
+    snap_type = input("SnapType : ")
+    snap_name = input("Snapshot Name : ")
+    snap_descr = input("Description : ")
+    snap_bool = None
+    while True:
+        snap_bool = input("Consistent ? [True / False] : ")
+        if snap_bool in ["True", "False"]:
+            break
+        else:
+            print("\nChoose either 'True' or 'False'\n")
+    data = {
+        "snapType": snap_type,
+        "name": snap_name,
+        "description": snap_descr,
+        "consistent": snap_bool
+    }
+
+    return (data, endpoint)
