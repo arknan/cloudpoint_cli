@@ -142,8 +142,8 @@ Examples : "cldpt create -h", \
         ["version", "Get current CloudPoint version"])
 
     parser_add(
-        "parser_login", [
-            "login",
+        "parser_authenticate", [
+            "authenticate",
             "Login to CloudPoint ; Required for doing any operation"])
 
     parser_add(
@@ -151,11 +151,13 @@ Examples : "cldpt create -h", \
             "create", "Create any information within CloudPoint"], None,
         {("Null",): (None,)})
     parser_add("parser_create_role-assignments", [
-        "role_assignments", "Assign an existing role to an existing user"])
+        "role-assignments", "Assign an existing role to an existing user"])
     parser_add("parser_create_email-config", [
         "email_config", "Integrate SMTP"])
     parser_add("parser_create_user", [
-        "user", "Creates a new user within CloudPoint"])
+        "user", "Create a new user within CloudPoint"])
+    parser_add("parser_create_snapshots", [
+        "snapshots", "Take snapshots of assets"])
     # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
 
@@ -165,6 +167,9 @@ Examples : "cldpt create -h", \
         {("Null",): (None,)})
     parser_add("parser_modify_reset-password", [
         "reset_password", "Reset a user's password"])
+
+    parser_add(
+        "parser_restore", ["restore", "Restore snapshots"])
 
     return parser_main
 
@@ -189,7 +194,7 @@ def interface(arguments):
         return (getattr(api.Command(), co.METHOD_DICT[
             arguments.command])('/'.join(endpoint)), endpoint)
 
-    elif arguments.command == "login":
+    elif arguments.command == "authenticate":
         getattr(api.Command(), co.METHOD_DICT[arguments.command])()
         sys.exit(4)
 

@@ -56,7 +56,7 @@ POST_DICT = {
 METHOD_DICT = {
     "show": "gets",
     "create": "posts",
-    "login": "authenticate",
+    "authenticate": "authenticate",
     "modify": "puts"
 }
 PUTS_LIST = ["email_config", "reset_password"]
