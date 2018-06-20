@@ -52,7 +52,7 @@ with this role")
     return (data, endpoint)
 
 
-def email_config(args, endpoin):
+def email_config(args, endpoint):
 
     # This doesn't seem to work currently,
     # maybe the data format is wrong ! need to check with ENGG
@@ -105,7 +105,7 @@ def user(args, endpoint):
 
     return (data, endpoint)
 
-def snapshot(args, endpoint):
+def snapshots(args, endpoint):
 
     if co.check_attr(args, "asset_id"):
        endpoint.append('/assets/')
@@ -136,3 +136,6 @@ def snapshot(args, endpoint):
     }
 
     return (data, endpoint)
+
+def restore(args, endpoint):
+   pass 

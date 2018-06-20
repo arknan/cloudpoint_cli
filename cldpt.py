@@ -157,7 +157,8 @@ Examples : "cldpt create -h", \
     parser_add("parser_create_user", [
         "user", "Create a new user within CloudPoint"])
     parser_add("parser_create_snapshots", [
-        "snapshots", "Take snapshots of assets"])
+        "snapshots", "Take snapshots of assets"],
+        {"-i": ["--asset-id", "Provide an ASSET_ID to snap"]})
     # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
 
@@ -169,7 +170,8 @@ Examples : "cldpt create -h", \
         "reset_password", "Reset a user's password"])
 
     parser_add(
-        "parser_restore", ["restore", "Restore snapshots"])
+        "parser_restore", ["restore", "Restore snapshots"],
+        {"-i": ["--snap-id", "Provide a SNAP_ID to restore"]})
 
     return parser_main
 
@@ -206,10 +208,13 @@ def interface(arguments):
         #    endpoint.append('/authorization/role')
         elif arguments.create_command in co.POST_DICT:
             endpoint.append(co.POST_DICT[arguments.create_command])
+        elif arguments.create_command == "snapshots":
+            pass
         else:
             print("That is not a valid endpoint to fetch\n")
 
-        data = getattr(create_decider, arguments.create_command)()
+        data, endpoint = getattr(
+            create_decider, arguments.create_command)(arguments, endpoint)
 
         if arguments.create_command in co.PUTS_LIST:
             return (getattr(api.Command(), "puts")(
@@ -232,6 +237,16 @@ def interface(arguments):
         if arguments.modify_command in co.PUTS_LIST:
             return (getattr(api.Command(), "puts")(
                 '/'.join(endpoint), data), endpoint)
+    
+    elif arguments.command == "restore":
+        if arguments.restore_command is None:
+            globals()['parser_restore'].print_help()
+            sys.exit(100)
+        endpoint.append(co.GETS_DICT["assets"])
+        data, endpoint = getattr(create_decider, "restore")(
+            arguments, endpoint)
+        return (getattr(api.Command(), "puts")(
+            '/'.join(endpoint), data), endpoint)
 
     else:
         parser_main.print_help()
