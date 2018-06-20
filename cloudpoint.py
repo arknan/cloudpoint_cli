@@ -23,17 +23,19 @@ Examples : "cldpt create -h", \
 "cldpt show assets -i <ASSET_ID> --help" \n """,
         formatter_class=argparse.RawTextHelpFormatter)
 
-    subparser_main = parser_main.add_subparsers(dest='command', metavar='<option>')
+    subparser_main = parser_main.add_subparsers(
+        dest='command', metavar='<option>')
 
     parser_show = subparser_main.add_parser("show", help="show operations")
-    subparser_show = parser_show.add_subparsers(dest="show_command")
+    subparser_show = parser_show.add_subparsers(dest="show_command", metavar='<option>')
 
     parser_show_agents = subparser_show.add_parser(
         "agents", help="Get information on agents")
     parser_show_agents.add_argument(
         "-i", "--agent-id", dest="agent_id", metavar="AGENT_ID",
         help="Get information on a specific agent ID")
-    subparser_show_agents = parser_show_agents.add_subparsers(dest="agent_command")
+    subparser_show_agents = parser_show_agents.add_subparsers(
+        dest="agents_command", metavar='<option>')
     parser_show_agents_plugins = subparser_show_agents.add_parser(
         "plugins", help="Get information on plugins for a specific agent")
     parser_show_agents_plugins.add_argument(
@@ -48,14 +50,16 @@ Examples : "cldpt create -h", \
     parser_show_assets.add_argument(
         "-i", "--asset-id", dest="asset_id",
         help="Get information on a specific asset ID")
-    subparser_show_assets = parser_show_assets.add_subparsers(dest="asset_command")
+    subparser_show_assets = parser_show_assets.add_subparsers(
+        dest="assets_command", metavar='<option>')
     parser_show_assets_snapshots = subparser_show_assets.add_parser(
         "snapshots", help="Get information on snapshots of an asset")
     parser_show_assets_snapshots.add_argument(
         "-i", "--snap-id", dest="snap_id",
         help="Get information on a snapshot ID")
     subparser_show_assets_snapshots =\
-    parser_show_assets_snapshots.add_subparsers(dest="snapshot_command")
+    parser_show_assets_snapshots.add_subparsers(
+        dest="snapshots_command", metavar='<option>')
     parser_show_assets_snapshots_granules = subparser_show_assets_snapshots.add_parser(
         "granules", help = "Get information on granules of asset snapshots")
     parser_show_assets_snapshots_granules.add_argument(
@@ -66,13 +70,19 @@ Examples : "cldpt create -h", \
     parser_show_assets_summary = subparser_show_assets.add_parser(
         "summary", help="Get summary of assets")
 
+    parser_show_email_config = subparser_show.add_parser(
+        "email-config", help="Get information on email server configuration")
+    parser_show_ldap_config = subparser_show.add_parser(
+        "ldap-config", 
+        help="Get information on Active-Directory/LDAP settings")
+
     parser_show_licenses = subparser_show.add_parser(
         "licenses", help="Get information on CloudPoint licenses")
     parser_show_licenses.add_argument(
         "-i", "--license-id", dest="license_id", 
         help="Get information on a specific license id")
     subparser_show_licenses = parser_show_licenses.add_subparsers(
-        dest="license_command")
+        dest="licenses_command", metavar='<option>')
     parser_show_licenses_active = subparser_show_licenses.add_parser(
         "active", help="Get information on all active licenses")
     parser_show_licenses_features = subparser_show_licenses.add_parser(
@@ -85,7 +95,8 @@ Examples : "cldpt create -h", \
         "-i", "--plugin-name", dest="available_plugin_name",
         metavar="PLUGIN_NAME",
         help="Get information on a specific available plugin")
-    subparser_show_plugins = parser_show_plugins.add_subparsers(dest="plugin_command")
+    subparser_show_plugins = parser_show_plugins.add_subparsers(
+        dest="plugins_command", metavar='<option>')
     parser_show_plugins_description = subparser_show_plugins.add_parser(
         "description", help="Get plugin description for a specific plugin name")
     parser_show_plugins_description = subparser_show_plugins.add_parser(
@@ -110,7 +121,8 @@ Examples : "cldpt create -h", \
     parser_show_reports.add_argument(
         "-i", "--report-id", dest="report_id",
         help="Get information on a specific report ID")
-    subparser_show_reports = parser_show_reports.add_subparsers(dest="report_command")
+    subparser_show_reports = parser_show_reports.add_subparsers(
+        dest="reports_command", metavar='<option>')
     parser_show_reports_report_data = subparser_show_reports.add_parser(
         "report-data", help="Show data collected by a specific report") 
     paser_show_reports_preview = subparser_show_reports.add_parser(
@@ -120,14 +132,9 @@ Examples : "cldpt create -h", \
         "roles", help="Get information on roles")
     parser_show_roles.add_argument(
         "-i", "--role-id", help="Get information on a specific role ID")
-    parser_show_email_config = subparser_show.add_parser(
-        "email-config", help="Get information on email server configuration")
-    parser_show_ldap_config = subparser_show.add_parser(
-        "ldap-config", 
-        help="Get information on Active-Directory/LDAP settings")
 
     parser_show_tags = subparser_show.add_parser(
-        "tags", help="Get infomation on classification tags")
+        "tags", help="Get information on classification tags")
 
     parser_show_tasks = subparser_show.add_parser(
         "tasks", help="Get information on CloudPoint tasks")
@@ -145,18 +152,19 @@ Examples : "cldpt create -h", \
         'delete-snapshot', 'delete-group-snapshots', 'restore']")
     parser_show_tasks.add_argument(
         "-l", "--limit", help="Limit number of results to <LIMIT>")
-    subparser_show_tags = parser_show_tags.add_subparsers(dest="tag_command")
+    subparser_show_tags = parser_show_tags.add_subparsers(
+        dest="tags_command", metavar='<option>')
     parser_show_tasks_summary = subparser_show_tags.add_parser(
         "summary", help="Get summary information of all tasks")
 
+    parser_show_telemetry = subparser_show.add_parser(
+        "telemetry",
+        help="Shows CloudPoint's Telemetry status [on/off]")
     parser_show_users = subparser_show.add_parser(
         "users", help="Get information on CloudPoint users")
     parser_show_users.add_argument(
         "-i", "--user-id",
         help="Get information on a particular CloudPoint user")
-    parser_show_telemetry = subparser_show.add_parser(
-        "telemetry",
-        help="Shows CloudPoint's Telemetry status [on/off]")
     parser_show_version = subparser_show.add_parser(
         "version", help="Get CloudPoint's version")
 
@@ -165,8 +173,9 @@ Examples : "cldpt create -h", \
         help="Login to CloudPoint ; Required for doing any operation")
 
     parser_create = subparser_main.add_parser(
-        "parser_create", help="Create any information within CloudPoint")
-    subparser_create = parser_create.add_subparsers(dest="create_command")
+        "create", help="Create any information within CloudPoint")
+    subparser_create = parser_create.add_subparsers(
+        dest="create_command", metavar='<option>')
     parser_create_role_assignments = subparser_create.add_parser(
         "role-assignments",
         help="Assign an existing role to an existing user")
@@ -182,13 +191,18 @@ Examples : "cldpt create -h", \
     # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
     parser_modify = subparser_main.add_parser(
-        "parser_modify", help="Modify any information within CloudPoint")
-    subparser_modify = parser_modify.add_subparsers(dest="modify_command")
+        "modify", help="Modify any information within CloudPoint")
+    subparser_modify = parser_modify.add_subparsers(
+        dest="modify_command", metavar='<option>')
     parser_modify_reset_password = subparser_modify.add_parser(
         "reset_password", help="Reset a CloudPoint user's password")
 
     parser_restore = subparser_main.add_parser(
         "restore", help="Restore snapshots")
+
+    return parser_main
+
+def interface(arguments):
 
     endpoint = []
 
