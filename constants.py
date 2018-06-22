@@ -48,6 +48,7 @@ GETS_DICT = {
 POST_DICT = {
     "role_assignments": "/authorization/role",
     "user": "/idm/user",
+    "policies": "/policies/",
     # PUTS DICT
     "email_config": "/email/config",
     "reset_password": "/idm/user/forgotPassword"

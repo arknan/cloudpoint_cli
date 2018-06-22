@@ -90,6 +90,8 @@ Examples : "cldpt create -h", \
     parser_add(
         "parser_show_assets_snapshots_granules", ["granules"],
         {"-i": ["--granule-id"]})
+    parser_add(
+        "parser_show_assets_snapshots_restore-targets", ["restore-targets"])
     # parser_add("parser_show_join-tokens", ["join-tokens",
     # "Show current join-tokens"])
     parser_add(
@@ -159,6 +161,10 @@ Examples : "cldpt create -h", \
     parser_add("parser_create_snapshots", [
         "snapshots", "Take snapshots of assets"],
         {"-i": ["--asset-id", "Provide an ASSET_ID to snap"]})
+    parser_add("parser_create_replicas", [
+        "replicas", "Replicate existing snapshots"],
+        {"-i": ["--snap-id", "Provide a SNAPSHOT_ID to replicate"]})
+    parser_add("parser_create_policies", ["policies", "Create Policies"])
     # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
 
@@ -171,7 +177,7 @@ Examples : "cldpt create -h", \
 
     parser_add(
         "parser_restore", ["restore", "Restore snapshots"],
-        {"-i": ["--snap-id", "Provide a SNAP_ID to restore"]})
+        {"-i": ["--snap-id", "Provide a SNAPSHOT_ID to restore"]})
 
     return parser_main
 
@@ -208,7 +214,7 @@ def interface(arguments):
         #    endpoint.append('/authorization/role')
         elif arguments.create_command in co.POST_DICT:
             endpoint.append(co.POST_DICT[arguments.create_command])
-        elif arguments.create_command == "snapshots":
+        elif arguments.create_command in ["snapshots", "replicas"]:
             pass
         else:
             print("That is not a valid endpoint to fetch\n")
@@ -239,9 +245,6 @@ def interface(arguments):
                 '/'.join(endpoint), data), endpoint)
     
     elif arguments.command == "restore":
-        if arguments.restore_command is None:
-            globals()['parser_restore'].print_help()
-            sys.exit(100)
         endpoint.append(co.GETS_DICT["assets"])
         data, endpoint = getattr(create_decider, "restore")(
             arguments, endpoint)
