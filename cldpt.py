@@ -108,7 +108,9 @@ Examples : "cldpt create -h", \
     parser_add(
         "parser_show_privileges", ["privileges"], {"-i": ["--privilege-id"]})
     parser_add(
-        "parser_show_replication", ["replication", "Get replication rules"])
+        "parser_show_replication", ["replication", "Get replication policies"],
+        {"-i": ["--policy-name"]}, {(
+            "rules", "Show replication rules for a policy"): (None, )})
     parser_add(
         "parser_show_reports", ["reports"], {"-i": ["--report-id"]},
         {("report-data", "Show data collected by a specific report"):

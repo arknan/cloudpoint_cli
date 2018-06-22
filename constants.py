@@ -33,7 +33,7 @@ GETS_DICT = {
     "plugins": "plugins/",
     "policies": "policies/",
     "privileges": "/authorization/privilege/",
-    "replication": "replication/default/rules",
+    "replication": "replication/",
     "report-types": "report-types/",
     "reports": "reports/",
     "roles": "authorization/role",
@@ -62,7 +62,7 @@ METHOD_DICT = {
 }
 PUTS_LIST = ["email_config", "reset_password"]
 COMMON_DECIDER_PATHS = ["privileges", "roles", "users", "policies"]
-DECIDER_PATHS = ["assets", "agents", "plugins",
+DECIDER_PATHS = ["assets", "agents", "plugins", "replication",
                  "licenses", "tasks", "reports", "settings"]
 DONT_PRINT = ['_links', 'links']
 
