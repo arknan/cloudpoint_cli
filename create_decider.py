@@ -277,3 +277,47 @@ def policies(args, endpoint):
 
 
     """
+
+def replication_rule(args, endpoint):
+
+    repl_locations = json.loads(getattr(api.Command(), 'gets')(
+        '/replica-locations/'))
+    valid_sources = {x['region']:x['id'] for x in repl_locations}
+    source = None
+    while True:
+        print("Enter a source region, valid values are:\n{}".format(
+            list(valid_sources.keys())))
+        source_region = input("Source region : ")
+        if source_region in valid_sources:
+            source = (valid_sources[source_region])
+            del valid_sources[source_region]
+            break
+        else:
+            print("Not a valid choice, please try again\n")
+
+    dest_counter = 0
+    dest = []
+    while dest_counter < 3:
+        temp = input("Destination : (enter 'none' if you are done) ")
+        if temp == 'none':
+            break
+
+        elif temp in valid_sources:
+                    dest.append(valid_sources[temp])
+                    dest_counter += 1
+
+        else:
+            print("\nNot a valid location\n")
+            print("Valid destination regions are : {}".format(
+                list(valid_sources.keys())))
+
+    if not dest:
+        print("\nYou should provide atleast 1 region to replicate to !\n")
+        sys.exit(-1)
+
+    data = {
+        "destination": dest,
+        "source": source
+    }
+
+    return (data, endpoint)

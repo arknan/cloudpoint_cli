@@ -73,6 +73,7 @@ class Command():
             return response.content.decode('utf-8')
 
     def posts(self, endpoint, data):
+        #print("\nIn POSTS : endpoint : {}, data : {}\n".format(endpoint, data))
         self.endpoint = endpoint
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}

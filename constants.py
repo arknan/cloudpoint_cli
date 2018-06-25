@@ -49,6 +49,7 @@ POST_DICT = {
     "role_assignments": "/authorization/role",
     "user": "/idm/user",
     "policies": "/policies/",
+    "replication_rule": "/replication/default/rules/",
     # PUTS DICT
     "email_config": "/email/config",
     "reset_password": "/idm/user/forgotPassword"

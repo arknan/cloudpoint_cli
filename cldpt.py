@@ -166,6 +166,9 @@ Examples : "cldpt create -h", \
     parser_add("parser_create_replicas", [
         "replicas", "Replicate existing snapshots"],
         {"-i": ["--snap-id", "Provide a SNAPSHOT_ID to replicate"]})
+
+    parser_add("parser_create_replication-rule", [
+        "replication_rule", "Create a replication rule"])
     parser_add("parser_create_policies", ["policies", "Create Policies"])
     # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
