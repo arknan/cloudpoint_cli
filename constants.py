@@ -50,6 +50,7 @@ POST_DICT = {
     "user": "/idm/user",
     "policies": "/policies/",
     "replication_rule": "/replication/default/rules/",
+    "telemetry": "/telemetry/",
     # PUTS DICT
     "email_config": "/email/config",
     "reset_password": "/idm/user/forgotPassword"

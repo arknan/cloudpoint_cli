@@ -179,6 +179,8 @@ Examples : "cldpt create -h", \
         {("Null",): (None,)})
     parser_add("parser_modify_reset-password", [
         "reset_password", "Reset a user's password"])
+    parser_add("parser_modify_telemetry", [
+        "telemetry", "Turn ON telemetry"])
 
     parser_add(
         "parser_restore", ["restore", "Restore snapshots"],
@@ -247,6 +249,9 @@ def interface(arguments):
 
         if arguments.modify_command in co.PUTS_LIST:
             return (getattr(api.Command(), "puts")(
+                '/'.join(endpoint), data), endpoint)
+        else:
+             return (getattr(api.Command(), "posts")(
                 '/'.join(endpoint), data), endpoint)
     
     elif arguments.command == "restore":
