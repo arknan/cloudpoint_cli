@@ -125,3 +125,19 @@ class Command():
                   (response.status_code, api_url))
 
         return response.content.decode('utf-8')
+
+    def deletes(self, endpoint):
+
+        self.endpoint = endpoint
+        self.header = {'Content-Type': 'application/json',
+                       'Authorization': 'Bearer {0}'.format(self.token)}
+        if not self.token:
+            print("Please authenticate first !")
+            exit()
+        api_url = '{}{}'.format(self.base_url, self.endpoint)
+        response = requests.delete(
+            api_url, verify=self.verify, headers=self.header)
+        if response.status_code != 200:
+            print('[!]ERROR : HTTP {0} calling [{1}]'.format
+                  (response.status_code, api_url))
+        return response.content.decode('utf-8')

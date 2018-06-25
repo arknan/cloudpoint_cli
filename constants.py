@@ -36,7 +36,7 @@ GETS_DICT = {
     "replication": "replication/",
     "report-types": "report-types/",
     "reports": "reports/",
-    "roles": "authorization/role",
+    "roles": "/authorization/role",
     "schedules": "schedules/",
     "settings": "/",
     "tasks": "tasks/",

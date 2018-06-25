@@ -9,6 +9,7 @@ import api
 import show_decider
 import create_decider
 import modify_decider
+import delete_decider
 import constants as co
 from pretty_printer import print_nested as pp
 
@@ -187,6 +188,13 @@ Examples : "cldpt create -h", \
         "parser_restore", ["restore", "Restore snapshots"],
         {"-i": ["--snap-id", "Provide a SNAPSHOT_ID to restore"]})
 
+    parser_add(
+        "parser_delete", ["delete", "Delete Operations"], None, {
+            ("Null",): (None,)})
+    parser_add(
+        "parser_delete_roles", ["roles", "Delete roles"],
+        {"-i": ["--role-id"]}) 
+
     return parser_main
 
 
@@ -261,6 +269,19 @@ def interface(arguments):
             arguments, endpoint)
         return (getattr(api.Command(), "puts")(
             '/'.join(endpoint), data), endpoint)
+
+    elif arguments.command == "delete":
+        if arguments.delete_command is None:
+            globals()['parser_delete'].print_help()
+            sys.exit(-1)
+        elif arguments.delete_command in co.GETS_DICT:
+            endpoint.append(co.GETS_DICT[arguments.delete_command])
+        
+        endpoint = getattr(delete_decider, arguments.delete_command)(
+            arguments, endpoint)
+
+        return(getattr(api.Command(), "deletes")(
+            '/'.join(endpoint)), endpoint)
 
     else:
         parser_main.print_help()
