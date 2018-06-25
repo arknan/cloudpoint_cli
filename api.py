@@ -64,16 +64,13 @@ class Command():
         response = requests.get(api_url,
                                 headers=self.header, verify=self.verify)
 
-        if response.status_code == 200:
-            return (response.content.decode('utf-8'))
-
-        else:
+        if response.status_code != 200:
             print('[!]ERROR : HTTP {0} calling [{1}]'.format
                   (response.status_code, api_url))
-            return response.content.decode('utf-8')
+
+        return response.content.decode('utf-8')
 
     def posts(self, endpoint, data):
-        #print("\nIn POSTS : endpoint : {}, data : {}\n".format(endpoint, data))
         self.endpoint = endpoint
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}

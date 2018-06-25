@@ -9,6 +9,7 @@ import os
 ROWS, COLUMNS = os.popen('stty size', 'r').read().split()
 COLUMNS = int(COLUMNS)
 
+
 def check_attr(args, attr):
 
     try:

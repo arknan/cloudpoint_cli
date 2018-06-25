@@ -44,11 +44,10 @@ def assets(endpoint, args):
             elif args.snapshots_command == "restore-targets":
                 if (co.check_attr(args, 'asset_id')) and\
                    (co.check_attr(args, 'snapshot_id')):
-                   endpoint.append('/targets')
+                    endpoint.append('/targets')
                 else:
                     print("Need ASSET_ID and SNAP_ID for restore-targets")
                     sys.exit(-1)
-
 
     elif (co.check_attr(args, 'assets_command')) and\
          (args.assets_command == "policies"):
@@ -189,8 +188,9 @@ def settings(endpoint, args):
 
     return endpoint
 
+
 def replication(endpoint, args):
-    
+
     if co.check_attr(args, 'policy_name'):
         endpoint.append(getattr(args, 'policy_name'))
     if co.check_attr(args, 'replication_command'):

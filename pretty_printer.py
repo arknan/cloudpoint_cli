@@ -4,6 +4,7 @@ import os
 import json
 from constants import DONT_PRINT, COLUMNS
 
+
 def chomp(data):
     final = data.replace('\n', '').replace(' ', '')
     return final
@@ -55,7 +56,7 @@ def print_it_general(data, col_len=0, nested=False):
                 #    print('\n')
                 #    print_it_general(value, col_len, True)
                 else:
-                    #clean_value = str(value).replace(' ', '')
+                    # clean_value = str(value).replace(' ', '')
                     clean_value = str(value)
                     print('{0}\n'.format(clean_value), end='')
                 print('-' * COLUMNS)
@@ -79,7 +80,6 @@ def print_it_general(data, col_len=0, nested=False):
 def print_nested(data, endpoint):
 
     final = None
-    clean_data = None
     type_error = False
 
     cover()
@@ -89,7 +89,7 @@ def print_nested(data, endpoint):
         type_error = True
 
     if type_error:
-        if ("errorMessage" in data):
+        if "errorMessage" in data:
             print_it_general(data)
             cover()
             os.sys.exit(0)

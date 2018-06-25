@@ -15,6 +15,7 @@ def reset_password():
 
     return data
 
+
 def telemetry():
 
     return {}

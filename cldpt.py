@@ -161,11 +161,11 @@ Examples : "cldpt create -h", \
         "email_config", "Integrate SMTP"])
     parser_add("parser_create_user", [
         "user", "Create a new user within CloudPoint"])
-    parser_add("parser_create_snapshots", [
-        "snapshots", "Take snapshots of assets"],
+    parser_add(
+        "parser_create_snapshots", ["snapshots", "Take snapshots of assets"],
         {"-i": ["--asset-id", "Provide an ASSET_ID to snap"]})
-    parser_add("parser_create_replicas", [
-        "replicas", "Replicate existing snapshots"],
+    parser_add(
+        "parser_create_replicas", ["replicas", "Replicate existing snapshots"],
         {"-i": ["--snap-id", "Provide a SNAPSHOT_ID to replicate"]})
 
     parser_add("parser_create_replication-rule", [
@@ -193,7 +193,7 @@ Examples : "cldpt create -h", \
             ("Null",): (None,)})
     parser_add(
         "parser_delete_roles", ["roles", "Delete roles"],
-        {"-i": ["--role-id"]}) 
+        {"-i": ["--role-id"]})
 
     return parser_main
 
@@ -260,9 +260,9 @@ def interface(arguments):
             return (getattr(api.Command(), "puts")(
                 '/'.join(endpoint), data), endpoint)
         else:
-             return (getattr(api.Command(), "posts")(
+            return (getattr(api.Command(), "posts")(
                 '/'.join(endpoint), data), endpoint)
-    
+
     elif arguments.command == "restore":
         endpoint.append(co.GETS_DICT["assets"])
         data, endpoint = getattr(create_decider, "restore")(
@@ -276,7 +276,7 @@ def interface(arguments):
             sys.exit(-1)
         elif arguments.delete_command in co.GETS_DICT:
             endpoint.append(co.GETS_DICT[arguments.delete_command])
-        
+
         endpoint = getattr(delete_decider, arguments.delete_command)(
             arguments, endpoint)
 

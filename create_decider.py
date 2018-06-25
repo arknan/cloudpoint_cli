@@ -7,6 +7,7 @@ import constants as co
 import cldpt
 import api
 
+
 def role_assignments(args, endpoint):
 
     """
@@ -68,7 +69,7 @@ def email_config(args, endpoint):
     if smtp_user:
         auth = True
         smtp_passwd = getpass("Password: ")
-    rint("\nPlease enter the smtp sender email address")
+    print("\nPlease enter the smtp sender email address")
     smtp_email = input("Sender Email : ")
 
     data = {
@@ -104,17 +105,19 @@ def user(args, endpoint):
 
     return (data, endpoint)
 
+
 def snapshots(args, endpoint):
 
     if co.check_attr(args, "asset_id"):
-       endpoint.append('/assets/')
-       endpoint.append(args.asset_id)
-       endpoint.append('/snapshots/')
+        endpoint.append('/assets/')
+        endpoint.append(args.asset_id)
+        endpoint.append('/snapshots/')
     else:
         print("\nPlease mention an ASSET_ID for taking snapshot\n")
         sys.exit(-1)
 
-    snap_types = json.loads(cldpt.run(["show", "assets", "-i", args.asset_id]))["snapMethods"]
+    snap_types = json.loads(cldpt.run(
+        ["show", "assets", "-i", args.asset_id]))["snapMethods"]
     print("\nPlease enter a snapshot type")
     print("Valid types for this asset include :", snap_types)
     snap_type = input("SnapType : ")
@@ -136,6 +139,7 @@ def snapshots(args, endpoint):
 
     return (data, endpoint)
 
+
 def replicas(args, endpoint):
 
     print("\nEnter the snapshot ID to replicate and the destination(s)\n")
@@ -146,7 +150,7 @@ def replicas(args, endpoint):
         '/assets/' + snap_id))
     snap_source_asset = snap_info["snapSourceId"]
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
-        '/assets/' + snap_source_asset + '/snapshots/' + snap_id +\
+        '/assets/' + snap_source_asset + '/snapshots/' + snap_id +
         '/repl-targets/'))
 
     valid_locations = []
@@ -188,6 +192,7 @@ def replicas(args, endpoint):
 
     return (data, endpoint)
 
+
 def restore(args, endpoint):
     if co.check_attr(args, "snap_id"):
         endpoint.append("/" + args.snap_id)
@@ -218,11 +223,11 @@ def restore(args, endpoint):
     else:
         pass
 
-    return (data, endpoint)    
+    return (data, endpoint)
+
 
 def policies(args, endpoint):
 
-    pass
     """
 
     name, appConsist, tag, snapTypePref, hour = None, None, None, None, None
@@ -267,7 +272,6 @@ def policies(args, endpoint):
     freq = input(
         "Backup every \n['minute', 'hour', 'day', 'week', 'month', 'year']\n
         Frequency : ")
-     
     minute = input("Minute : ") or "0"
     hour = input("Hour : ") or "0"
     mday = input("Date : ") or "1"
@@ -277,12 +281,14 @@ def policies(args, endpoint):
 
 
     """
+    pass
+
 
 def replication_rule(args, endpoint):
 
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
         '/replica-locations/'))
-    valid_sources = {x['region']:x['id'] for x in repl_locations}
+    valid_sources = {x['region']: x['id'] for x in repl_locations}
     source = None
     while True:
         print("Enter a source region, valid values are:\n{}".format(
@@ -303,8 +309,8 @@ def replication_rule(args, endpoint):
             break
 
         elif temp in valid_sources:
-                    dest.append(valid_sources[temp])
-                    dest_counter += 1
+            dest.append(valid_sources[temp])
+            dest_counter += 1
 
         else:
             print("\nNot a valid location\n")
@@ -325,8 +331,6 @@ def replication_rule(args, endpoint):
 
 def reports(args, endpoint):
 
-    print("Not implemented\n")
-    sys.exit(-1)
 
     """
     report_id = input("Report Name : ")
@@ -343,3 +347,5 @@ def reports(args, endpoint):
 
     return (data, endpoint)
     """
+    print("Not implemented\n")
+    sys.exit(-1)
