@@ -172,6 +172,7 @@ Examples : "cldpt create -h", \
     parser_add("parser_create_policies", ["policies", "Create Policies"])
     # parser_add("parser_create_privilege")
     # ("-f", ("--file-name", "JSON formatted file with role details"))})
+    parser_add("parser_create_reports", ["reports", "Create Reports"])
 
     parser_add(
         "parser_modify", [

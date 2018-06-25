@@ -321,3 +321,25 @@ def replication_rule(args, endpoint):
     }
 
     return (data, endpoint)
+
+
+def reports(args, endpoint):
+
+    print("Not implemented\n")
+    sys.exit(-1)
+
+    """
+    report_id = input("Report Name : ")
+
+    first_name = input("Firstname : ")
+    last_name = input("Lastname : ")
+    email_addr = input("Email : ")
+
+    data = {
+        "lastName": last_name,
+        "email": email_addr,
+        "firstName": first_name
+    }
+
+    return (data, endpoint)
+    """

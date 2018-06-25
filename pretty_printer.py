@@ -55,7 +55,8 @@ def print_it_general(data, col_len=0, nested=False):
                 #    print('\n')
                 #    print_it_general(value, col_len, True)
                 else:
-                    clean_value = str(value).replace(' ', '')
+                    #clean_value = str(value).replace(' ', '')
+                    clean_value = str(value)
                     print('{0}\n'.format(clean_value), end='')
                 print('-' * COLUMNS)
         if not nested:
@@ -79,21 +80,22 @@ def print_nested(data, endpoint):
 
     final = None
     clean_data = None
+    type_error = False
 
     cover()
-    if "errorMessage" in data:
-        print_it_general(data)
-        cover()
-        os.sys.exit(0)
-    else:
-        clean_data = chomp(data)
-        try:
-            final = json.loads(clean_data)
-        except TypeError:
-            print(clean_data)
+    try:
+        final = json.loads(data)
+    except TypeError:
+        type_error = True
 
-    if "assets/" in endpoint:
-        print_it_assets(final, endpoint)
+    if type_error:
+        if ("errorMessage" in data):
+            print_it_general(data)
+            cover()
+            os.sys.exit(0)
     else:
-        print_it_general(final)
+        if "assets/" in endpoint:
+            print_it_assets(final, endpoint)
+        else:
+            print_it_general(final)
     cover()
