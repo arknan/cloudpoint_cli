@@ -75,7 +75,7 @@ def print_nested(data, endpoint):
     cover()
     try:
         final = json.loads(data)
-    except TypeError:
+    except (TypeError, json.decoder.JSONDecodeError):
         type_error = True
 
     if type_error:
@@ -83,6 +83,8 @@ def print_nested(data, endpoint):
             print_it_general(data)
             cover()
             os.sys.exit(0)
+        else:
+            print(data)
     else:
         if "assets/" in endpoint:
             print_it_assets(final, endpoint)

@@ -187,7 +187,11 @@ Examples : "cldpt create -h", \
             ("Null",): (None,)})
     parser_add(
         "parser_delete_roles", ["roles", "Delete roles"],
-        {"-i": ["--role-id"]})
+        {"-i": ["--role-id", "Delete a specific role"]})
+    parser_add(
+        "parser_delete_reports", ["reports", "Delete reports"],
+        {"-i": ["--report-id", "Delete report data for a report"],
+         "-o": ["--option", "Choose either ['data', 'full']"]})
 
     return parser_main
 
@@ -300,8 +304,8 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(-1)
     else:
-        #print(args)
+        print(args)
         output, endpoint = interface(args)
-        #print(output, endpoint)
-        print(output)
-        #pp(output, endpoint)
+        print(output, endpoint)
+        #print(output)
+        pp(output, endpoint)

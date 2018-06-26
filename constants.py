@@ -23,27 +23,27 @@ def check_attr(args, attr):
 
 
 GETS_DICT = {
-    "ad": "idm/config/ad",
-    "agents": "agents/",
-    "assets": "assets/",
-    "tags": "classifications/tags",
-    "smtp": "email/config",
-    "granules": "granules",
+    "ad": "/idm/config/ad",
+    "agents": "/agents/",
+    "assets": "/assets/",
+    "tags": "/classifications/tags",
+    "smtp": "/email/config",
+    "granules": "/granules",
     # "join-tokens": "jointokens/",
-    "licenses": "licenses/",
-    "plugins": "plugins/",
-    "policies": "policies/",
+    "licenses": "/licenses/",
+    "plugins": "/plugins/",
+    "policies": "/policies/",
     "privileges": "/authorization/privilege/",
-    "replication": "replication/",
-    "report-types": "report-types/",
-    "reports": "reports/",
+    "replication": "/replication/",
+    "report-types": "/report-types/",
+    "reports": "/reports/",
     "roles": "/authorization/role",
-    "schedules": "schedules/",
+    "schedules": "/schedules/",
     "settings": "/",
-    "tasks": "tasks/",
-    "telemetry": "telemetry/",
-    "users": "idm/user/",
-    "version": "version"
+    "tasks": "/tasks/",
+    "telemetry": "/telemetry/",
+    "users": "/idm/user/",
+    "version": "/version"
 }
 
 POST_DICT = {
