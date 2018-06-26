@@ -77,6 +77,8 @@ def agents(endpoint, args):
        (args.agents_command == "plugins"):
         if co.check_attr(args, detail):
             endpoint.append("plugins/")
+            if co.check_attr(args, 'plugin_name'):
+                endpoint.append(args.plugin_name)
         else:
             print(co.EXIT_5)
             sys.exit(101)

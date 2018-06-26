@@ -303,4 +303,5 @@ if __name__ == '__main__':
         #print(args)
         output, endpoint = interface(args)
         #print(output, endpoint)
-        pp(output, endpoint)
+        print(output)
+        #pp(output, endpoint)
