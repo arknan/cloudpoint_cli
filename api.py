@@ -55,7 +55,6 @@ class Command():
 
     def gets(self, endpoint):
         self.endpoint = endpoint
-        print(endpoint)
         if not self.token:
             print("\nPlease authenticate first !\n")
             exit()
@@ -80,9 +79,6 @@ class Command():
             exit()
 
         api_url = '{}{}'.format(self.base_url, self.endpoint)
-# if isinstance(self.data, str):
-#    response = requests.post(api_url, data=self.data, verify=self.verify,
-#    headers=self.header)
         if isinstance(self.data, dict):
             response = requests.post(api_url, json=self.data,
                                      verify=self.verify, headers=self.header)

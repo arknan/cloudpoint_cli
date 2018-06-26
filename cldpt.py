@@ -28,11 +28,9 @@ def parser_add(parser_name, command_name, arguments=None, add_subparsers=None):
         globals()[parser_name] = globals()[subparser_name].add_parser(
             command_name[0], help=command_name[1])
 
-    # if command_name[0] not in co.EXCEPTION_LIST:
     if arguments:
         for key, value in sorted(arguments.items()):
             if value is None:
-                # describer = parser_name.split('_')[-2]
                 globals()[parser_name].add_argument(key)
             else:
                 if len(value) == 1:
@@ -93,8 +91,6 @@ Examples : "cldpt create -h", \
         {"-i": ["--granule-id"]})
     parser_add(
         "parser_show_assets_snapshots_restore-targets", ["restore-targets"])
-    # parser_add("parser_show_join-tokens", ["join-tokens",
-    # "Show current join-tokens"])
     parser_add(
         "parser_show_licenses", ["licenses", "Get licensing information"],
         {"-i": ["--license-id"]},
@@ -171,8 +167,6 @@ Examples : "cldpt create -h", \
     parser_add("parser_create_replication-rule", [
         "replication_rule", "Create a replication rule"])
     parser_add("parser_create_policies", ["policies", "Create Policies"])
-    # parser_add("parser_create_privilege")
-    # ("-f", ("--file-name", "JSON formatted file with role details"))})
     parser_add("parser_create_reports", ["reports", "Create Reports"])
 
     parser_add(
@@ -214,7 +208,6 @@ def interface(arguments):
             endpoint = getattr(
                 show_decider, arguments.show_command)(endpoint, arguments)
 
-        print(endpoint)
         return (getattr(api.Command(), co.METHOD_DICT[
             arguments.command])('/'.join(endpoint)), endpoint)
 
@@ -226,8 +219,6 @@ def interface(arguments):
         if arguments.create_command is None:
             globals()['parser_create'].print_help()
             sys.exit(100)
-        # elif arguments.create_command == "role_assignments":
-        #    endpoint.append('/authorization/role')
         elif arguments.create_command in co.POST_DICT:
             endpoint.append(co.POST_DICT[arguments.create_command])
         elif arguments.create_command in ["snapshots", "replicas"]:
@@ -309,7 +300,7 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(-1)
     else:
-        print(args)
+        #print(args)
         output, endpoint = interface(args)
-        print(output, endpoint)
+        #print(output, endpoint)
         pp(output, endpoint)

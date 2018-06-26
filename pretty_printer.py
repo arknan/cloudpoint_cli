@@ -39,7 +39,6 @@ def print_it_general(data, col_len=0, nested=False):
     if isinstance(data, dict):
         col_len = maxlengths(sorted(data))
         for key, value in sorted(data.items()):
-            # if k.startswith(dont_print):
             if key in DONT_PRINT:
                 pass
             else:
@@ -52,26 +51,17 @@ def print_it_general(data, col_len=0, nested=False):
                 if (isinstance(value, dict)) and (value):
                     print('\n')
                     print_it_general(value, col_len, True)
-                # elif isinstance(value, list):
-                #    print('\n')
-                #    print_it_general(value, col_len, True)
                 else:
-                    # clean_value = str(value).replace(' ', '')
-                    clean_value = str(value)
-                    print('{0}\n'.format(clean_value), end='')
+                    print('{0}\n'.format(str(value)), end='')
                 print('-' * COLUMNS)
         if not nested:
-            print()
             print('=' * COLUMNS)
-            print()
 
     elif isinstance(data, list):
         for i in data:
             if isinstance(i, dict):
                 print_it_general(i)
             else:
-                # print('{1:>{2}}{0:<{2}}'.format(
-                #    i, '|', (col_len+2)))
                 print(i)
     else:
         print(data)
