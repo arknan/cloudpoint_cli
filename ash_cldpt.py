@@ -3,14 +3,15 @@
 # PYTHON_ARGCOMPLETE_OK
 
 import sys
-import reports 
 import argparse
 import argcomplete
 import agents
+import reports 
 
 
 def create_parser():
 
+    """ MAIN PARSER """
     parser_main = argparse.ArgumentParser()
     subparser_main = parser_main.add_subparsers(
 	   dest='command', metavar='<positional argument>')
@@ -333,11 +334,5 @@ if __name__ == '__main__':
     else:
         #args = parser_main.parse_known_args(sys.argv[1:])
         args = parser_main.parse_args()
-        try:
-            getattr(vars()[args.command], "entry_point")()
-        except KeyError:
-            print("Error: '{}' module has not been implemented".format(args.command))
-        except AttributeError:
-            print("Error: '{}' module should have 'entry_point' function".format(args.command))
-        finally:
-            exit
+        print(args)
+        getattr(vars()[args.command], "entry_point")(args)

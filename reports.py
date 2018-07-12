@@ -1,22 +1,37 @@
 #!/usr/bin/env python3
 
-# PYTHON_ARGCOMPLETE_OK
+import sys
+import constants as co
+import api
 
-import argparse
-import argcomplete
+def entry_point(arguments):
 
-def create_parser():
-    parser_reports = argparse.ArgumentParser()
-    parser_reports.add_argument("-a", help="Hello from reports module !")
+    endpoint = ["/reports/"]
+    temp = []
+    if co.check_attr(arguments, 'reports_command'):
+        #temp = arguments.reports_command(arguments, endpoint)
+        globals()[arguments.reports_command](arguments, endpoint)
+    else:
+        print("Internal Error : Invalid function {}".format(arguments.reports_command))
 
-    return parser_reports
+    output = getattr(api.Command(), co.METHOD_DICT[arguments.reports_command])('/'.join(endpoint))
+    print(output)
 
-def entry_point(args):
-#    print("You sent : ", args)
-    parser_main = create_parser()
-    argcomplete.autocomplete(parser_main)
-    final = parser_main.parse_args(args)
-    print(final)
+def show(args, endpoint):
 
-if __name__ == "__main__":
-    print("main")
+    if co.check_attr(args, 'report_id'):
+        endpoint.append(getattr(args, 'report_id'))
+
+    if co.check_attr(args, 'reports_show_command'):
+        if co.check_attr(args, 'report_id'):
+            if getattr(args, 'reports_show_command') == "preview":
+                endpoint.append('/preview')
+            else:
+                endpoint.append('/data')
+        else:
+            print("\nSpecify a REPORT_ID for getting",
+                  getattr(args, 'reports_show_command'), "\n")
+            sys.exit(9)
+
+    return endpoint
+
