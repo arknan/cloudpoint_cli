@@ -25,11 +25,11 @@ def check_attr(args, attr):
 
 
 GETS_DICT = {
-    "ad": "/idm/config/ad",
+    "ldap_config": "/idm/config/ad",
     "agents": "/agents/",
     "assets": "/assets/",
     "tags": "/classifications/tags",
-    "smtp": "/email/config",
+    "email_config": "/email/config",
     "granules": "/granules",
     # "join-tokens": "jointokens/",
     "licenses": "/licenses/",
@@ -41,7 +41,7 @@ GETS_DICT = {
     "reports": "/reports/",
     "roles": "/authorization/role",
     "schedules": "/schedules/",
-    "settings": "/",
+    #"settings": "/",
     "tasks": "/tasks/",
     "telemetry": "/telemetry/",
     "users": "/idm/user/",

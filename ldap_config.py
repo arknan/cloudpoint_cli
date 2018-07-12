@@ -1,6 +1,25 @@
 #!/usr/bin/env python3
 
+import sys
+import api
+import constants as co
+
 def entry_point(args):
-    if co.check_attr(args, 'settings_command'):
-        if getattr(args, 'settings_command') == "ad":
-            endpoint.append("idm/config/ad")
+
+    endpoint = []
+    endpoint.append(co.GETS_DICT[args.command])
+    if co.check_attr(args, 'ldap_config_command'):
+        globals()[args.ldap_config_command](args, endpoint)
+    else:
+        print("Invalid argument : '{}'".format(args.ldap_config_command))
+        sys.exit(-1)
+
+    output = getattr(api.Command(), co.METHOD_DICT[args.ldap_config_command])('/'.join(endpoint))
+    # Ideally this is where we would pass the output to a pretty printer function
+    print(output)
+
+def show(endpoint, args):
+    # There is no work needed here, since our GETS_DICT provides
+    # the whole endpoint ... retaining this for future ?
+    return endpoint
+

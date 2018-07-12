@@ -90,7 +90,7 @@ def create_parser():
 
     """ EMAIL RELATED PARSING """
     parser_email_config = subparser_main.add_parser(
-        "email-config", help="SMTP related operations")
+        "email_config", help="SMTP related operations")
     subparser_email_config = parser_email_config.add_subparsers(
         dest="email_config_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
@@ -100,13 +100,13 @@ def create_parser():
     parser_email_config_create = subparser_email_config.add_parser(
         "create", help="Add email/smtp related settings")
     subparser_email_config_create = parser_email_config_create.add_subparsers(
-        dest="email__config_create_command", metavar='<positional argument>')
+        dest="email_config_create_command", metavar='<positional argument>')
     parser_email_config_create_email_config = subparser_email_config_create.add_parser(
-        "email-config", help="Add Email configuration")
+        "email_config", help="Add Email configuration")
 
     """ LDAP RELATED PARSING """
     parser_ldap_config = subparser_main.add_parser(
-        "ldap-config", help="LDAP related operations")
+        "ldap_config", help="LDAP related operations")
     subparser_ldap_config = parser_ldap_config.add_subparsers(
         dest="ldap_config_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
@@ -126,7 +126,7 @@ def create_parser():
         "-i", "--license-id", dest="license_id",
         help="Show information on a specific license id")
     subparser_licenses_show = parser_licenses_show.add_subparsers(
-        dest="licenses_command", metavar='<positional argument>')
+        dest="licenses_show_command", metavar='<positional argument>')
     parser_licenses_show_active = subparser_licenses_show.add_parser(
         "active", help="Show information on all active licenses")
     parser_licenses_show_features = subparser_licenses_show.add_parser(
@@ -146,7 +146,7 @@ def create_parser():
         "-i", "--plugin-name", dest="available_plugin_name",
         help="Show information on a specific available plugin")
     subparser_plugins_show = parser_plugins_show.add_subparsers(
-        dest="plugins_command", metavar='<positional argument>')
+        dest="plugins_show_command", metavar='<positional argument>')
     parser_plugins_show_description = subparser_plugins_show.add_parser(
         "description", help="Get plugin description for a specific plugin name")
     parser_plugins_show_summary = subparser_plugins_show.add_parser(
