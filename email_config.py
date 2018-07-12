@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
-import constants as co
 import api
+import constants as co
 
 def entry_point(args):
 
@@ -19,7 +19,7 @@ def entry_point(args):
     print(output)
 
 
-def show(endpoint, args):
+def show(args, endpoint):
     # There is no work needed here, since our GETS_DICT provides
     # the whole endpoint ... retaining this for future ?
     return endpoint

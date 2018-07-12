@@ -18,7 +18,7 @@ def entry_point(args):
     # Ideally this is where we would pass the output to a pretty printer function
     print(output)
 
-def show(endpoint, args):
+def show(args, endpoint):
     # There is no work needed here, since our GETS_DICT provides
     # the whole endpoint ... retaining this for future ?
     return endpoint

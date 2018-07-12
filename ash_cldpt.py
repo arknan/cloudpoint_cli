@@ -189,6 +189,10 @@ def create_parser():
         "show", help="Show information on replication rules")
     parser_replication_show.add_argument(
         "-i", "--policy-name", help="Get information on a specific replication rule")
+    subparser_replication_show = parser_replication_show.add_subparsers(
+        dest="replication_show_command", metavar='positional argument>')
+    parser_replication_show_rules = subparser_replication_show.add_parser(
+        "rules", help="Show replication rules for a policy")
     # CREATE [PUT/POST] PARSING
     parser_replication_create = subparser_replication.add_parser(
         "create", help="Create replication related information in CloudPoint")
@@ -277,11 +281,14 @@ def create_parser():
         help="Filter on tasks started in last <RUN_SINCE> no. of hours")
     parser_tasks_show.add_argument(
         "-s", "--status", help="Filter on status, valid values for status are :\
-        ['running', 'successful', 'failed']")
+        ['running', 'successful', 'failed']", metavar='<STATUS>',
+        choices=['running', 'successful', 'failed'])
     parser_tasks_show.add_argument(
-        "-t", "--taskType", help="Filter on task type, valid values for task \
+        "-t", "--task-type", help="Filter on task type, valid values for task \
         types are : ['create-snapshot', 'create-group-snapshot',\
-        'delete-snapshot', 'delete-group-snapshots', 'restore']")
+        'delete-snapshot', 'delete-group-snapshots', 'restore']",
+        metavar='TASK_TYPE', choices=['create-snapshot', 'create-group-snapshot',\
+        'delete-snapshot', 'delete-group-snapshots', 'restore'])
     subparser_tasks_show = parser_tasks_show.add_subparsers(
         dest="tasks_show_command", metavar='<positional argument>')
     parser_tasks_show_summary = subparser_tasks_show.add_parser(
