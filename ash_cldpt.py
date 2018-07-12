@@ -6,7 +6,8 @@ import sys
 import argparse
 import argcomplete
 import agents
-import reports, assets
+import reports, assets, agents, plugins, licenses, tasks, replication
+import privileges, roles, users, policies, email_config, ldap_config
 
 
 def create_parser():
@@ -88,28 +89,28 @@ def create_parser():
         "authenticate", help="Login to CloudPoint")
 
     """ EMAIL RELATED PARSING """
-    parser_email = subparser_main.add_parser(
-        "email", help="SMTP related operations")
-    subparser_email = parser_email.add_subparsers(
-        dest="email_command", metavar='<positional argument>')
+    parser_email_config = subparser_main.add_parser(
+        "email-config", help="SMTP related operations")
+    subparser_email_config = parser_email_config.add_subparsers(
+        dest="email_config_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
-    parser_email_show = subparser_email.add_parser(
+    parser_email_config_show = subparser_email_config.add_parser(
         "show", help="Show SMTP related details")
     # CREATE [PUT/POST] PARSING
-    parser_email_create = subparser_email.add_parser(
+    parser_email_config_create = subparser_email_config.add_parser(
         "create", help="Add email/smtp related settings")
-    subparser_email_create = parser_email_create.add_subparsers(
-        dest="email_create_command", metavar='<positional argument>')
-    parser_email_create_email_config = subparser_email_create.add_parser(
+    subparser_email_config_create = parser_email_config_create.add_subparsers(
+        dest="email__config_create_command", metavar='<positional argument>')
+    parser_email_config_create_email_config = subparser_email_config_create.add_parser(
         "email-config", help="Add Email configuration")
 
     """ LDAP RELATED PARSING """
-    parser_ldap = subparser_main.add_parser(
-        "ldap", help="LDAP related operations")
-    subparser_ldap = parser_ldap.add_subparsers(
-        dest="ldap_command", metavar='<positional argument>')
+    parser_ldap_config = subparser_main.add_parser(
+        "ldap-config", help="LDAP related operations")
+    subparser_ldap_config = parser_ldap_config.add_subparsers(
+        dest="ldap_config_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
-    parser_ldap_show = subparser_ldap.add_parser(
+    parser_ldap_config_show = subparser_ldap_config.add_parser(
         "show", help="Show LDAP related details")
     # CREATE [PUT/POST] PARSING
 
