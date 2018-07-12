@@ -6,7 +6,7 @@ import sys
 import argparse
 import argcomplete
 import agents
-import reports 
+import reports, assets
 
 
 def create_parser():

@@ -13,12 +13,14 @@ COLUMNS = int(COLUMNS)
 def check_attr(args, attr):
 
     try:
-        if hasattr(args, attr):
-            if getattr(args, attr):
-                return True
-    except NameError:
+        if not hasattr(args, attr):
+            return False
+    except :
         return False
-    else:
+    try:
+        if getattr(args, attr):
+            return True
+    except:
         return False
 
 

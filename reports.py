@@ -4,17 +4,18 @@ import sys
 import constants as co
 import api
 
-def entry_point(arguments):
+def entry_point(args):
 
-    endpoint = ["/reports/"]
-    temp = []
-    if co.check_attr(arguments, 'reports_command'):
-        #temp = arguments.reports_command(arguments, endpoint)
-        globals()[arguments.reports_command](arguments, endpoint)
+    endpoint = []
+    endpoint.append(co.GETS_DICT[args.command])
+    if co.check_attr(args, 'reports_command'):
+        globals()[args.reports_command](args, endpoint)
     else:
-        print("Internal Error : Invalid function {}".format(arguments.reports_command))
+        print("Invalid argument : '{}'".format(args.reports_command))
+        sys.exit(-1)
 
-    output = getattr(api.Command(), co.METHOD_DICT[arguments.reports_command])('/'.join(endpoint))
+    output = getattr(api.Command(), co.METHOD_DICT[args.reports_command])('/'.join(endpoint))
+    # Ideally this is where we would pass the output to a pretty printer function
     print(output)
 
 def show(args, endpoint):
@@ -35,3 +36,4 @@ def show(args, endpoint):
 
     return endpoint
 
+# TO DO : add create method and other methods as needed
