@@ -5,9 +5,20 @@
 import sys
 import argparse
 import argcomplete
+
 import agents
-import reports, assets, agents, plugins, licenses, tasks, replication
-import privileges, roles, users, policies, email_config, ldap_config
+import assets
+import email_config
+import ldap_config
+import licenses
+import plugins
+import policies
+import privileges
+import replication
+import reports
+import roles
+import tasks
+import users
 
 
 def create_parser():
@@ -15,7 +26,7 @@ def create_parser():
     """ MAIN PARSER """
     parser_main = argparse.ArgumentParser()
     subparser_main = parser_main.add_subparsers(
-	   dest='command', metavar='<positional argument>')
+        dest='command', metavar='<positional argument>')
 
     """ AGENT RELATED PARSING """
     parser_agents = subparser_main.add_parser(
@@ -26,7 +37,8 @@ def create_parser():
     parser_agents_show = subparser_agents.add_parser(
         "show", help="Show agent related information")
     parser_agents_show.add_argument(
-        "-i", "--agent-id", help="Show information related to a specific agent")
+        "-i", "--agent-id",
+        help="Show information related to a specific agent")
     subparser_agents_show = parser_agents_show.add_subparsers(
         dest="agents_show_command", metavar='<positional argument>')
     parser_agents_show_plugins = subparser_agents_show.add_parser(
@@ -47,21 +59,27 @@ def create_parser():
     parser_assets_show = subparser_assets.add_parser(
         "show", help="Show assets related information")
     parser_assets_show.add_argument(
-        "-i", "--asset-id", help="Show information related to a specifici asset")
+        "-i", "--asset-id",
+        help="Show information related to a specific asset")
     subparser_assets_show = parser_assets_show.add_subparsers(
         dest="assets_show_command", metavar='<positional argument>')
     parser_assets_show_snapshots = subparser_assets_show.add_parser(
         "snapshots", help="Show related snapshots for an asset")
     parser_assets_show_snapshots.add_argument(
-        "-i", "--snapshot-id", help="Show snapshot information for a specific snapshot")
-    subparser_assets_show_snapshots = parser_assets_show_snapshots.add_subparsers(
-        dest="snapshots_command", metavar='<positional argument>')
-    parser_assets_show_snapshots_granules = subparser_assets_show_snapshots.add_parser(
-        "granules", help="Show granules for a snapshot of an asset")
+        "-i", "--snapshot-id",
+        help="Show snapshot information for a specific snapshot")
+    subparser_assets_show_snapshots = \
+        parser_assets_show_snapshots.add_subparsers(
+            dest="snapshots_command", metavar='<positional argument>')
+    parser_assets_show_snapshots_granules = \
+        subparser_assets_show_snapshots.add_parser(
+            "granules", help="Show granules for a snapshot of an asset")
     parser_assets_show_snapshots_granules.add_argument(
         "-i", "--granule-id", help="Show information on a particular granule")
-    parser_assets_show_snapshots_restore_targets = subparser_assets_show_snapshots.add_parser(
-        "restore-targets", help="Show restore target locations for a specific snapshot asset")
+    parser_assets_show_snapshots_restore_targets = \
+        subparser_assets_show_snapshots.add_parser(
+            "restore-targets",
+            help="Show restore target locations for a specific snapshot asset")
     parser_assets_show_policies = subparser_assets_show.add_parser(
         "policies", help="Show policy information for an asset")
     parser_assets_show_summary = subparser_assets_show.add_parser(
@@ -101,8 +119,9 @@ def create_parser():
         "create", help="Add email/smtp related settings")
     subparser_email_config_create = parser_email_config_create.add_subparsers(
         dest="email_config_create_command", metavar='<positional argument>')
-    parser_email_config_create_email_config = subparser_email_config_create.add_parser(
-        "email_config", help="Add Email configuration")
+    parser_email_config_create_email_config = \
+        subparser_email_config_create.add_parser(
+            "email_config", help="Add Email configuration")
 
     """ LDAP RELATED PARSING """
     parser_ldap_config = subparser_main.add_parser(
@@ -133,7 +152,6 @@ def create_parser():
         "features", help="Show information on all licensed features")
     # CREATE [PUT/POST] PARSING
 
-
     """ PLUGIN RELATED PARSING """
     parser_plugins = subparser_main.add_parser(
         "plugins", help="Plugin related operations")
@@ -148,7 +166,8 @@ def create_parser():
     subparser_plugins_show = parser_plugins_show.add_subparsers(
         dest="plugins_show_command", metavar='<positional argument>')
     parser_plugins_show_description = subparser_plugins_show.add_parser(
-        "description", help="Get plugin description for a specific plugin name")
+        "description",
+        help="Get plugin description for a specific plugin name")
     parser_plugins_show_summary = subparser_plugins_show.add_parser(
         "summary", help="Show summary information for plugins")
     # CREATE [PUT/POST] PARSING
@@ -174,10 +193,10 @@ def create_parser():
         dest="privileges_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
     parser_priviliges_show = subparser_priviliges.add_parser(
-    "show", help="Show privilege related information")
+        "show", help="Show privilege related information")
     parser_priviliges_show.add_argument(
-    "-i", "--privilege-id", help="Get information on a particular privilege")
-    # CREATE [PUT/POST] PARSING
+        "-i", "--privilege-id",
+        help="Get information on a particular privilege")
 
     """ REPLICATION RELATED PARSING """
     parser_replication = subparser_main.add_parser(
@@ -188,7 +207,8 @@ def create_parser():
     parser_replication_show = subparser_replication.add_parser(
         "show", help="Show information on replication rules")
     parser_replication_show.add_argument(
-        "-i", "--policy-name", help="Get information on a specific replication rule")
+        "-i", "--policy-name",
+        help="Get information on a specific replication rule")
     subparser_replication_show = parser_replication_show.add_subparsers(
         dest="replication_show_command", metavar='positional argument>')
     parser_replication_show_rules = subparser_replication_show.add_parser(
@@ -198,8 +218,9 @@ def create_parser():
         "create", help="Create replication related information in CloudPoint")
     subparser_replication_create = parser_replication_create.add_subparsers(
         dest="replication_create_command", metavar='<positional argument>')
-    parser_replication_create_replication_rule = subparser_replication_create.add_parser(
-        "replication_rule", help="Create a replication rule")
+    parser_replication_create_replication_rule = \
+        subparser_replication_create.add_parser(
+            "replication_rule", help="Create a replication rule")
 
     """ REPORT RELATED PARSING """
     parser_reports = subparser_main.add_parser(
@@ -224,11 +245,11 @@ def create_parser():
     parser_reports_delete = subparser_reports.add_parser(
         "delete", help="Delete report related information in CloudPoint")
     parser_reports_delete.add_argument(
-        "-i", "--report-id", help="Delete data related to a specific REPORT_ID in CloudPoint")
+        "-i", "--report-id",
+        help="Delete data related to a specific REPORT_ID in CloudPoint")
     parser_reports_delete.add_argument(
-        "-f", "--full", dest='option', 
+        "-f", "--full", dest='option',
         help="Delete both report data and report in CloudPoint")
-
 
     """ ROLE RELATED PARSING """
     parser_roles = subparser_main.add_parser(
@@ -262,8 +283,6 @@ def create_parser():
     # SHOW [GET] PARSING
     parser_tags_show = subparser_tags.add_parser(
         "show", help="Show Classification tags related information")
-    # CREATE [PUT/POST] PARSING
-        
 
     """ TASK RELATED PARSING """
     parser_tasks = subparser_main.add_parser(
@@ -281,21 +300,21 @@ def create_parser():
         "-r", "--run-since",
         help="Filter on tasks started in last <RUN_SINCE> no. of hours")
     parser_tasks_show.add_argument(
-        "-s", "--status", help="Filter on status, valid values for status are :\
-        ['running', 'successful', 'failed']", metavar='<STATUS>',
+        "-s", "--status", metavar='<STATUS>',
+        help="Filter on status, valid values for status are :\
+        ['running', 'successful', 'failed']",
         choices=['running', 'successful', 'failed'])
     parser_tasks_show.add_argument(
         "-t", "--task-type", help="Filter on task type, valid values for task \
         types are : ['create-snapshot', 'create-group-snapshot',\
         'delete-snapshot', 'delete-group-snapshots', 'restore']",
-        metavar='TASK_TYPE', choices=['create-snapshot', 'create-group-snapshot',\
-        'delete-snapshot', 'delete-group-snapshots', 'restore'])
+        metavar='TASK_TYPE', choices=[
+            'create-snapshot', 'create-group-snapshot', 'delete-snapshot',
+            'delete-group-snapshots', 'restore'])
     subparser_tasks_show = parser_tasks_show.add_subparsers(
         dest="tasks_show_command", metavar='<positional argument>')
     parser_tasks_show_summary = subparser_tasks_show.add_parser(
         "summary", help="Get summary information of all tasks")
-    # CREATE [PUT/POST] PARSING
-        
 
     """ TELEMETRY RELATED PARSING """
     parser_telemetry = subparser_main.add_parser(
@@ -339,7 +358,8 @@ def run(pass_args=None):
     args = parser.parse_args(pass_args)
     output = getattr(globals()[args.command], "entry_point")(args)
     return output
-    
+
+
 if __name__ == '__main__':
 
     parser_main = create_parser()
@@ -348,7 +368,6 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(-1)
     else:
-        #args = parser_main.parse_known_args(sys.argv[1:])
         args = parser_main.parse_args()
         print(args)
         output = getattr(globals()[args.command], "entry_point")(args)

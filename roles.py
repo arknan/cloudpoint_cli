@@ -6,6 +6,7 @@ import api
 import cldpt
 import constants as co
 
+
 def entry_point(args):
 
     endpoint = []
@@ -13,17 +14,20 @@ def entry_point(args):
     if args.roles_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
+        output = getattr(
+            api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
 
     elif args.roles_command == "create":
         endpoint.append(co.POSTS_DICT[args.roles_create_command])
-        data = create(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+        data = create()
+        output = getattr(
+            api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
     elif args.roles_command == "delete":
         endpoint.append(co.GETS_DICT[args.command])
         delete(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
+        output = getattr(
+            api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
 
     else:
         print("Invalid argument : '{}'".format(args.roles_command))
@@ -31,11 +35,13 @@ def entry_point(args):
 
     return output
 
+
 def show(args, endpoint):
     if co.check_attr(args, 'role_id'):
         endpoint.append(args.role_id)
 
-def create(args, endpoint):
+
+def create():
 
     print("\nPlease choose a name that you want this role to be called")
     role_name = input("Role name : ")
@@ -64,6 +70,7 @@ with this role")
 
     return data
 
+
 def delete(args, endpoint):
 
     if co.check_attr(args, 'role_id'):
@@ -72,7 +79,8 @@ def delete(args, endpoint):
         role_id = input("Enter role id of the role you want to delete : ")
         endpoint.append('/' + role_id)
 
+
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format that makes parsing easier !
+    # Since all commands don't have a standard output format
     print(data)

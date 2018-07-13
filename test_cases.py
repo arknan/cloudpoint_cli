@@ -2,10 +2,12 @@
 
 import unittest
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
 from constants import GETS_DICT
 import cldpt
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+urllib3.disable_warnings(InsecureRequestWarning)
 
 IMPLEMENTED = ["report-types", "schedules", "granules"]
 

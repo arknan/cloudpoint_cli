@@ -4,27 +4,34 @@ import sys
 import api
 import constants as co
 
+
 def entry_point(args):
 
     endpoint = []
     if args.policies_command == 'show':
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT[args.policies_command])('/'.join(endpoint))
+        output = getattr(
+            api.Command(), co.METHOD_DICT[args.policies_command])(
+                '/'.join(endpoint))
     elif args.policies_command == 'create':
-        create(args, endpoint)
+        # create(args, endpoint)
+        create()
     else:
         print("Invalid argument : '{}'".format(args.policies_command))
         sys.exit(-1)
 
     return output
 
+
 def show(args, endpoint):
-    
+
     if co.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
 
-def create(args, endpoint):
+
+# def create(args, endpoint):
+def create():
 
     """
     name, appConsist, tag, snapTypePref, hour = None, None, None, None, None
@@ -75,5 +82,5 @@ def create(args, endpoint):
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format that makes parsing easier !
+    # Since all commands don't have a standard output format
     print(data)

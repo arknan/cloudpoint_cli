@@ -5,27 +5,35 @@ import json
 import api
 import constants as co
 
+
 def entry_point(args):
 
     endpoint = []
     if args.replication_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT[args.replication_command])('/'.join(endpoint))
-    elif  args.replication_command == "create":
+        output = getattr(
+            api.Command(), co.METHOD_DICT[args.replication_command])(
+                '/'.join(endpoint))
+    elif args.replication_command == "create":
         if not co.check_attr(args, 'replication_create_command'):
-            print("Invalid argument : '{}'".format(args.replication_create_command))
+            print("Invalid argument : '{}'".format(
+                args.replication_create_command))
             sys.exit(-1)
 
         endpoint.append(co.POSTS_DICT[args.replication_create_command])
-        data = create(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+        # data = create(args, endpoint)
+        data = create()
+        output = getattr(
+            api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
     else:
-        print("Invalid '{}' argument : '{}'".format(__name__, args.replication_command))
+        print("Invalid '{}' argument : '{}'".format(
+            __name__, args.replication_command))
         sys.exit(-1)
 
     return output
+
 
 def show(args, endpoint):
 
@@ -38,7 +46,9 @@ def show(args, endpoint):
         else:
             endpoint.append('/default/rules/')
 
-def create(args, endpoint):
+
+# def create(args, endpoint):
+def create():
 
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
         '/replica-locations/'))
@@ -82,7 +92,8 @@ def create(args, endpoint):
 
     return data
 
+
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format that makes parsing easier !
+    # Since all commands don't have a standard output format
     print(data)

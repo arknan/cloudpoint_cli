@@ -4,24 +4,30 @@ import sys
 import api
 import constants as co
 
+
 def entry_point(args):
 
     endpoint = []
-    if args.users_command == "show":	
+    if args.users_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
+        output = getattr(
+            api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
 
     elif args.users_command == "create":
         data = None
         endpoint.append(co.POSTS_DICT[args.user])
-        data = create(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+        # data = create(args, endpoint)
+        data = create()
+        output = getattr(
+            api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
     elif args.users_command == 'reset_password':
         endpoint.append(co.POSTS_DICT['reset_password'])
-        data = modify(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint))
+        # data = modify(args, endpoint)
+        modify()
+        output = getattr(
+            api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint), data)
 
     else:
         print("Invalid argument : '{}'".format(args.users_command))
@@ -29,11 +35,14 @@ def entry_point(args):
 
     return output
 
+
 def show(args, endpoint):
     if co.check_attr(args, 'user_id'):
         endpoint.append(args.user_id)
 
-def create(args, endpoint):
+
+# def create(args, endpoint):
+def create():
 
     print("\nPlease note that users must be accessible by both ", end='')
     print("LDAP[Name] and SMTP[email address]")
@@ -49,7 +58,9 @@ def create(args, endpoint):
 
     return data
 
+
 def modify():
+
     # API endpoint is messed up .. this doesn't work either :(
     """
     email_addr = input("Email : ")
@@ -68,5 +79,5 @@ def modify():
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format that makes parsing easier !
+    # Since all commands don't have a standard output format
     print(data)

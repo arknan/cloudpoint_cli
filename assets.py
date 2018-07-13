@@ -6,26 +6,30 @@ import api
 import cldpt
 import constants as co
 
+
 def entry_point(args):
 
     endpoint = []
     if args.assets_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])('/'.join(endpoint))
+        output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])(
+            '/'.join(endpoint))
     elif args.assets_command == "create":
         data = create(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+        output = getattr(api.Command(), co.METHOD_DICT['create'])(
+            '/'.join(endpoint), data)
 
     elif args.assets_command == "restore":
         endpoint.append(co.GETS_DICT["assets"])
         data = restore(args, endpoint)
         output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
-    else: 
+    else:
         print("Invalid argument : '{}'".format(args.assets_command))
         sys.exit(-1)
 
     return output
+
 
 def show(args, endpoint):
 
@@ -75,19 +79,21 @@ def show(args, endpoint):
         else:
             endpoint.append(args.assets_show_command)
 
+
 def create(args, endpoint):
     data = None
     if co.check_attr(args, 'assets_create_command'):
         if args.assets_create_command == 'snapshot':
             data = create_snapshot(args, endpoint)
         elif args.assets_create_command == 'replica':
-            data = create_replica(args, endpoint)
-    else: 
+            data = create_replica(endpoint)
+    else:
         print("Invalid argument : '{}'".format(args.assets_create_command))
         sys.exit(-1)
 
     return data
-        
+
+
 def create_snapshot(args, endpoint):
     if co.check_attr(args, "asset_id"):
         endpoint.append('/assets/')
@@ -120,7 +126,8 @@ def create_snapshot(args, endpoint):
 
     return data
 
-def create_replica(args, endpoint):
+
+def create_replica(endpoint):
 
     print("\nEnter the snapshot ID to replicate and the destination(s)\n")
     print("A maximum of 3 destinations are allowed\n")
@@ -171,6 +178,7 @@ def create_replica(args, endpoint):
 
     return data
 
+
 def restore(args, endpoint):
 
     if co.check_attr(args, "snapshot_id"):
@@ -201,10 +209,11 @@ def restore(args, endpoint):
             print("\nOnly host type snapshots are supported thru CLI\n")
     else:
         raise NotImplementedError("To be implemented")
-		
+
     return data
+
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format that makes parsing easier !
+    # Since all commands don't have a standard output format
     print(data)
