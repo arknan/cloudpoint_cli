@@ -17,6 +17,12 @@ def entry_point(args):
         endpoint.append(co.POSTS_DICT[args.user])
         data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+
+    elif args.users_command == 'reset_password':
+        endpoint.append(co.POSTS_DICT['reset_password'])
+        data = modify(args, endpoint)
+        output = getattr(api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint))
+
     else:
         print("Invalid argument : '{}'".format(args.users_command))
         sys.exit(-1)
@@ -42,6 +48,23 @@ def create(args, endpoint):
     }
 
     return data
+
+def modify():
+    # API endpoint is messed up .. this doesn't work either :(
+    """
+    email_addr = input("Email : ")
+    new_passwd = getpass("New Password : ")
+
+    data = {
+        "email": email_addr,
+        "newPassword": new_passwd
+    }
+
+    return data
+    """
+    print("Not implemented")
+    sys.exit(-1)
+
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

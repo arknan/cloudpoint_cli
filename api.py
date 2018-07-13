@@ -121,7 +121,7 @@ class Command():
 
         return response.content.decode('utf-8')
 
-    def deletes(self, endpoint):
+    def delete(self, endpoint):
 
         self.endpoint = endpoint
         self.header = {'Content-Type': 'application/json',

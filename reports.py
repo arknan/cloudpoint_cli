@@ -15,6 +15,12 @@ def entry_point(args):
     elif args.reports_command == 'create':
         create(args, endpoint)
 
+    elif args.reports_command == 'delete':
+        endpoint.append(co.GETS_DICT[args.command])
+        delete(args, endpoint)
+        output = getattr(api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
+
+        
     else:
         print("Invalid argument : '{}'".format(args.reports_command))
         sys.exit(-1)
@@ -54,6 +60,19 @@ def create(args, endpoint):
     """
     print("Not implemented")
     sys.exit(-1)
+
+def delete(args, endpoint):
+    
+    report_id = None
+    if co.check_attr(args, 'report_id'):
+        report_id = '/' + args.report_id
+    else:
+        report_id = input("Enter the report id you want to delete : ")
+
+    endpoint.append(report_id)
+
+    if not co.check_attr(args, 'option'):
+        endpoint.append('/data')
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

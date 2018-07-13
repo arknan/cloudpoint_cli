@@ -10,7 +10,7 @@ def entry_point(args):
     if args.agents_command == 'show':
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT[args.agents_command])('/'.join(endpoint))
+        output = getattr(api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
 
     else:
         print("Invalid argument : '{}'".format(args.agents_command))

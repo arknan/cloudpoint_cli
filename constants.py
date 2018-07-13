@@ -60,11 +60,13 @@ POSTS_DICT = {
 }
 
 METHOD_DICT = {
-    "show": "gets",
-    "create": "posts",
     "authenticate": "authenticate",
-    "modify": "puts"
+    "create": "posts",
+    "delete": "delete",
+    "modify": "puts",
+    "show": "gets"
 }
+
 PUTS_LIST = ["email_config", "reset_password"]
 COMMON_DECIDER_PATHS = ["privileges", "roles", "users", "policies"]
 DECIDER_PATHS = ["assets", "agents", "plugins", "replication",

@@ -3,7 +3,7 @@
 import sys
 import json
 import api
-import ash_cldpt
+import cldpt
 import constants as co
 
 def entry_point(args):
@@ -97,7 +97,7 @@ def create_snapshot(args, endpoint):
         print("\nPlease mention an ASSET_ID for taking snapshot\n")
         sys.exit(-1)
 
-    snap_types = json.loads(ash_cldpt.run(
+    snap_types = json.loads(cldpt.run(
         ["assets", "show", "-i", args.asset_id]))["snapMethods"]
     print("\nPlease enter a snapshot type")
     print("Valid types for this asset include :", snap_types)
