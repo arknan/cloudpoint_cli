@@ -29,6 +29,10 @@ def entry_point(args):
             sys.exit(-1)
         output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
+    else:
+        print("Invalid argument : '{}'".format(args.roles_command))
+        sys.exit(-1)
+
     return output
 
 def show(args, endpoint):

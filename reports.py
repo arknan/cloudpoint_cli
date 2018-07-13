@@ -7,14 +7,20 @@ import constants as co
 def entry_point(args):
 
     endpoint = []
-    endpoint.append(co.GETS_DICT[args.command])
-    if co.check_attr(args, 'reports_command'):
-        globals()[args.reports_command](args, endpoint)
+    if args.reports_command == 'show':
+        endpoint.append(co.GETS_DICT[args.command])
+        if co.check_attr(args, 'reports_command'):
+            globals()[args.reports_command](args, endpoint)
+        else:
+            print("Invalid argument : '{}'".format(args.reports_command))
+            sys.exit(-1)
+        output = getattr(api.Command(), co.METHOD_DICT[args.reports_command])('/'.join(endpoint))
+    elif args.reports_command == 'create':
+        create(args, endpoint)
     else:
         print("Invalid argument : '{}'".format(args.reports_command))
         sys.exit(-1)
 
-    output = getattr(api.Command(), co.METHOD_DICT[args.reports_command])('/'.join(endpoint))
     return output
 
 def show(args, endpoint):
@@ -35,7 +41,23 @@ def show(args, endpoint):
 
     return endpoint
 
-# TO DO : add create method and other methods as needed
+def create(args, endpoint):
+
+
+    """
+    report_id = input("Report Name : ")
+    first_name = input("Firstname : ")
+    last_name = input("Lastname : ")
+    email_addr = input("Email : ")
+    data = {
+        "lastName": last_name,
+        "email": email_addr,
+        "firstName": first_name
+    }
+    return (data, endpoint)
+    """
+    print("Not implemented")
+    sys.exit(-1)
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

@@ -92,7 +92,8 @@ class Command():
             return response.content.decode('utf-8')
 
         else:
-            print("Data must a dictionary !!")
+            print("Data must be a dictionary !!")
+            print("You sent: ", type(data))
             sys.exit(-99)
 
     def puts(self, endpoint, data):
@@ -110,7 +111,8 @@ class Command():
                 api_url, json=self.data, verify=self.verify,
                 headers=self.header)
         else:
-            print("Data must a dictionary !!")
+            print("Data must be a dictionary !!")
+            print("You sent: ", type(data))
             sys.exit(-99)
 
         if response.status_code != 200:

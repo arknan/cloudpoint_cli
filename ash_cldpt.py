@@ -75,9 +75,9 @@ def create_parser():
         "snapshot", help="Take snapshots of assets")
     parser_assets_create_snapshot.add_argument(
         "-i", "--asset-id", help="Provide an ASSET_ID to snap")
-    parser_assets_create_replicas = subparser_assets_create.add_parser(
-        "replicas", help="Replicate Existing snapshots")
-    parser_assets_create_replicas.add_argument(
+    parser_assets_create_replica = subparser_assets_create.add_parser(
+        "replica", help="Replicate Existing snapshots")
+    parser_assets_create_replica.add_argument(
         "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to replicate")
     parser_assets_restore = subparser_assets.add_parser(
         "restore", help="Restore snapshots")
@@ -199,7 +199,7 @@ def create_parser():
     subparser_replication_create = parser_replication_create.add_subparsers(
         dest="replication_create_command", metavar='<positional argument>')
     parser_replication_create_replication_rule = subparser_replication_create.add_parser(
-        "replication-rule", help="Create a replication rule")
+        "replication_rule", help="Create a replication rule")
 
     """ REPORT RELATED PARSING """
     parser_reports = subparser_main.add_parser(
