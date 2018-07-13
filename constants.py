@@ -48,8 +48,8 @@ GETS_DICT = {
     "version": "/version"
 }
 
-POST_DICT = {
-    "role_assignments": "/authorization/role",
+POSTS_DICT = {
+    "role-assignments": "/authorization/role",
     "user": "/idm/user",
     "policies": "/policies/",
     "replication_rule": "/replication/default/rules/",

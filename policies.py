@@ -15,8 +15,7 @@ def entry_point(args):
         sys.exit(-1)
 
     output = getattr(api.Command(), co.METHOD_DICT[args.policies_command])('/'.join(endpoint))
-    # Ideally this is where we would pass the output to a pretty printer function
-    print(output)
+    return output
 
 def show(args, endpoint):
     
@@ -24,3 +23,8 @@ def show(args, endpoint):
         endpoint.append(args.policy_id)
 
     return endpoint
+
+def pretty_print(data):
+    # This function has to be tailor suited for each command's output
+    # Since all commands don't have a standard output format that makes parsing easier !
+    print(data)

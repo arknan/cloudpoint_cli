@@ -332,6 +332,13 @@ def create_parser():
 
     return parser_main
 
+
+def run(pass_args=None):
+    parser = create_parser()
+    args = parser.parse_args(pass_args)
+    output = getattr(globals()[args.command], "entry_point")(args)
+    return output
+    
 if __name__ == '__main__':
 
     parser_main = create_parser()
@@ -343,4 +350,5 @@ if __name__ == '__main__':
         #args = parser_main.parse_known_args(sys.argv[1:])
         args = parser_main.parse_args()
         print(args)
-        getattr(vars()[args.command], "entry_point")(args)
+        output = getattr(globals()[args.command], "entry_point")(args)
+        getattr(globals()[args.command], "pretty_print")(output)
