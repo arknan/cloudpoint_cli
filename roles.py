@@ -12,23 +12,16 @@ def entry_point(args):
 
     if args.roles_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'roles_command'):
-            globals()[args.roles_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.roles_command))
-            sys.exit(-1)
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
 
     elif args.roles_command == "create":
-        data = None
         endpoint.append(co.POSTS_DICT[args.roles_create_command])
-        if co.check_attr(args, 'roles_command'):
-            data = globals()[args.roles_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.roles_command))
-            sys.exit(-1)
+        data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
+    elif args.roles_command == "delete":
+        delete(args, endpoint)
     else:
         print("Invalid argument : '{}'".format(args.roles_command))
         sys.exit(-1)
@@ -38,8 +31,6 @@ def entry_point(args):
 def show(args, endpoint):
     if co.check_attr(args, 'role_id'):
         endpoint.append(args.role_id)
-
-    return endpoint
 
 def create(args, endpoint):
 

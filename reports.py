@@ -9,14 +9,12 @@ def entry_point(args):
     endpoint = []
     if args.reports_command == 'show':
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'reports_command'):
-            globals()[args.reports_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.reports_command))
-            sys.exit(-1)
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT[args.reports_command])('/'.join(endpoint))
+
     elif args.reports_command == 'create':
         create(args, endpoint)
+
     else:
         print("Invalid argument : '{}'".format(args.reports_command))
         sys.exit(-1)
@@ -38,8 +36,6 @@ def show(args, endpoint):
             print("\nSpecify a REPORT_ID for getting",
                   getattr(args, 'reports_show_command'), "\n")
             sys.exit(9)
-
-    return endpoint
 
 def create(args, endpoint):
 

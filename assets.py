@@ -11,19 +11,15 @@ def entry_point(args):
     endpoint = []
     if args.assets_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'assets_command'):
-            globals()[args.assets_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.assets_command))
-            sys.exit(-1)
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])('/'.join(endpoint))
     elif args.assets_command == "create":
-        data = globals()[args.assets_command](args, endpoint)
+        data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
     elif args.assets_command == "restore":
         endpoint.append(co.GETS_DICT["assets"])
-        data = globals()[args.assets_command](args, endpoint)
+        data = restore(args, endpoint)
         output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
     else: 
         print("Invalid argument : '{}'".format(args.assets_command))
@@ -78,8 +74,6 @@ def show(args, endpoint):
             sys.exit(10)
         else:
             endpoint.append(args.assets_show_command)
-
-    return endpoint
 
 def create(args, endpoint):
     data = None

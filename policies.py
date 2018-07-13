@@ -9,16 +9,12 @@ def entry_point(args):
     endpoint = []
     if args.policies_command == 'show':
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'policies_command'):
-            globals()[args.policies_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.policies_command))
-            sys.exit(-1)
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT[args.policies_command])('/'.join(endpoint))
     elif args.policies_command == 'create':
         create(args, endpoint)
     else:
-        print("Invalid argument : '{}'".format(args.reports_command))
+        print("Invalid argument : '{}'".format(args.policies_command))
         sys.exit(-1)
 
     return output
@@ -27,8 +23,6 @@ def show(args, endpoint):
     
     if co.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
-
-    return endpoint
 
 def create(args, endpoint):
 

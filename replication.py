@@ -10,18 +10,13 @@ def entry_point(args):
     endpoint = []
     if args.replication_command == "show":
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'replication_command'):
-            show(args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.replication_command))
-            sys.exit(-1)
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT[args.replication_command])('/'.join(endpoint))
     elif  args.replication_command == "create":
-        if co.check_attr(args, 'replication_create_command'):
-            show(args, endpoint)
-        else:
+        if not co.check_attr(args, 'replication_create_command'):
             print("Invalid argument : '{}'".format(args.replication_create_command))
             sys.exit(-1)
+
         endpoint.append(co.POSTS_DICT[args.replication_create_command])
         data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
@@ -42,8 +37,6 @@ def show(args, endpoint):
             endpoint.append('/rules/')
         else:
             endpoint.append('/default/rules/')
-
-    return endpoint
 
 def create(args, endpoint):
 

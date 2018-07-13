@@ -7,14 +7,15 @@ import constants as co
 def entry_point(args):
 
     endpoint = []
-    endpoint.append(co.GETS_DICT[args.command])
-    if co.check_attr(args, 'agents_command'):
-        globals()[args.agents_command](args, endpoint)
+    if args.agents_command == 'show':
+        endpoint.append(co.GETS_DICT[args.command])
+        show(args, endpoint)
+        output = getattr(api.Command(), co.METHOD_DICT[args.agents_command])('/'.join(endpoint))
+
     else:
         print("Invalid argument : '{}'".format(args.agents_command))
         sys.exit(-1)
 
-    output = getattr(api.Command(), co.METHOD_DICT[args.agents_command])('/'.join(endpoint))
     return output
 
 def show(args, endpoint):
@@ -41,8 +42,6 @@ def show(args, endpoint):
             sys.exit(11)
         else:
             endpoint.append("summary")
-
-    return endpoint
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

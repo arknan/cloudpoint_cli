@@ -9,12 +9,7 @@ def entry_point(args):
     endpoint = []
     if args.email_config_command == 'show':
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'email_config_command'):
-            globals()[args.email_config_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.email_config_command))
-            sys.exit(-1)
-
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT[args.email_config_command])('/'.join(endpoint))
     elif args.email_config_command == 'create':
         create(args, endpoint)
@@ -27,7 +22,7 @@ def entry_point(args):
 def show(args, endpoint):
     # There is no work needed here, since our GETS_DICT provides
     # the whole endpoint ... retaining this for future ?
-    return endpoint
+    pass
 
 def create(args, endpoint):
 

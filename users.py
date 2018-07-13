@@ -9,30 +9,23 @@ def entry_point(args):
     endpoint = []
     if args.users_command == "show":	
         endpoint.append(co.GETS_DICT[args.command])
-        if co.check_attr(args, 'users_command'):
-            globals()[args.users_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.users_command))
-            sys.exit(-1)
+        show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
 
     elif args.users_command == "create":
         data = None
         endpoint.append(co.POSTS_DICT[args.user])
-        if co.check_attr(args, 'users_command'):
-            data = globals()[args.users_command](args, endpoint)
-        else:
-            print("Invalid argument : '{}'".format(args.users_command))
-            sys.exit(-1)
+        data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+    else:
+        print("Invalid argument : '{}'".format(args.users_command))
+        sys.exit(-1)
 
     return output
 
 def show(args, endpoint):
     if co.check_attr(args, 'user_id'):
         endpoint.append(args.user_id)
-
-    return endpoint
 
 def create(args, endpoint):
 

@@ -7,21 +7,21 @@ import constants as co
 def entry_point(args):
 
     endpoint = []
-    endpoint.append(co.GETS_DICT[args.command])
-    if co.check_attr(args, 'ldap_config_command'):
-        globals()[args.ldap_config_command](args, endpoint)
+    if args.ldap_config_command == 'show':
+        endpoint.append(co.GETS_DICT[args.command])
+        show(args, endpoint)
+        output = getattr(api.Command(), co.METHOD_DICT[args.ldap_config_command])('/'.join(endpoint))
+
     else:
-        print("Invalid argument : '{}'".format(args.ldap_config_command))
+        print("Invalid argument : '{}'".format(args.roles_command))
         sys.exit(-1)
 
-    output = getattr(api.Command(), co.METHOD_DICT[args.ldap_config_command])('/'.join(endpoint))
     return output
 
 def show(args, endpoint):
     # There is no work needed here, since our GETS_DICT provides
     # the whole endpoint ... retaining this for future ?
-    return endpoint
-
+    pass
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
