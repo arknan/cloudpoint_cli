@@ -8,6 +8,7 @@ import argcomplete
 
 import agents
 import assets
+import authenticate
 import email_config
 import ldap_config
 import licenses
