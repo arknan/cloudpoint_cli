@@ -30,7 +30,8 @@ def entry_point(args):
             api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
 
     else:
-        print("Invalid argument : '{}'".format(args.roles_command))
+        print("No arguments provided for 'roles'\n")
+        cldpt.run(["roles", "-h"])
         sys.exit(-1)
 
     return output

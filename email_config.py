@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -18,7 +19,8 @@ def entry_point(args):
         # create(args, endpoint)
         create()
     else:
-        print("Invalid argument : '{}'".format(args.email_config_command))
+        print("No arguments provided for 'email_config'\n")
+        cldpt.run(["email_config", "-h"])
         sys.exit(-1)
 
     return output

@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -17,7 +18,8 @@ def entry_point(args):
                 '/'.join(endpoint))
 
     else:
-        print("Invalid argument : '{}'".format(args.roles_command))
+        print("No arguments provided for 'ldap_config'\n")
+        cldpt.run(["ldap_config", "-h"])
         sys.exit(-1)
 
     return output

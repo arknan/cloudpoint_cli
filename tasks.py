@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -16,7 +17,8 @@ def entry_point(args):
                 '/'.join(endpoint))
 
     else:
-        print("Invalid argument : '{}'".format(args.tasks_command))
+        print("No arguments provided for 'tasks'\n")
+        cldpt.run(["tasks", "-h"])
         sys.exit(-1)
 
     return output

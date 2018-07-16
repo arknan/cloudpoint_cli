@@ -33,7 +33,7 @@ def create_parser():
     parser_agents = subparser_main.add_parser(
         "agents", help="Agent related operations")
     subparser_agents = parser_agents.add_subparsers(
-        dest="agents_command", metavar='<agent argument>')
+        dest="agents_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
     parser_agents_show = subparser_agents.add_parser(
         "show", help="Show agent related information")
@@ -55,7 +55,7 @@ def create_parser():
     parser_assets = subparser_main.add_parser(
         "assets", help="Asset releated operations")
     subparser_assets = parser_assets.add_subparsers(
-        dest="assets_command", metavar='<asset argument>')
+        dest="assets_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
     parser_assets_show = subparser_assets.add_parser(
         "show", help="Show assets related information")

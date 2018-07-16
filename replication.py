@@ -3,6 +3,7 @@
 import sys
 import json
 import api
+import cldpt
 import constants as co
 
 
@@ -28,8 +29,8 @@ def entry_point(args):
             api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
     else:
-        print("Invalid '{}' argument : '{}'".format(
-            __name__, args.replication_command))
+        print("No arguments provided for 'replication'\n")
+        cldpt.run(["replication", "-h"])
         sys.exit(-1)
 
     return output

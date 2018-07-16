@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -15,7 +16,8 @@ def entry_point(args):
             api.Command(), co.METHOD_DICT[args.plugins_command])(
                 '/'.join(endpoint))
     else:
-        print("Invalid argument : '{}'".format(args.plugins_command))
+        print("No arguments provided for 'plugins'\n")
+        cldpt.run(["plugins", "-h"])
         sys.exit(-1)
 
     return output

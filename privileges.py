@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -16,7 +17,8 @@ def entry_point(args):
                 '/'.join(endpoint))
 
     else:
-        print("Invalid argument : '{}'".format(args.privileges_command))
+        print("No arguments provided for 'privileges'\n")
+        cldpt.run(["privileges", "-h"])
         sys.exit(-1)
 
     return output

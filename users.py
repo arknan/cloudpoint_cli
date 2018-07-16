@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -30,7 +31,8 @@ def entry_point(args):
             api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint), data)
 
     else:
-        print("Invalid argument : '{}'".format(args.users_command))
+        print("No arguments provided for 'users'\n")
+        cldpt.run(["users", "-h"])
         sys.exit(-1)
 
     return output

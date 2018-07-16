@@ -25,7 +25,8 @@ def entry_point(args):
         data = restore(args, endpoint)
         output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
     else:
-        print("Invalid argument : '{}'".format(args.assets_command))
+        print("No arguments provided for 'assets'\n")
+        cldpt.run(["assets", "-h"])
         sys.exit(-1)
 
     return output

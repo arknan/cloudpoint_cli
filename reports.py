@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -26,7 +27,8 @@ def entry_point(args):
             api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
 
     else:
-        print("Invalid argument : '{}'".format(args.reports_command))
+        print("No arguments provided for 'reports'\n")
+        cldpt.run(["reports", "-h"])
         sys.exit(-1)
 
     return output

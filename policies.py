@@ -2,6 +2,7 @@
 
 import sys
 import api
+import cldpt
 import constants as co
 
 
@@ -18,7 +19,8 @@ def entry_point(args):
         # create(args, endpoint)
         create()
     else:
-        print("Invalid argument : '{}'".format(args.policies_command))
+        print("No arguments provided for 'policies'\n")
+        cldpt.run(["policies", "-h"])
         sys.exit(-1)
 
     return output

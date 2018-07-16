@@ -3,7 +3,7 @@
 import sys
 import api
 import constants as co
-
+import cldpt
 
 def entry_point(args):
 
@@ -15,7 +15,8 @@ def entry_point(args):
             '/'.join(endpoint))
 
     else:
-        print("Invalid argument : '{}'".format(args.agents_command))
+        print("No arguments provided for 'agents'\n")
+        cldpt.run(["agents", "-h"])
         sys.exit(-1)
 
     return output
