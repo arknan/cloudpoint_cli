@@ -18,7 +18,7 @@ def entry_point(args):
             api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
 
     elif args.roles_command == "create":
-        endpoint.append(co.POSTS_DICT[args.roles_create_command])
+        endpoint.append(co.POSTS_DICT['role-assignments'])
         data = create()
         output = getattr(
             api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
@@ -28,6 +28,12 @@ def entry_point(args):
         delete(args, endpoint)
         output = getattr(
             api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
+
+    elif args.roles_command == "modify":
+        endpoint.append(co.GETS_DICT[args.command])
+        data = modify(endpoint)
+        output = getattr(
+            api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint), data)
 
     else:
         print("No arguments provided for 'roles'\n")
@@ -44,7 +50,7 @@ def show(args, endpoint):
 
 def create():
 
-    print("\nPlease choose a name that you want this role to be called")
+    # print("\nPlease choose a name that you want this role to be called")
     role_name = input("Role name : ")
     roles = json.loads(cldpt.run(["privileges", "show"]))
     roles_list = []
@@ -52,7 +58,7 @@ def create():
         roles_list.append(row["name"])
     print("\nPlease choose a role type, valid role types include : ",
           roles_list)
-    role_type = str(input("Role type to associate: "))
+    role_type = (str(input("Role type to associate: "))).upper()
     if role_type not in co.VALID_PRIVILEGES:
         print("\nThat is not a valid role type !\n")
         sys.exit(-23)
@@ -80,6 +86,22 @@ def delete(args, endpoint):
         role_id = input("Enter role id of the role you want to delete : ")
         endpoint.append('/' + role_id)
 
+
+def modify(endpoint):
+    data = create()
+    roles_dict = json.loads(cldpt.run(["roles", "show"]))
+    role_id = None
+    for num, _ in enumerate(roles_dict):
+        if data["name"] == roles_dict[num]['name']:
+            role_id = roles_dict[num]['id']
+
+    if not role_id:
+        print("Role '{}' doesn't exist".format(data["name"]))
+    else:
+        endpoint.append(role_id)
+
+    return data
+        
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

@@ -120,9 +120,18 @@ def create_parser():
         "create", help="Add email/smtp related settings")
     subparser_email_config_create = parser_email_config_create.add_subparsers(
         dest="email_config_create_command", metavar='<positional argument>')
-    parser_email_config_create_email_config = \
+    parser_email_config_create_aws_ses = \
         subparser_email_config_create.add_parser(
-            "email_config", help="Add Email configuration")
+            "aws_ses", help="Add AWS SES Email configuration")
+    parser_email_config_create_send_grid = \
+        subparser_email_config_create.add_parser(
+            "send_grid", help="Add SendGrid Email configuration")
+    parser_email_config_create_smtp = \
+        subparser_email_config_create.add_parser(
+            "smtp", help="Add SMTP Email configuration")
+    # DELETE RELATED PARSING
+    parser_email_config_delete = subparser_email_config.add_parser(
+        "delete", help="Delete email configuration from CloudPoint")
 
     """ LDAP RELATED PARSING """
     parser_ldap_config = subparser_main.add_parser(
@@ -275,6 +284,9 @@ def create_parser():
         "delete", help="Delete roles")
     parser_roles_delete.add_argument(
         "-i", "--role-id", help="Delete a specific role within CloudPoint")
+    # MODIFY PARSING
+    parser_roles_modify = subparser_roles.add_parser(
+        "modify", help="Modify roles")
 
     """ TAG RELATED PARSING """
     parser_tags = subparser_main.add_parser(
