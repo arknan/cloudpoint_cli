@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
+import json
+from getpass import getpass
 import api
 import cldpt
 import constants as co
@@ -18,17 +20,17 @@ def entry_point(args):
     elif args.users_command == "create":
         data = None
         endpoint.append(co.POSTS_DICT[args.user])
-        # data = create(args, endpoint)
         data = create()
         output = getattr(
             api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
 
     elif args.users_command == 'reset_password':
-        endpoint.append(co.POSTS_DICT['reset_password'])
-        # data = modify(args, endpoint)
-        modify()
+        endpoint.append(co.GETS_DICT['users'])
+        endpoint.append('/forgotPassword')
+        data = reset_password()
         output = getattr(
-            api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint), data)
+            api.Command(), 'posts')('/'.join(endpoint), data)
+        print("\nPassword has been successfully reset\n")
 
     else:
         print("No arguments provided for 'users'\n")
@@ -61,11 +63,12 @@ def create():
     return data
 
 
-def modify():
+def reset_password():
 
     # API endpoint is messed up .. this doesn't work either :(
-    """
-    email_addr = input("Email : ")
+    print("\nPlease enter the following details for the \
+user whose password needs to be changed\n")
+    email_addr = input("Email Address : ")
     new_passwd = getpass("New Password : ")
 
     data = {
@@ -74,9 +77,6 @@ def modify():
     }
 
     return data
-    """
-    print("Not implemented")
-    sys.exit(-1)
 
 
 def pretty_print(data):

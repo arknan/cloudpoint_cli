@@ -4,3 +4,6 @@
 6) See if daemonizing the program is beneficial 
 7) Package the solution and provide a simple install script
 10) GET on classification needs a server with internet access (inbound + outbound) :( need to test that
+11) In 'CREATE' operations, you should provide a dialogue interface as well as the ability to provide a JSON
+    formatted file as user input.
+12) SSL Certificate for CloudPoint (Instead of ignoring SSL errors)
