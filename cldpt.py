@@ -49,7 +49,38 @@ def create_parser():
         help="Show plugin information for a specific agent plugin")
     parser_agents_show_summary = subparser_agents_show.add_parser(
         "summary", help="Show summary of agents")
+    subparser_agents_show_plugins = parser_agents_show_plugins.add_subparsers(
+        dest="agents_show_plugins_command", metavar='<positional argument>')
+    parser_agents_show_plugins_configs =\
+        subparser_agents_show_plugins.add_parser(
+            "configs", help="Show configuration of a specific plug-in")
     # CREATE [PUT/POST] PARSING
+    # DELETE PARSING
+    parser_agents_delete = subparser_agents.add_parser(
+        "delete", help="Delete agent related information in CloudPoint")
+    subparser_agents_delete = parser_agents_delete.add_subparsers(
+        dest="agents_delete_command", metavar='<positional argument>')
+    parser_agents_delete_agent = subparser_agents_delete.add_parser(
+        "agent", help="Delete agent")
+    parser_agents_delete_agent.add_argument(
+        "-i", "--agent-id", help="Delete a specific agent", required=True)
+    subparser_agents_delete_agent = parser_agents_delete_agent.add_subparsers(
+        dest="agents_delete_agent_command", metavar='<positional argument>')
+    parser_agents_delete_agent_plugins = subparser_agents_delete_agent.add_parser(
+        "plugins", help="Delete plugins of a specific agent")
+    parser_agents_delete_agent_plugins.add_argument(
+        "-i", "--plugin-name", required=True,
+        help="Delete a specific plugin for a specific agent")
+    subparser_agents_delete_agent_plugins =\
+        parser_agents_delete_agent_plugins.add_subparsers(
+            dest="agents_delete_agent_plugins_command",
+            metavar='<positional argument>')
+    parser_agents_delete_agent_plugins_config =\
+        subparser_agents_delete_agent_plugins.add_parser(
+            "config", help="Delete plugin configuration")
+    parser_agents_delete_agent_plugins_config.add_argument(
+        "-i", "--config-id", required=True,
+        help="Delete a specific configuration of a plugin")
 
     """ ASSET RELATED PARSING """
     parser_assets = subparser_main.add_parser(

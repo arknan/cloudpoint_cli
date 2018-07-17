@@ -33,7 +33,7 @@ def entry_point(args):
         endpoint.append(co.GETS_DICT[args.command])
         data = modify(endpoint)
         output = getattr(
-            api.Command(), co.METHOD_DICT['modify'])('/'.join(endpoint), data)
+            api.Command(), 'puts')('/'.join(endpoint), data)
 
     else:
         print("No arguments provided for 'roles'\n")
