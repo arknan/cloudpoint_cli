@@ -15,6 +15,7 @@ def entry_point(args):
         show(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])(
             '/'.join(endpoint))
+
     elif args.assets_command == "create":
         data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])(
@@ -42,49 +43,46 @@ def show(args, endpoint):
 
     if co.check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
-
-    if (co.check_attr(args, 'assets_show_command')) and\
-       (args.assets_show_command == "snapshots"):
-        if co.check_attr(args, 'asset_id'):
-            endpoint.append(args.assets_show_command)
-            if co.check_attr(args, 'snapshot_id'):
-                endpoint.append(args.snapshot_id)
-        else:
-            print(co.EXIT_1)
-            sys.exit(2)
-
-        if co.check_attr(args, 'snapshots_command'):
-            if args.snapshots_command == "granules":
-                if (co.check_attr(args, 'asset_id')) and\
-                   (co.check_attr(args, 'snapshot_id')):
-                    endpoint.append(args.snapshots_command + '/')
-                    if co.check_attr(args, 'granule_id'):
-                        endpoint.append(args.granule_id)
+        if co.check_attr(args, 'assets_show_command'):
+            if args.assets_show_command == "snapshots":
+                endpoint.append(args.assets_show_command)
+                if co.check_attr(args, 'snapshot_id'):
+                    endpoint.append(args.snapshot_id)
+                    if co.check_attr(args, 'snapshots_command'):
+                        if args.snapshots_command == "granules":
+                            endpoint.append(args.snapshots_command + '/')
+                            if co.check_attr(args, 'granule_id'):
+                                endpoint.append(args.granule_id)
+                        elif args.snapshots_command == "restore-targets":
+                            endpoint.append('/targets')
+                        else:
+                            print("INTERNAL ERROR")
+                            sys.exit()
                 else:
-                    print(co.EXIT_2)
-                    sys.exit(3)
-            elif args.snapshots_command == "restore-targets":
-                if (co.check_attr(args, 'asset_id')) and\
-                   (co.check_attr(args, 'snapshot_id')):
-                    endpoint.append('/targets')
-                else:
-                    print("Need ASSET_ID and SNAP_ID for restore-targets")
-                    sys.exit(-1)
+                    print("Argument '{}' needs a snapshot_id".format(
+                        args.snapshots_command))
+                    sys.exit()
 
-    elif (co.check_attr(args, 'assets_show_command')) and\
-         (args.assets_show_command == "policies"):
-        if co.check_attr(args, 'asset_id'):
-            endpoint.append(args.assets_show_command)
+            elif args.assets_show_command == "policies":
+                endpoint.append(args.assets_show_command)
+
+    else:
+        if args.assets_show_command in ['snapshots', 'policies']:
+            print("Argument '{}' needs an asset_id".format(
+                args.assets_show_command))
+            sys.exit()
+        if co.check_attr(args, 'assets_show_command') :
+            if args.assets_show_command == "summary":
+                endpoint.append('/summary')
+            elif args.assets_show_command == "all":
+                pass
+            else:
+                print("INTERNAL ERROR")
+                sys.exit()
         else:
-            print("\nFor policies, you need to enter an asset_id \n\n")
-            sys.exit(4)
-    elif (co.check_attr(args, 'assets_show_command')) and\
-         (args.assets_show_command == "summary"):
-        if co.check_attr(args, 'asset_id'):
-            print("\nSummary cannot be provided for a specific asset id\n")
-            sys.exit(10)
-        else:
-            endpoint.append(args.assets_show_command)
+            endpoint.append('/?limit=3')
+            print("\nBY DEFAULT ONLY 3 ASSETS ARE SHOWN")
+            print("TO SEE THE ALL ASSETS, RUN : 'cldpt assets show all'\n")
 
 
 def create(args, endpoint):

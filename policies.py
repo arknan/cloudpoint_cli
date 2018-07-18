@@ -18,6 +18,11 @@ def entry_point(args):
     elif args.policies_command == 'create':
         # create(args, endpoint)
         create()
+    elif args.policies_command == 'asset':
+        endpoint.append('/policies/')
+        data = asset(args, endpoint)
+        output = getattr(
+            api.Command(), 'patches')('/'.join(endpoint), data)
     else:
         print("No arguments provided for 'policies'\n")
         cldpt.run(["policies", "-h"])
@@ -37,8 +42,6 @@ def create():
 
     """
     name, appConsist, tag, snapTypePref, hour = None, None, None, None, None
-    schedule = {}
-    print(name, appConsist, tag, snapTypePref, hour, schedule)
     while True:
         name = input("Policy Name : ")
         if (len(name) > 32) or (len(name) < 2):
@@ -46,11 +49,11 @@ def create():
         else:
             break
     while True:
-        appConsist = input("Application Consistent ['True' or 'False'] : ")
-        if appConsist not in ['True', 'False']:
-            print("\nValid options are 'True' or 'False'\n")
+        appConsist = (input("Application Consistent ['yes' or 'no'] : ")).lower()
+        if appConsist not in ['yes', 'no']:
+            print("\nValid options are 'yes' or 'no'\n")
         else:
-            if appConsist == 'True':
+            if appConsist == 'yes':
                 appConsist = True
                 break
             else:
@@ -58,29 +61,46 @@ def create():
                 break
     tag = input("Description of Policy : ")
     while True:
-        snapTypePref = input("Snapshot type ['cow', 'clone'] : ")
+        snapTypePref = (input("Snapshot type ['cow', 'clone'] : ")).lower()
         if snapTypePref not in ['cow', 'clone']:
             print("\nValid options are 'cow' or 'clone'\n")
         else:
             break
-    sched_dict = {
-        'minute': 'Backup every __ minute(s) :',
-        'hour' : 'Backup every __ hour(s) :',
-        'day': 'Backup on __day :',
-    print("Schedule frequency options, Leave Blank if not applicable :\n")
-    freq = input(
-        "Backup every \n['minute', 'hour', 'day', 'week', 'month', 'year']\n
-        Frequency : ")
-    minute = input("Minute : ") or "0"
-    hour = input("Hour : ") or "0"
-    mday = input("Date : ") or "1"
-    month = input("Month : ") or "1"
-    wday = input("Day of the week : ")
-    mday = input("Date of the month: ")
-    """
-    print("Not implemented")
-    sys.exit(-1)
 
+    print("Schedule frequency options, Leave Blank if not applicable :\n")
+    minute = input("Minute (0-59): ") or "0"
+    hour = input("Hour (0-23): ") or "0"
+    month = input("Month : ") or "*"
+    wday = input("Day of the week : ") or "*"
+    mday = input("Date of the month: ") or "*"
+
+    schedule = {
+        "minute": minute,
+        "hour": hour,
+        "month": month,
+        "wday": wday,
+        "mday": mday
+    }
+    """
+
+    print("Not implemented")
+    sys.exit()
+
+
+def asset(args, endpoint):
+    
+    if co.check_attr(args, 'policies_asset_command'):
+        endpoint.append(args.policy_id)
+        data = {
+            "op" : args.policies_asset_command,
+            "asset": args.asset_id
+        }
+
+    else:
+        print("No arguments provided for 'asset'\n")
+        cldpt.run(["policies", "asset", "-h"])
+
+    return data
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

@@ -95,6 +95,10 @@ def create_parser():
         help="Show information related to a specific asset")
     subparser_assets_show = parser_assets_show.add_subparsers(
         dest="assets_show_command", metavar='<positional argument>')
+    parser_assets_show_all = subparser_assets_show.add_parser(
+        "all", help="Show all the asssets discovered by CloudPoint")
+    parser_assets_show_policies = subparser_assets_show.add_parser(
+        "policies", help="Show policies associated with an asset")
     parser_assets_show_snapshots = subparser_assets_show.add_parser(
         "snapshots", help="Show related snapshots for an asset")
     parser_assets_show_snapshots.add_argument(
@@ -112,8 +116,6 @@ def create_parser():
         subparser_assets_show_snapshots.add_parser(
             "restore-targets",
             help="Show restore target locations for a specific snapshot asset")
-    parser_assets_show_policies = subparser_assets_show.add_parser(
-        "policies", help="Show policy information for an asset")
     parser_assets_show_summary = subparser_assets_show.add_parser(
         "summary", help="Show summary of assets")
     # CREATE [PUT/POST] PARSING
@@ -232,6 +234,25 @@ def create_parser():
     # CREATE [PUT/POST] PARSING
     parser_policies_create = subparser_policies.add_parser(
         "create", help="Create policy related information in CloudPoint")
+    # ADD/REMOVE ASSETS [PATCH] PARSING
+    parser_policies_asset = subparser_policies.add_parser(
+        "asset", help="Add/Remove assets to policies")
+    parser_policies_asset.add_argument(
+        "-i", "--policy-id", required=True,
+        help="Policy_id to add/remove asset to(from)")
+    subparser_policies_asset = parser_policies_asset.add_subparsers(
+        dest="policies_asset_command", metavar='<positional argument>')
+    parser_policies_asset_add = subparser_policies_asset.add_parser(
+        "add", help="Add asset(s) to a policy")
+    parser_policies_asset_add.add_argument(
+        "-i", "--asset-id", required=True,
+        help="Asset_id to add to the policy")
+    parser_policies_asset_remove = subparser_policies_asset.add_parser(
+        "remove", help="Remove asset(s) from a policy")
+    parser_policies_asset_remove.add_argument(
+        "-i", "--asset-id", required=True,
+        help="Asset_id to remove from the policy")
+
 
     """ PRIVILEGE RELATED PARSING """
     parser_privileges = subparser_main.add_parser(
