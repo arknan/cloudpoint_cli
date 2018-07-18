@@ -24,6 +24,12 @@ def entry_point(args):
         endpoint.append(co.GETS_DICT["assets"])
         data = restore(args, endpoint)
         output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
+
+    elif args.assets_command == "delete":
+        endpoint.append(co.GETS_DICT["assets"])
+        delete(endpoint)
+        output = getattr(api.Command(), "deletes")('/'.join(endpoint))
+
     else:
         print("No arguments provided for 'assets'\n")
         cldpt.run(["assets", "-h"])
@@ -89,8 +95,10 @@ def create(args, endpoint):
         elif args.assets_create_command == 'replica':
             data = create_replica(endpoint)
     else:
-        print("Invalid argument : '{}'".format(args.assets_create_command))
+        print("No arguments provided for 'create'\n")
+        cldpt.run(["assets", "create", "-h"])
         sys.exit(-1)
+
 
     return data
 
@@ -182,13 +190,11 @@ def create_replica(endpoint):
 
 def restore(args, endpoint):
 
-    if co.check_attr(args, "snapshot_id"):
-        endpoint.append("/" + args.snapshot_id)
-    else:
+    if not co.check_attr(args, "snapshot_id"):
         print("\nPlease mention a SNAP_ID for doing restores\n")
         sys.exit(-1)
 
-    print("\nPlease enter a restore location.\n")
+    print("\nPlease enter a restore location type.\n")
     print("Valid values are [new, original]\n")
     restore_loc = None
     data = {
@@ -199,6 +205,7 @@ def restore(args, endpoint):
         if restore_loc in ['new', 'original']:
             break
     if restore_loc == 'new':
+        # endpoint.append("/" + args.snapshot_id)
         snap_info = json.loads(getattr(api.Command(), 'gets')(
             '/assets/' + args.snapshot_id))
         snap_source_id = snap_info["snapSourceId"]
@@ -209,10 +216,21 @@ def restore(args, endpoint):
             print("\nSnapshot type is : ", snap_type)
             print("\nOnly host type snapshots are supported thru CLI\n")
     else:
-        raise NotImplementedError("To be implemented")
+        print("INTERNAL ERROR")
+        sys.exit(-1)
 
     return data
 
+
+def delete(endpoint):
+
+    snap_info = json.loads(getattr(api.Command(), 'gets')(
+        '/assets/' + args.snapshot_id))
+    snap_source_asset = snap_info["snapSourceId"]
+    endpoint.append('/assets/')
+    endpoint.append(snap_source_asset)
+    endpoint.append('/snapshots/')
+    endpoint.append(args.snapshot_id)
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

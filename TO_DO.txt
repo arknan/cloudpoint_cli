@@ -7,3 +7,6 @@
 11) In 'CREATE' operations, you should provide a dialogue interface as well as the ability to provide a JSON
     formatted file as user input.
 12) SSL Certificate for CloudPoint (Instead of ignoring SSL errors)
+13) For ASSETS, paginate the output so that it doesn't overwhelm the end user
+14) Figure out what to do additionally for snapshot restores(dest param)
+15) Have to work on assets - granules

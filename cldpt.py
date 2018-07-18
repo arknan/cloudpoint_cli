@@ -133,6 +133,12 @@ def create_parser():
         "restore", help="Restore snapshots")
     parser_assets_restore.add_argument(
         "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to restore")
+    # DELETE PARSING
+    parser_assets_delete_snapshot = subparser_assets.add_parser(
+        "delete_snapshot", help="Delete snapshots")
+    parser_assets_delete_snapshot.add_argument(
+        "-i", "--snapshot-id", required=True,
+        help="Delete a specific snapshot")
 
     """ AUTHENTICATION RELATED PARSING """
     parser_authenticate = subparser_main.add_parser(
