@@ -5,6 +5,7 @@ import api
 import constants as co
 import cldpt
 
+
 def entry_point(args):
 
     endpoint = ['/agents/']
@@ -28,13 +29,13 @@ def entry_point(args):
 def delete(args, endpoint):
 
     if co.check_attr(args, 'agents_delete_command'):
-            endpoint.append(args.agent_id) 
-            if co.check_attr(args, 'agents_delete_agent_command'):
-                endpoint.append('/' + args.agents_delete_agent_command)
-                endpoint.append('/' + args.plugin_name)
-                if co.check_attr(args, 'agents_delete_agent_plugins_command'):
-                     endpoint.append('/configs')
-                     endpoint.append('/' + args.config_id)
+        endpoint.append(args.agent_id)
+        if co.check_attr(args, 'agents_delete_agent_command'):
+            endpoint.append('/' + args.agents_delete_agent_command)
+            endpoint.append('/' + args.plugin_name)
+            if co.check_attr(args, 'agents_delete_agent_plugins_command'):
+                endpoint.append('/configs')
+                endpoint.append('/' + args.config_id)
     else:
         cldpt.run(["agents", "delete", "-h"])
 
