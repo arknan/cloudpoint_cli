@@ -34,27 +34,6 @@ def create_parser():
         "agents", help="Agent related operations")
     subparser_agents = parser_agents.add_subparsers(
         dest="agents_command", metavar='<positional argument>')
-    # SHOW [GET] PARSING
-    parser_agents_show = subparser_agents.add_parser(
-        "show", help="Show agent related information")
-    parser_agents_show.add_argument(
-        "-i", "--agent-id",
-        help="Show information related to a specific agent")
-    subparser_agents_show = parser_agents_show.add_subparsers(
-        dest="agents_show_command", metavar='<positional argument>')
-    parser_agents_show_plugins = subparser_agents_show.add_parser(
-        "plugins", help="Show related plugins for an agent")
-    parser_agents_show_plugins.add_argument(
-        "-i", "--plugin-name", dest="configured_plugin_name",
-        help="Show plugin information for a specific agent plugin")
-    parser_agents_show_summary = subparser_agents_show.add_parser(
-        "summary", help="Show summary of agents")
-    subparser_agents_show_plugins = parser_agents_show_plugins.add_subparsers(
-        dest="agents_show_plugins_command", metavar='<positional argument>')
-    parser_agents_show_plugins_configs =\
-        subparser_agents_show_plugins.add_parser(
-            "configs", help="Show configuration of a specific plug-in")
-    # CREATE [PUT/POST] PARSING
     # DELETE PARSING
     parser_agents_delete = subparser_agents.add_parser(
         "delete", help="Delete agent related information in CloudPoint")
@@ -81,6 +60,27 @@ def create_parser():
     parser_agents_delete_agent_plugins_config.add_argument(
         "-i", "--config-id", required=True,
         help="Delete a specific configuration of a plugin")
+    # SHOW [GET] PARSING
+    parser_agents_show = subparser_agents.add_parser(
+        "show", help="Show agent related information")
+    parser_agents_show.add_argument(
+        "-i", "--agent-id",
+        help="Show information related to a specific agent")
+    subparser_agents_show = parser_agents_show.add_subparsers(
+        dest="agents_show_command", metavar='<positional argument>')
+    parser_agents_show_plugins = subparser_agents_show.add_parser(
+        "plugins", help="Show related plugins for an agent")
+    parser_agents_show_plugins.add_argument(
+        "-i", "--plugin-name", dest="configured_plugin_name",
+        help="Show plugin information for a specific agent plugin")
+    parser_agents_show_summary = subparser_agents_show.add_parser(
+        "summary", help="Show summary of agents")
+    subparser_agents_show_plugins = parser_agents_show_plugins.add_subparsers(
+        dest="agents_show_plugins_command", metavar='<positional argument>')
+    parser_agents_show_plugins_configs =\
+        subparser_agents_show_plugins.add_parser(
+            "configs", help="Show configuration of a specific plug-in")
+    # CREATE [PUT/POST] PARSING
 
     """ ASSET RELATED PARSING """
     parser_assets = subparser_main.add_parser(
