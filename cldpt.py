@@ -87,6 +87,45 @@ def create_parser():
         "assets", help="Asset releated operations")
     subparser_assets = parser_assets.add_subparsers(
         dest="assets_command", metavar='<positional argument>')
+
+    parser_assets_create = subparser_assets.add_parser(
+        "create", help="Create asset related information in CloudPoint")
+    subparser_assets_create = parser_assets_create.add_subparsers(
+        dest="assets_create_command", metavar='<positional argument>')
+    parser_assets_policy = subparser_assets.add_parser(
+        "policy", help="Assign/Remove a policy to/from an asset")
+    parser_assets_policy.add_argument(
+        "-i", "--asset-id", required=True,
+        help="Provide an ASSET_ID to assign a policy to")
+    subparser_assets_policy = parser_assets_policy.add_subparsers(
+        dest="assets_policy_command",  metavar='<positional argument>')
+    parser_assets_policy_assign = subparser_assets_policy.add_parser(
+        "assign", help="Assign a policy to an asset")
+    parser_assets_policy_assign.add_argument(
+        "-i", "--policy-id", required=True,
+        help="Provide a policy_id to assign to an asset")
+    parser_assets_policy_remove = subparser_assets_policy.add_parser(
+        "remove", help="Remove a policy from an asset")
+    parser_assets_policy_remove.add_argument(
+        "-i", "--policy-id", required=True,
+        help="Provide a policy_id to remove from an asset")
+    parser_assets_create_snapshot = subparser_assets_create.add_parser(
+        "snapshot", help="Take snapshots of assets")
+    parser_assets_create_snapshot.add_argument(
+        "-i", "--asset-id", help="Provide an ASSET_ID to snap")
+    parser_assets_create_replica = subparser_assets_create.add_parser(
+        "replica", help="Replicate Existing snapshots")
+    parser_assets_create_replica.add_argument(
+        "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to replicate")
+    parser_assets_delete_snapshot = subparser_assets.add_parser(
+        "delete-snapshot", help="Delete snapshots")
+    parser_assets_delete_snapshot.add_argument(
+        "-i", "--snapshot-id", required=True,
+        help="Delete a specific snapshot")
+    parser_assets_restore = subparser_assets.add_parser(
+        "restore", help="Restore snapshots")
+    parser_assets_restore.add_argument(
+        "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to restore")
     # SHOW [GET] PARSING
     parser_assets_show = subparser_assets.add_parser(
         "show", help="Show assets related information")
@@ -118,29 +157,6 @@ def create_parser():
             help="Show restore target locations for a specific snapshot asset")
     parser_assets_show_summary = subparser_assets_show.add_parser(
         "summary", help="Show summary of assets")
-    # CREATE [PUT/POST] PARSING
-    parser_assets_create = subparser_assets.add_parser(
-        "create", help="Create asset related information in CloudPoint")
-    subparser_assets_create = parser_assets_create.add_subparsers(
-        dest="assets_create_command", metavar='<positional argument>')
-    parser_assets_create_snapshot = subparser_assets_create.add_parser(
-        "snapshot", help="Take snapshots of assets")
-    parser_assets_create_snapshot.add_argument(
-        "-i", "--asset-id", help="Provide an ASSET_ID to snap")
-    parser_assets_create_replica = subparser_assets_create.add_parser(
-        "replica", help="Replicate Existing snapshots")
-    parser_assets_create_replica.add_argument(
-        "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to replicate")
-    parser_assets_restore = subparser_assets.add_parser(
-        "restore", help="Restore snapshots")
-    parser_assets_restore.add_argument(
-        "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to restore")
-    # DELETE PARSING
-    parser_assets_delete_snapshot = subparser_assets.add_parser(
-        "delete_snapshot", help="Delete snapshots")
-    parser_assets_delete_snapshot.add_argument(
-        "-i", "--snapshot-id", required=True,
-        help="Delete a specific snapshot")
 
     """ AUTHENTICATION RELATED PARSING """
     parser_authenticate = subparser_main.add_parser(
@@ -252,6 +268,11 @@ def create_parser():
     parser_policies_asset_remove.add_argument(
         "-i", "--asset-id", required=True,
         help="Asset_id to remove from the policy")
+    # DELETE PARSING
+    parser_policies_delete = subparser_policies.add_parser(
+        "delete", help="Delete a policy from CloudPoint")
+    parser_policies_delete.add_argument(
+        "-i", "--policy-id", required=True, help="Policy_id to delete")
 
 
     """ PRIVILEGE RELATED PARSING """

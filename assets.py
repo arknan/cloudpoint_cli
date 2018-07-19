@@ -9,27 +9,28 @@ import constants as co
 
 def entry_point(args):
 
-    endpoint = []
-    if args.assets_command == "show":
-        endpoint.append(co.GETS_DICT[args.command])
-        show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])(
-            '/'.join(endpoint))
+    endpoint = ['/assets/']
+
+    if args.assets_command == "policy":
+        output = policy(args, endpoint)
 
     elif args.assets_command == "create":
         data = create(args, endpoint)
         output = getattr(api.Command(), co.METHOD_DICT['create'])(
             '/'.join(endpoint), data)
 
+    elif args.assets_command == "delete-snapshot":
+        delete(endpoint)
+        output = getattr(api.Command(), "deletes")('/'.join(endpoint))
+
     elif args.assets_command == "restore":
-        endpoint.append(co.GETS_DICT["assets"])
         data = restore(args, endpoint)
         output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
 
-    elif args.assets_command == "delete":
-        endpoint.append(co.GETS_DICT["assets"])
-        delete(endpoint)
-        output = getattr(api.Command(), "deletes")('/'.join(endpoint))
+    elif args.assets_command == "show":
+        show(args, endpoint)
+        output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])(
+            '/'.join(endpoint))
 
     else:
         print("No arguments provided for 'assets'\n")
@@ -103,7 +104,6 @@ def create(args, endpoint):
 
 def create_snapshot(args, endpoint):
     if co.check_attr(args, "asset_id"):
-        endpoint.append('/assets/')
         endpoint.append(args.asset_id)
         endpoint.append('/snapshots/')
     else:
@@ -179,7 +179,6 @@ def create_replica(endpoint):
         "srcSnapId": snap_id,
         "dest": dest
     }
-    endpoint.append('/assets/')
     endpoint.append(snap_source_asset)
     endpoint.append('/snapshots/')
 
@@ -229,6 +228,27 @@ def delete(endpoint):
     endpoint.append(snap_source_asset)
     endpoint.append('/snapshots/')
     endpoint.append(args.snapshot_id)
+
+
+def policy(args, endpoint):
+    
+    if co.check_attr(args, 'assets_policy_command'):
+        endpoint.append(args.asset_id)
+        endpoint.append('/policies/')
+        endpoint.append(args.policy_id)
+    else:
+        print("No arguments provided for 'policy'\n")
+        cldpt.run(["assets", "policy", "-h"])
+        sys.exit(-1)
+
+    if args.assets_policy_command == 'assign':
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
+        
+    elif args.assets_policy_command == 'remove':
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    return output
+
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

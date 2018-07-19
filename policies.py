@@ -9,20 +9,21 @@ import constants as co
 def entry_point(args):
 
     endpoint = []
-    if args.policies_command == 'show':
+    if args.policies_command == 'asset':
+        output = asset(args, endpoint)
+    elif args.policies_command == 'create':
+        # create(args, endpoint)
+        create()
+    elif args.policies_command == 'delete':
+        delete(args, endpoint)
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    elif args.policies_command == 'show':
         endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
         output = getattr(
             api.Command(), co.METHOD_DICT[args.policies_command])(
                 '/'.join(endpoint))
-    elif args.policies_command == 'create':
-        # create(args, endpoint)
-        create()
-    elif args.policies_command == 'asset':
-        endpoint.append('/policies/')
-        data = asset(args, endpoint)
-        output = getattr(
-            api.Command(), 'patches')('/'.join(endpoint), data)
     else:
         print("No arguments provided for 'policies'\n")
         cldpt.run(["policies", "-h"])
@@ -88,19 +89,29 @@ def create():
 
 
 def asset(args, endpoint):
-    
-    if co.check_attr(args, 'policies_asset_command'):
-        endpoint.append(args.policy_id)
-        data = {
-            "op" : args.policies_asset_command,
-            "asset": args.asset_id
-        }
 
+    if co.check_attr(args, 'policies_asset_command'):
+        endpoint.append('/assets/')
+        endpoint.append(args.asset_id)
+        endpoint.append('/policies/')
+        endpoint.append(args.policy_id)
     else:
         print("No arguments provided for 'asset'\n")
         cldpt.run(["policies", "asset", "-h"])
+        sys.exit(-1)
 
-    return data
+    if args.policies_asset_command == 'add':
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
+
+    elif args.policies_asset_command == 'remove':
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    return output
+
+def delete(args, endpoint):
+    
+    endpoint.append('/policies/')
+    endpoint.append(args.policy_id)
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
