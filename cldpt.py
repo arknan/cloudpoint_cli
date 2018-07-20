@@ -292,6 +292,30 @@ def create_parser():
         "replication", help="Replication related operations")
     subparser_replication = parser_replication.add_subparsers(
         dest="replication_command", metavar='<positional argument>')
+    # CREATE [PUT/POST] PARSING
+    parser_replication_create = subparser_replication.add_parser(
+        "create", help="Create replication related information in CloudPoint")
+    subparser_replication_create = parser_replication_create.add_subparsers(
+        dest="replication_create_command", metavar='<positional argument>')
+    parser_replication_create_replication_rule = \
+        subparser_replication_create.add_parser(
+            "replication_rule", help="Create a replication rule")
+    # DELETE PARSING
+    parser_replication_delete = subparser_replication.add_parser(
+        "delete", help="Delete replication related information")
+    subparser_replication_delete = parser_replication_delete.add_subparsers(
+        dest="replication_delete_command", metavar='<positional argument>')
+    parser_replication_delete_replication_rule = \
+        subparser_replication_delete.add_parser(
+            "replication_rule", help="Delete a replication rule")
+    # MODIFY PARSING
+    parser_replication_modify = subparser_replication.add_parser(
+        "modify", help="Modify replication related information")
+    subparser_replication_modify = parser_replication_modify.add_subparsers(
+        dest="replication_modify_command", metavar='<positional argument>')
+    parser_replication_modify_replication_rule = \
+        subparser_replication_modify.add_parser(
+            "replication_rule", help="Modify a replication rule")
     # SHOW [GET] PARSING
     parser_replication_show = subparser_replication.add_parser(
         "show", help="Show information on replication rules")
@@ -302,14 +326,6 @@ def create_parser():
         dest="replication_show_command", metavar='positional argument>')
     parser_replication_show_rules = subparser_replication_show.add_parser(
         "rules", help="Show replication rules for a policy")
-    # CREATE [PUT/POST] PARSING
-    parser_replication_create = subparser_replication.add_parser(
-        "create", help="Create replication related information in CloudPoint")
-    subparser_replication_create = parser_replication_create.add_subparsers(
-        dest="replication_create_command", metavar='<positional argument>')
-    parser_replication_create_replication_rule = \
-        subparser_replication_create.add_parser(
-            "replication_rule", help="Create a replication rule")
 
     """ REPORT RELATED PARSING """
     parser_reports = subparser_main.add_parser(

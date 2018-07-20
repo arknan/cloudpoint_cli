@@ -10,23 +10,42 @@ import constants as co
 def entry_point(args):
 
     endpoint = []
-    if args.replication_command == "show":
-        endpoint.append(co.GETS_DICT[args.command])
-        show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.replication_command])(
-                '/'.join(endpoint))
-    elif args.replication_command == "create":
+
+    if args.replication_command == "create":
         if not co.check_attr(args, 'replication_create_command'):
-            print("Invalid argument : '{}'".format(
-                args.replication_create_command))
+            print("No arguments provided for 'create'\n")
+            cldpt.run(["replication", "create", "-h"])
             sys.exit(-1)
 
-        endpoint.append(co.POSTS_DICT[args.replication_create_command])
-        # data = create(args, endpoint)
+        endpoint.append('/replication/default/rules/')
         data = create()
+        output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
+
+    elif args.replication_command == "delete":
+        if not co.check_attr(args, 'replication_delete_command'):
+            print("No arguments provided for 'delete'\n")
+            cldpt.run(["replication", "delete", "-h"])
+            sys.exit(-1)
+
+        endpoint.append('/replication/default/rules/')
+        delete(endpoint)
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    elif args.replication_command == "modify":
+        if not co.check_attr(args, 'replication_modify_command'):
+            print("No arguments provided for 'modify'\n")
+            cldpt.run(["replication", "modify", "-h"])
+            sys.exit()
+
+        endpoint.append('/replication/default/rules/')
+        data = modify(endpoint)
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
+
+    elif args.replication_command == "show":
+        endpoint.append('/replication/')
+        show(args, endpoint)
         output = getattr(
-            api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+            api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'replication'\n")
@@ -36,19 +55,6 @@ def entry_point(args):
     return output
 
 
-def show(args, endpoint):
-
-    if co.check_attr(args, 'policy_name'):
-        endpoint.append(getattr(args, 'policy_name'))
-
-    if co.check_attr(args, 'replication_show_command'):
-        if co.check_attr(args, 'policy_name'):
-            endpoint.append('/rules/')
-        else:
-            endpoint.append('/default/rules/')
-
-
-# def create(args, endpoint):
 def create():
 
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
@@ -92,6 +98,57 @@ def create():
     }
 
     return data
+
+
+def delete(endpoint):
+
+    repl_locations = json.loads(getattr(api.Command(), 'gets')(
+        '/replica-locations/'))
+    valid_sources = {x['region']: x['id'] for x in repl_locations}
+
+    existing_locations = json.loads(cldpt.run(
+        ["replication", "show", "rules"]))
+    existing_sources = [existing_locations[x]['source'] for x, _ in enumerate(
+        existing_locations)]
+
+    for k in list(sorted(valid_sources)):
+        if not valid_sources[k] in existing_sources:
+            del valid_sources[k]
+
+    src_region = None
+    print("Enter the source region of the replication rule to be deleted\n")
+    while True:
+        print("Valid source regions :\n", sorted(valid_sources.keys()))
+        src_region = input("Source Region : ")
+        if src_region in valid_sources:
+            break
+        else:
+            print("No replication rule exists for the source region\n")
+            print("Enter a valid source region to delete\n")
+    endpoint.append(valid_sources[src_region])
+
+
+def modify(endpoint):
+
+    create_data = create()
+    endpoint.append('/' + create_data["source"])
+    data = {
+        "destination": create_data["destination"]
+    }
+
+    return data
+
+
+def show(args, endpoint):
+
+    if co.check_attr(args, 'policy_name'):
+        endpoint.append(getattr(args, 'policy_name'))
+
+    if co.check_attr(args, 'replication_show_command'):
+        if co.check_attr(args, 'policy_name'):
+            endpoint.append('/rules/')
+        else:
+            endpoint.append('/default/rules/')
 
 
 def pretty_print(data):
