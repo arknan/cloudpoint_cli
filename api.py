@@ -10,7 +10,6 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 
 
-
 class Command():
 
     def __init__(self):
@@ -32,7 +31,7 @@ class Command():
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}
 
-    def authenticate(self):
+    def authenticates(self):
 
         self.token_header = {'Content-Type': 'application/json'}
         self.token_endpoint = self.base_url + '/idm/login'
@@ -56,6 +55,21 @@ class Command():
                 (json.loads(response.content.decode('utf-8'))["errorMessage"]))
             sys.exit()
 
+    def deletes(self, endpoint):
+
+        self.endpoint = endpoint
+        self.header = {'Content-Type': 'application/json',
+                       'Authorization': 'Bearer {0}'.format(self.token)}
+        if not self.token:
+            print("Please authenticate first !")
+            sys.exit()
+
+        api_url = '{}{}'.format(self.base_url, self.endpoint)
+        response = requests.delete(
+            api_url, verify=self.verify, headers=self.header)
+
+        return response.content.decode('utf-8')
+
     def gets(self, endpoint):
         self.endpoint = endpoint
         if not self.token:
@@ -66,9 +80,20 @@ class Command():
         response = requests.get(api_url,
                                 headers=self.header, verify=self.verify)
 
-        # if response.status_code != 200:
-            # print('[!]ERROR : HTTP {0} calling [{1}]'.format
-                  # (response.status_code, api_url))
+        return response.content.decode('utf-8')
+
+    def patches(self, endpoint, data):
+        print("endpoint is: {}\n, data is : {}\n".format(endpoint, data))
+        self.endpoint = endpoint
+        self.header = {'Content-Type': 'application/json',
+                       'Authorization': 'Bearer {0}'.format(self.token)}
+        if not self.token:
+            print("Please authenticate first !")
+            sys.exit()
+
+        api_url = '{}{}'.format(self.base_url, self.endpoint)
+        response = requests.patch(
+            api_url, verify=self.verify, headers=self.header)
 
         return response.content.decode('utf-8')
 
@@ -89,7 +114,6 @@ class Command():
 
         return response.content.decode('utf-8')
 
-
     def puts(self, endpoint, data):
         self.endpoint = endpoint
         self.header = {
@@ -104,39 +128,5 @@ class Command():
         api_url = '{}{}'.format(self.base_url, self.endpoint)
         response = requests.put(
             api_url, json=self.data, verify=self.verify, headers=self.header)
-
-        return response.content.decode('utf-8')
-
-    def deletes(self, endpoint):
-
-        self.endpoint = endpoint
-        self.header = {'Content-Type': 'application/json',
-                       'Authorization': 'Bearer {0}'.format(self.token)}
-        if not self.token:
-            print("Please authenticate first !")
-            sys.exit()
-
-        api_url = '{}{}'.format(self.base_url, self.endpoint)
-        response = requests.delete(
-            api_url, verify=self.verify, headers=self.header)
-
-        # if response.status_code != 200:
-        #    print('[!]ERROR : HTTP {0} calling [{1}]'.format
-        #          (response.status_code, api_url))
-
-        return response.content.decode('utf-8')
-
-    def patches(self, endpoint, data):
-        print("endpoint is: {}\n, data is : {}\n".format(endpoint, data))
-        self.endpoint = endpoint
-        self.header = {'Content-Type': 'application/json',
-                       'Authorization': 'Bearer {0}'.format(self.token)}
-        if not self.token:
-            print("Please authenticate first !")
-            sys.exit()
-
-        api_url = '{}{}'.format(self.base_url, self.endpoint)
-        response = requests.patch(
-            api_url, verify=self.verify, headers=self.header)
 
         return response.content.decode('utf-8')

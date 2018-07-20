@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import json
+import sys
 from getpass import getpass
 import api
 import cldpt
@@ -48,10 +48,10 @@ def show():
 def create(args):
 
     if co.check_attr(args, 'email_config_create_command'):
-        if args.email_config_create_command == 'aws_ses' :
+        if args.email_config_create_command == 'aws_ses':
             print("\nPlease enter the following AWS details :\n")
             aws_ak = input("Access Key :")
-            awk_sk = getpass("Secret Key :")
+            aws_sk = getpass("Secret Key :")
             aws_region = input("Region :")
             print("\nPlease enter the sender's email address")
             aws_email = input("Sender Email : ")
@@ -65,7 +65,6 @@ def create(args):
                 "accessKey": aws_ak,
                 "secretKey": aws_sk
             })
-
 
         elif args.email_config_create_command == 'send_grid':
             print("\nPlease enter the sender's email address")
@@ -88,7 +87,8 @@ def create(args):
             smtp_port = input("Port (25) : ")
             if not smtp_port:
                 smtp_port = 25
-            print("\nPlease enter SMTP credentials [skip if anonymous authentication]")
+            print("\nPlease enter SMTP credentials\n")
+            print("[Hit enter to skip if anonymous authentication is used\n]")
             smtp_user = input("User name : ")
             smtp_passwd = None
             auth = False
@@ -121,11 +121,10 @@ def create(args):
             sys.exit()
 
     else:
-         cldpt.run(["email_config", "create", "-h"])
-         sys.exit()
+        cldpt.run(["email_config", "create", "-h"])
+        sys.exit()
 
     return data
-
 
 
 def pretty_print(data):

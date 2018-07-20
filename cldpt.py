@@ -45,8 +45,9 @@ def create_parser():
         "-i", "--agent-id", help="Delete a specific agent", required=True)
     subparser_agents_delete_agent = parser_agents_delete_agent.add_subparsers(
         dest="agents_delete_agent_command", metavar='<positional argument>')
-    parser_agents_delete_agent_plugins = subparser_agents_delete_agent.add_parser(
-        "plugins", help="Delete plugins of a specific agent")
+    parser_agents_delete_agent_plugins = \
+        subparser_agents_delete_agent.add_parser(
+            "plugins", help="Delete plugins of a specific agent")
     parser_agents_delete_agent_plugins.add_argument(
         "-i", "--plugin-name", required=True,
         help="Delete a specific plugin for a specific agent")
@@ -98,7 +99,7 @@ def create_parser():
         "-i", "--asset-id", required=True,
         help="Provide an ASSET_ID to assign a policy to")
     subparser_assets_policy = parser_assets_policy.add_subparsers(
-        dest="assets_policy_command",  metavar='<positional argument>')
+        dest="assets_policy_command", metavar='<positional argument>')
     parser_assets_policy_assign = subparser_assets_policy.add_parser(
         "assign", help="Assign a policy to an asset")
     parser_assets_policy_assign.add_argument(
@@ -273,7 +274,6 @@ def create_parser():
         "delete", help="Delete a policy from CloudPoint")
     parser_policies_delete.add_argument(
         "-i", "--policy-id", required=True, help="Policy_id to delete")
-
 
     """ PRIVILEGE RELATED PARSING """
     parser_privileges = subparser_main.add_parser(

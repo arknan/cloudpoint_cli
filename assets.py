@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import json
+import sys
 import api
 import cldpt
 import constants as co
@@ -20,7 +20,7 @@ def entry_point(args):
             '/'.join(endpoint), data)
 
     elif args.assets_command == "delete-snapshot":
-        delete(endpoint)
+        delete(args, endpoint)
         output = getattr(api.Command(), "deletes")('/'.join(endpoint))
 
     elif args.assets_command == "restore":
@@ -40,52 +40,6 @@ def entry_point(args):
     return output
 
 
-def show(args, endpoint):
-
-    if co.check_attr(args, 'asset_id'):
-        endpoint.append(args.asset_id)
-        if co.check_attr(args, 'assets_show_command'):
-            if args.assets_show_command == "snapshots":
-                endpoint.append(args.assets_show_command)
-                if co.check_attr(args, 'snapshot_id'):
-                    endpoint.append(args.snapshot_id)
-                    if co.check_attr(args, 'snapshots_command'):
-                        if args.snapshots_command == "granules":
-                            endpoint.append(args.snapshots_command + '/')
-                            if co.check_attr(args, 'granule_id'):
-                                endpoint.append(args.granule_id)
-                        elif args.snapshots_command == "restore-targets":
-                            endpoint.append('/targets')
-                        else:
-                            print("INTERNAL ERROR")
-                            sys.exit()
-                else:
-                    print("Argument '{}' needs a snapshot_id".format(
-                        args.snapshots_command))
-                    sys.exit()
-
-            elif args.assets_show_command == "policies":
-                endpoint.append(args.assets_show_command)
-
-    else:
-        if args.assets_show_command in ['snapshots', 'policies']:
-            print("Argument '{}' needs an asset_id".format(
-                args.assets_show_command))
-            sys.exit()
-        if co.check_attr(args, 'assets_show_command') :
-            if args.assets_show_command == "summary":
-                endpoint.append('/summary')
-            elif args.assets_show_command == "all":
-                pass
-            else:
-                print("INTERNAL ERROR")
-                sys.exit()
-        else:
-            endpoint.append('/?limit=3')
-            print("\nBY DEFAULT ONLY 3 ASSETS ARE SHOWN")
-            print("TO SEE THE ALL ASSETS, RUN : 'cldpt assets show all'\n")
-
-
 def create(args, endpoint):
     data = None
     if co.check_attr(args, 'assets_create_command'):
@@ -97,39 +51,6 @@ def create(args, endpoint):
         print("No arguments provided for 'create'\n")
         cldpt.run(["assets", "create", "-h"])
         sys.exit(-1)
-
-
-    return data
-
-
-def create_snapshot(args, endpoint):
-    if co.check_attr(args, "asset_id"):
-        endpoint.append(args.asset_id)
-        endpoint.append('/snapshots/')
-    else:
-        print("\nPlease mention an ASSET_ID for taking snapshot\n")
-        sys.exit(-1)
-
-    snap_types = json.loads(cldpt.run(
-        ["assets", "show", "-i", args.asset_id]))["snapMethods"]
-    print("\nPlease enter a snapshot type")
-    print("Valid types for this asset include :", snap_types)
-    snap_type = input("SnapType : ")
-    snap_name = input("Snapshot Name : ")
-    snap_descr = input("Description : ")
-    snap_bool = None
-    while True:
-        snap_bool = input("Consistent ? [True / False] : ")
-        if snap_bool in ["True", "False"]:
-            break
-        else:
-            print("\nChoose either 'True' or 'False'\n")
-    data = {
-        "snapType": snap_type,
-        "name": snap_name,
-        "description": snap_descr,
-        "consistent": snap_bool
-    }
 
     return data
 
@@ -185,6 +106,69 @@ def create_replica(endpoint):
     return data
 
 
+def create_snapshot(args, endpoint):
+    if co.check_attr(args, "asset_id"):
+        endpoint.append(args.asset_id)
+        endpoint.append('/snapshots/')
+    else:
+        print("\nPlease mention an ASSET_ID for taking snapshot\n")
+        sys.exit(-1)
+
+    snap_types = json.loads(cldpt.run(
+        ["assets", "show", "-i", args.asset_id]))["snapMethods"]
+    print("\nPlease enter a snapshot type")
+    print("Valid types for this asset include :", snap_types)
+    snap_type = input("SnapType : ")
+    snap_name = input("Snapshot Name : ")
+    snap_descr = input("Description : ")
+    snap_bool = None
+    while True:
+        snap_bool = input("Consistent ? [True / False] : ")
+        if snap_bool in ["True", "False"]:
+            break
+        else:
+            print("\nChoose either 'True' or 'False'\n")
+    data = {
+        "snapType": snap_type,
+        "name": snap_name,
+        "description": snap_descr,
+        "consistent": snap_bool
+    }
+
+    return data
+
+
+def delete(args, endpoint):
+
+    snap_info = json.loads(getattr(api.Command(), 'gets')(
+        '/assets/' + args.snapshot_id))
+    snap_source_asset = snap_info["snapSourceId"]
+    endpoint.append('/assets/')
+    endpoint.append(snap_source_asset)
+    endpoint.append('/snapshots/')
+    endpoint.append(args.snapshot_id)
+
+
+def policy(args, endpoint):
+
+    if co.check_attr(args, 'assets_policy_command'):
+        endpoint.append(args.asset_id)
+        endpoint.append('/policies/')
+        endpoint.append(args.policy_id)
+    else:
+        print("No arguments provided for 'policy'\n")
+        cldpt.run(["assets", "policy", "-h"])
+        sys.exit(-1)
+
+    if args.assets_policy_command == 'assign':
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
+
+    elif args.assets_policy_command == 'remove':
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    return output
+
+
 def restore(args, endpoint):
 
     if not co.check_attr(args, "snapshot_id"):
@@ -219,35 +203,50 @@ def restore(args, endpoint):
     return data
 
 
-def delete(endpoint):
+def show(args, endpoint):
 
-    snap_info = json.loads(getattr(api.Command(), 'gets')(
-        '/assets/' + args.snapshot_id))
-    snap_source_asset = snap_info["snapSourceId"]
-    endpoint.append('/assets/')
-    endpoint.append(snap_source_asset)
-    endpoint.append('/snapshots/')
-    endpoint.append(args.snapshot_id)
-
-
-def policy(args, endpoint):
-    
-    if co.check_attr(args, 'assets_policy_command'):
+    if co.check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
-        endpoint.append('/policies/')
-        endpoint.append(args.policy_id)
+        if co.check_attr(args, 'assets_show_command'):
+            if args.assets_show_command == "snapshots":
+                endpoint.append(args.assets_show_command)
+                if co.check_attr(args, 'snapshot_id'):
+                    endpoint.append(args.snapshot_id)
+                    if co.check_attr(args, 'snapshots_command'):
+                        if args.snapshots_command == "granules":
+                            endpoint.append(args.snapshots_command + '/')
+                            if co.check_attr(args, 'granule_id'):
+                                endpoint.append(args.granule_id)
+                        elif args.snapshots_command == "restore-targets":
+                            endpoint.append('/targets')
+                        else:
+                            print("INTERNAL ERROR")
+                            sys.exit()
+                else:
+                    print("Argument '{}' needs a snapshot_id".format(
+                        args.snapshots_command))
+                    sys.exit()
+
+            elif args.assets_show_command == "policies":
+                endpoint.append(args.assets_show_command)
+
     else:
-        print("No arguments provided for 'policy'\n")
-        cldpt.run(["assets", "policy", "-h"])
-        sys.exit(-1)
-
-    if args.assets_policy_command == 'assign':
-        output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
-        
-    elif args.assets_policy_command == 'remove':
-        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
-
-    return output
+        if args.assets_show_command in ['snapshots', 'policies']:
+            print("Argument '{}' needs an asset_id".format(
+                args.assets_show_command))
+            sys.exit()
+        if co.check_attr(args, 'assets_show_command'):
+            if args.assets_show_command == "summary":
+                endpoint.append('/summary')
+            elif args.assets_show_command == "all":
+                pass
+            else:
+                print("INTERNAL ERROR")
+                sys.exit()
+        else:
+            endpoint.append('/?limit=3')
+            print("\nBY DEFAULT ONLY 3 ASSETS ARE SHOWN")
+            print("TO SEE THE ALL ASSETS, RUN : 'cldpt assets show all'\n")
 
 
 def pretty_print(data):

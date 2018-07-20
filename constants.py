@@ -35,7 +35,7 @@ GETS_DICT = {
     "reports": "/reports/",
     "roles": "/authorization/role",
     "schedules": "/schedules/",
-    #"settings": "/",
+    # "settings": "/",
     "tasks": "/tasks/",
     "telemetry": "/telemetry/",
     "users": "/idm/user/",

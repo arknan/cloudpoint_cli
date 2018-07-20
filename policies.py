@@ -50,7 +50,8 @@ def create():
         else:
             break
     while True:
-        appConsist = (input("Application Consistent ['yes' or 'no'] : ")).lower()
+        appConsist = (input(
+            "Application Consistent ['yes' or 'no'] : ")).lower()
         if appConsist not in ['yes', 'no']:
             print("\nValid options are 'yes' or 'no'\n")
         else:
@@ -108,10 +109,12 @@ def asset(args, endpoint):
 
     return output
 
+
 def delete(args, endpoint):
-    
+
     endpoint.append('/policies/')
     endpoint.append(args.policy_id)
+
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys
-import json
 from getpass import getpass
 import api
 import cldpt

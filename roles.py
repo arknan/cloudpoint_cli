@@ -101,7 +101,7 @@ def modify(endpoint):
         endpoint.append(role_id)
 
     return data
-        
+
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
