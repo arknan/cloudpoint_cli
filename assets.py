@@ -24,7 +24,7 @@ def entry_point(args):
         output = getattr(api.Command(), "deletes")('/'.join(endpoint))
 
     elif args.assets_command == "restore":
-        data = restore(args, endpoint)
+        data = restore(args)
         output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
 
     elif args.assets_command == "show":
@@ -169,7 +169,7 @@ def policy(args, endpoint):
     return output
 
 
-def restore(args, endpoint):
+def restore(args):
 
     if not co.check_attr(args, "snapshot_id"):
         print("\nPlease mention a SNAP_ID for doing restores\n")

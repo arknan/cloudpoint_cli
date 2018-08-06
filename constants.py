@@ -4,10 +4,10 @@
 This module hosts all the global constants that are used in every other module
 """
 
-import os
+# import os
 
-ROWS, COLUMNS = os.popen('stty size', 'r').read().split()
-COLUMNS = int(COLUMNS)
+# ROWS, COLUMNS = os.popen('stty size', 'r').read().split()
+# COLUMNS = int(COLUMNS)
 
 
 def check_attr(args, attr):

@@ -204,6 +204,17 @@ def create_parser():
         "licenses", help="Licensing related operations")
     subparser_licenses = parser_licenses.add_subparsers(
         dest="licenses_command", metavar='<positional argument>')
+    # CREATE [PUT/POST] PARSING
+    parser_licenses_add = subparser_licenses.add_parser(
+        "add", help="Add a license to CloudPoint")
+    parser_licenses_add.add_argument(
+        "-f", "--file-name", required=True,
+        help="Provide the full path to the license file (.slf)")
+    # DELETE PARSING
+    parser_licenses_delete = subparser_licenses.add_parser(
+        "delete", help="Delete a license from CloudPoint")
+    parser_licenses_delete.add_argument(
+        "-i", "--license-id", help="Delete a specific license", required=True)
     # SHOW [GET] PARSING
     parser_licenses_show = subparser_licenses.add_parser(
         "show", help="Show licensing related information")
@@ -216,7 +227,6 @@ def create_parser():
         "active", help="Show information on all active licenses")
     parser_licenses_show_features = subparser_licenses_show.add_parser(
         "features", help="Show information on all licensed features")
-    # CREATE [PUT/POST] PARSING
 
     """ PLUGIN RELATED PARSING """
     parser_plugins = subparser_main.add_parser(
