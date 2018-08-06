@@ -407,6 +407,18 @@ def create_parser():
         "tasks", help="Task related operations")
     subparser_tasks = parser_tasks.add_subparsers(
         dest="tasks_command", metavar='<positional argument>')
+    # DELETE PARSING
+    parser_tasks_delete = subparser_tasks.add_parser(
+        "delete", help="Delete a task from CloudPoint")
+    parser_tasks_delete.add_argument(
+        "-i", "--task-id", help="Delete a specific task id")
+    parser_tasks_delete.add_argument(
+        "-s", "--status", help="Delete ALL tasks with a specified status,\
+        Valid values are : ['running', 'successful', 'failed']",
+        choices=['running', 'successful', 'failed'], metavar='<STATUS>')
+    parser_tasks_delete.add_argument(
+        "-o", "--older-than", metavar='<OLDER_THAN>',
+        help="Delete ALL tasks older than <OLDER_THAN> days")
     # SHOW [GET] PARSING
     parser_tasks_show = subparser_tasks.add_parser(
         "show", help="Show information on CloudPoint tasks")

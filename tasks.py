@@ -8,13 +8,15 @@ import constants as co
 
 def entry_point(args):
 
-    endpoint = []
-    if args.tasks_command == 'show':
-        endpoint.append(co.GETS_DICT[args.command])
+    endpoint = ['/tasks/']
+    if args.tasks_command == 'delete':
+        delete(args, endpoint)
+        print(endpoint)
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    elif args.tasks_command == 'show':
         show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.tasks_command])(
-                '/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'tasks'\n")
@@ -22,6 +24,23 @@ def entry_point(args):
         sys.exit(-1)
 
     return output
+
+
+def delete(args, endpoint):
+
+    # STATUS based deletion is failing :( Need to check with Engineering
+
+    if co.check_attr(args, 'task_id'):
+        endpoint.append(args.task_id)
+
+    elif co.check_attr(args, 'status'):
+        temp_endpoint = ['?status=' + args.status]
+        if co.check_attr(args, 'older_than'):
+            temp_endpoint.append('&olderThan=' + args.older_than)
+
+        endpoint.append(''.join(temp_endpoint))
+    else:
+        cldpt.run(["tasks", "delete", "-h"])
 
 
 def show(args, endpoint):
@@ -50,6 +69,7 @@ def show(args, endpoint):
             if len(filters) > 1:
                 for j in filters[1:]:
                     temp_endpoint.append('&' + j + '=' + getattr(args, j))
+
         endpoint.append(''.join(temp_endpoint))
 
 
