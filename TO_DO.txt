@@ -1,15 +1,20 @@
-3) Add a configuration file for different configuration parameters for CLI
-4) Implement Python Logger to output to console and access logs + cli logs (info + error)
-5) See if Multi-threading is applicable
-6) See if daemonizing the program is beneficial 
-7) Package the solution and provide a simple install script
-10) GET on classification needs a server with internet access (inbound + outbound) :( need to test that
-11) In 'CREATE' operations, you should provide a dialogue interface as well as the ability to provide a JSON
+Near Future :
+==================
+1) Implement Python Logger to output to console and access logs + cli logs (info + error)
+2) Package the solution and provide a simple install script
+3) GET on classification needs a server with internet access (inbound + outbound) :( need to test that
+4) In 'CREATE' operations, you should provide a dialogue interface as well as the ability to provide a JSON
     formatted file as user input.
-12) SSL Certificate for CloudPoint (Instead of ignoring SSL errors)
-14) Figure out what to do additionally for snapshot restores(dest param)
-15) Have to work on assets - granules
-16) Policy creation + modification .. lotts of work needed ... 
-17) Move away from ID's to names ! (dont make customers user policy_id ... instead let them use policy_name)
-18) Need to add filters in REPORT CREATION
-19) Modifying REPORTS doesn't have the right method listed in the guide
+5) Figure out what to do additionally for snapshot restores(dest param)
+6) Have to work on assets - granules
+7) Policy creation + modification .. lotts of work needed ... 
+8) Move away from ID's to names ! (dont make customers user policy_id ... instead let them use policy_name)
+9) Need to add filters in REPORT CREATION
+10) Modifying REPORTS doesn't have the right method listed in the guide
+
+Really !? :
+==================
+11) Add a configuration file for different configuration parameters for CLI
+12) See if Multi-threading is applicable
+13) See if daemonizing the program is beneficial 
+14) SSL Certificate for CloudPoint (Instead of ignoring SSL errors)
