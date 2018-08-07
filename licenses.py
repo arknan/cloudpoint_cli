@@ -21,9 +21,8 @@ def entry_point(args):
 
     elif args.licenses_command == 'show':
         show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.licenses_command])(
-                '/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+
     else:
         print("No arguments provided for 'licenses'\n")
         cldpt.run(["licenses", "-h"])

@@ -19,6 +19,7 @@ import replication
 import reports
 import roles
 import tasks
+import telemetry
 import users
 
 
@@ -451,12 +452,15 @@ def create_parser():
         "telemetry", help="Telemetry related operations")
     subparser_telemetry = parser_telemetry.add_subparsers(
         dest='telemetry_command', metavar='<positional argument>')
-    # SHOW [GET] PARSING
-    parser_telemetry_show = subparser_telemetry.add_parser(
-        "show", help="Show CloudPoint's Telemetry status [on/off]")
+    # DELETE PARSING
+    parser_telemetry_disable = subparser_telemetry.add_parser(
+        "disable", help="Turn OFF telemetry for CloudPoint")
     # CREATE [PUT/POST] PARSING
     parser_telemetry_enable = subparser_telemetry.add_parser(
         "enable", help="Turn ON telemetry for CloudPoint")
+    # SHOW [GET] PARSING
+    parser_telemetry_show = subparser_telemetry.add_parser(
+        "show", help="Show CloudPoint's Telemetry status [on/off]")
 
     """ USER RELATED PARSING """
     parser_users = subparser_main.add_parser(
