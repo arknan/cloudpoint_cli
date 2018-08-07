@@ -83,7 +83,6 @@ class Command():
         return response.content.decode('utf-8')
 
     def patches(self, endpoint, data):
-        print("endpoint is: {}\n, data is : {}\n".format(endpoint, data))
         self.endpoint = endpoint
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}

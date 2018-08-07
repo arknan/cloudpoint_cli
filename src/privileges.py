@@ -3,18 +3,15 @@
 import sys
 import api
 import cloudpoint
-import constants as co
 
 
 def entry_point(args):
 
-    endpoint = []
+    endpoint = ['/authorization/privilege/']
     if args.privileges_command == 'show':
-        endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
         output = getattr(
-            api.Command(), co.METHOD_DICT[args.privileges_command])(
-                '/'.join(endpoint))
+            api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'privileges'\n")

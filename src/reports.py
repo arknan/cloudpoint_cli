@@ -27,7 +27,6 @@ def entry_point(args):
 
     elif args.reports_command == 'show':
         show(args, endpoint)
-        print(endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:

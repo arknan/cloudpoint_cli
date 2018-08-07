@@ -19,11 +19,10 @@ def entry_point(args):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.policies_command == 'show':
-        endpoint.append(co.GETS_DICT[args.command])
+        endpoint.append('/policies/')
         show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.policies_command])(
-                '/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+
     else:
         print("No arguments provided for 'policies'\n")
         cloudpoint.run(["policies", "-h"])

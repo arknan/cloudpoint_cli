@@ -83,7 +83,7 @@ EXIT_5 = "\nERROR : Argument 'plugins' requires -i flag for 'AGENT_ID'\n\
 Expected Command Format : cloudpoint show agents -i <AGENT_ID> plugins\n"
 
 EXIT_6 = "\nERROR:Argument 'description' requires -i flag for 'PLUGIN_NAME'\n\
-Expected Command Format : cloudpoint show plugins -i <PLUGIN_NAME> description\n"
+Expected Command Format:cloudpoint show plugins -i <PLUGIN_NAME> description\n"
 
 
 VALID_PRIVILEGES = ["REPLICATION_POLICY_MANAGEMENT", "REPORT_MANAGEMENT",

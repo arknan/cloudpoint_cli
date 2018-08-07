@@ -3,19 +3,14 @@
 import sys
 import api
 import cloudpoint
-import constants as co
 
 
 def entry_point(args):
 
-    endpoint = []
+    endpoint = ['/idm/config/ad']
     if args.ldap_config_command == 'show':
-        endpoint.append(co.GETS_DICT[args.command])
-        # show(args, endpoint)
         show()
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.ldap_config_command])(
-                '/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'ldap_config'\n")

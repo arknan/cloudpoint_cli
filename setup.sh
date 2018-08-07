@@ -3,7 +3,7 @@
 sig_trap () {
 
     echo -e "\n\n\n\nCleaning up & Terminating on user request .................\n\n"
-    rm -rf "${BASE_DIR}"
+    rm -f /usr/bin/cloudpoint
 
 }
 
@@ -67,7 +67,7 @@ else
         done
     fi
 
-    pip3 install -r ./src/requirements.txt
+    pip3 install -r ./requirements.txt
     ln -s "$(pwd)"/src/cloudpoint.py /usr/bin/cloudpoint
     activate-global-python-argcomplete
     source /etc/profile

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import json
+import sys
 import api
 import cloudpoint
 import constants as co
@@ -12,13 +12,8 @@ def entry_point(args):
     endpoint = []
 
     if args.replication_command == "create":
-        if not co.check_attr(args, 'replication_create_command'):
-            print("No arguments provided for 'create'\n")
-            cloudpoint.run(["replication", "create", "-h"])
-            sys.exit(-1)
-
         endpoint.append('/replication/default/rules/')
-        data = create()
+        data = create(args)
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.replication_command == "delete":
@@ -38,7 +33,7 @@ def entry_point(args):
             sys.exit()
 
         endpoint.append('/replication/default/rules/')
-        data = modify(endpoint)
+        data = modify(args, endpoint)
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
 
     elif args.replication_command == "show":
@@ -55,7 +50,12 @@ def entry_point(args):
     return output
 
 
-def create():
+def create(args):
+
+    if not co.check_attr(args, 'replication_create_command'):
+        print("No arguments provided for 'create'\n")
+        cloudpoint.run(["replication", "create", "-h"])
+        sys.exit(-1)
 
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
         '/replica-locations/'))
@@ -128,9 +128,9 @@ def delete(endpoint):
     endpoint.append(valid_sources[src_region])
 
 
-def modify(endpoint):
+def modify(args, endpoint):
 
-    create_data = create()
+    create_data = create(args)
     endpoint.append('/' + create_data["source"])
     data = {
         "destination": create_data["destination"]

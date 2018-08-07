@@ -8,13 +8,10 @@ import constants as co
 
 def entry_point(args):
 
-    endpoint = []
+    endpoint = ['/plugins/']
     if args.plugins_command == 'show':
-        endpoint.append(co.GETS_DICT[args.command])
         show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.plugins_command])(
-                '/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
     else:
         print("No arguments provided for 'plugins'\n")
         cloudpoint.run(["plugins", "-h"])

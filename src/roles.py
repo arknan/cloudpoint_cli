@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import json
+import sys
 import api
 import cloudpoint
 import constants as co
@@ -9,31 +9,23 @@ import constants as co
 
 def entry_point(args):
 
-    endpoint = []
+    endpoint = ['/authorization/role']
 
-    if args.roles_command == "show":
-        endpoint.append(co.GETS_DICT[args.command])
-        show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT['show'])('/'.join(endpoint))
-
-    elif args.roles_command == "create":
-        endpoint.append(co.POSTS_DICT['role-assignments'])
+    if args.roles_command == "create":
         data = create()
-        output = getattr(
-            api.Command(), co.METHOD_DICT['create'])('/'.join(endpoint), data)
+        output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.roles_command == "delete":
-        endpoint.append(co.GETS_DICT[args.command])
         delete(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.roles_command == "modify":
-        endpoint.append(co.GETS_DICT[args.command])
         data = modify(endpoint)
-        output = getattr(
-            api.Command(), 'puts')('/'.join(endpoint), data)
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
+
+    elif args.roles_command == "show":
+        show(args, endpoint)
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'roles'\n")
@@ -41,11 +33,6 @@ def entry_point(args):
         sys.exit(-1)
 
     return output
-
-
-def show(args, endpoint):
-    if co.check_attr(args, 'role_id'):
-        endpoint.append(args.role_id)
 
 
 def create():
@@ -107,3 +94,8 @@ def pretty_print(data):
     # This function has to be tailor suited for each command's output
     # Since all commands don't have a standard output format
     print(data)
+
+
+def show(args, endpoint):
+    if co.check_attr(args, 'role_id'):
+        endpoint.append(args.role_id)

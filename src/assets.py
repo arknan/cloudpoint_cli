@@ -11,26 +11,24 @@ def entry_point(args):
 
     endpoint = ['/assets/']
 
-    if args.assets_command == "policy":
-        output = policy(args, endpoint)
-
-    elif args.assets_command == "create":
+    if args.assets_command == "create":
         data = create(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT['create'])(
-            '/'.join(endpoint), data)
+        output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.assets_command == "delete-snapshot":
         delete(args, endpoint)
         output = getattr(api.Command(), "deletes")('/'.join(endpoint))
 
+    elif args.assets_command == "policy":
+        output = policy(args, endpoint)
+
     elif args.assets_command == "restore":
         data = restore(args)
-        output = getattr(api.Command(), "puts")('/'.join(endpoint), data)
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
 
     elif args.assets_command == "show":
         show(args, endpoint)
-        output = getattr(api.Command(), co.METHOD_DICT[args.assets_command])(
-            '/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'assets'\n")
@@ -246,7 +244,7 @@ def show(args, endpoint):
         else:
             endpoint.append('/?limit=3')
             print("\nBY DEFAULT ONLY 3 ASSETS ARE SHOWN")
-            print("TO SEE THE ALL ASSETS, RUN : 'cloudpoint assets show all'\n")
+            print("TO SEE ALL ASSETS, RUN : 'cloudpoint assets show all'\n")
 
 
 def pretty_print(data):

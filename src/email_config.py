@@ -10,23 +10,17 @@ import constants as co
 
 def entry_point(args):
 
-    endpoint = []
+    endpoint = ['/email/config']
     if args.email_config_command == 'show':
-        endpoint.append(co.GETS_DICT['email_config'])
-        # show(args, endpoint)
+        show()
         output = getattr(
-            api.Command(), co.METHOD_DICT[args.email_config_command])(
-                '/'.join(endpoint))
+            api.Command(), 'gets')('/'.join(endpoint))
     elif args.email_config_command == 'create':
-        endpoint.append(co.GETS_DICT['email_config'])
         data = create(args)
-        output = getattr(
-            api.Command(), 'puts')('/'.join(endpoint), data)
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
 
     elif args.email_config_command == 'delete':
-        endpoint.append(co.GETS_DICT['email_config'])
-        getattr(
-            api.Command(), 'deletes')('/'.join(endpoint))
+        getattr(api.Command(), 'deletes')('/'.join(endpoint))
         output = 'Email Configuration has been deleted'
 
     else:
@@ -37,14 +31,12 @@ def entry_point(args):
     return output
 
 
-# def show(args, endpoint):
 def show():
     # There is no work needed here, since our GETS_DICT provides
     # the whole endpoint ... retaining this for future ?
     pass
 
 
-# def create(args, endpoint):
 def create(args):
 
     if co.check_attr(args, 'email_config_create_command'):
