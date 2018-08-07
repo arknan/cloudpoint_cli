@@ -21,6 +21,7 @@ import roles
 import tasks
 import telemetry
 import users
+import version
 
 
 def create_parser():
