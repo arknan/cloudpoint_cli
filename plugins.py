@@ -2,7 +2,7 @@
 
 import sys
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -17,7 +17,7 @@ def entry_point(args):
                 '/'.join(endpoint))
     else:
         print("No arguments provided for 'plugins'\n")
-        cldpt.run(["plugins", "-h"])
+        cloudpoint.run(["plugins", "-h"])
         sys.exit(-1)
 
     return output

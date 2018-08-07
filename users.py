@@ -3,7 +3,7 @@
 import sys
 from getpass import getpass
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -33,7 +33,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'users'\n")
-        cldpt.run(["users", "-h"])
+        cloudpoint.run(["users", "-h"])
         sys.exit(-1)
 
     return output

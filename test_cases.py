@@ -5,7 +5,7 @@ import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
 from constants import GETS_DICT
-import cldpt
+import cloudpoint
 
 urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -21,7 +21,7 @@ class MyTests(unittest.TestCase):
         self.base_url = 'https://' + self.ip_addr + ':/cloudpoint/api/v2'
         self.verify = False
         try:
-            with open("/root/.cldpt_token", "r") as file_handle:
+            with open("/root/.cloudpoint_token", "r") as file_handle:
                 self.token = file_handle.readline()
         except FileNotFoundError:
             self.token = ''
@@ -38,11 +38,11 @@ class MyTests(unittest.TestCase):
                                         verify=self.verify)
                 expected_result = response.content.decode('utf-8')
                 if key == 'smtp':
-                    result = cldpt.run(["show", 'settings', 'smtp'])
+                    result = cloudpoint.run(["show", 'settings', 'smtp'])
                 elif key == 'ad':
-                    result = cldpt.run(["show", 'settings', 'ad'])
+                    result = cloudpoint.run(["show", 'settings', 'ad'])
                 else:
-                    result = cldpt.run(["show", key])
+                    result = cloudpoint.run(["show", key])
                 with self.subTest(key=key):
                     self.assertEqual(result, expected_result)
 

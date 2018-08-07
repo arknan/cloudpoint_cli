@@ -2,7 +2,7 @@
 
 import sys
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -18,7 +18,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'privileges'\n")
-        cldpt.run(["privileges", "-h"])
+        cloudpoint.run(["privileges", "-h"])
         sys.exit(-1)
 
     return output

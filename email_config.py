@@ -4,7 +4,7 @@ import json
 import sys
 from getpass import getpass
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -31,7 +31,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'email_config'\n")
-        cldpt.run(["email_config", "-h"])
+        cloudpoint.run(["email_config", "-h"])
         sys.exit(-1)
 
     return output
@@ -121,7 +121,7 @@ def create(args):
             sys.exit()
 
     else:
-        cldpt.run(["email_config", "create", "-h"])
+        cloudpoint.run(["email_config", "create", "-h"])
         sys.exit()
 
     return data

@@ -3,7 +3,7 @@
 import json
 import sys
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -34,7 +34,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'assets'\n")
-        cldpt.run(["assets", "-h"])
+        cloudpoint.run(["assets", "-h"])
         sys.exit(-1)
 
     return output
@@ -49,7 +49,7 @@ def create(args, endpoint):
             data = create_replica(endpoint)
     else:
         print("No arguments provided for 'create'\n")
-        cldpt.run(["assets", "create", "-h"])
+        cloudpoint.run(["assets", "create", "-h"])
         sys.exit(-1)
 
     return data
@@ -114,7 +114,7 @@ def create_snapshot(args, endpoint):
         print("\nPlease mention an ASSET_ID for taking snapshot\n")
         sys.exit(-1)
 
-    snap_types = json.loads(cldpt.run(
+    snap_types = json.loads(cloudpoint.run(
         ["assets", "show", "-i", args.asset_id]))["snapMethods"]
     print("\nPlease enter a snapshot type")
     print("Valid types for this asset include :", snap_types)
@@ -157,7 +157,7 @@ def policy(args, endpoint):
         endpoint.append(args.policy_id)
     else:
         print("No arguments provided for 'policy'\n")
-        cldpt.run(["assets", "policy", "-h"])
+        cloudpoint.run(["assets", "policy", "-h"])
         sys.exit(-1)
 
     if args.assets_policy_command == 'assign':
@@ -246,7 +246,7 @@ def show(args, endpoint):
         else:
             endpoint.append('/?limit=3')
             print("\nBY DEFAULT ONLY 3 ASSETS ARE SHOWN")
-            print("TO SEE THE ALL ASSETS, RUN : 'cldpt assets show all'\n")
+            print("TO SEE THE ALL ASSETS, RUN : 'cloudpoint assets show all'\n")
 
 
 def pretty_print(data):

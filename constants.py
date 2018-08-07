@@ -68,22 +68,22 @@ DECIDER_PATHS = ["assets", "agents", "plugins", "replication",
 DONT_PRINT = ['_links', 'links']
 
 EXIT_1 = "\nERROR : Argument 'snapshots' requires -i flag for 'ASSET_ID'\n\
-Expected Command Format : cldpt show assets -i <ASSET_ID> snapshots\n"
+Expected Command Format : cloudpoint show assets -i <ASSET_ID> snapshots\n"
 
 EXIT_2 = "\nERROR : Granules can only be listed for asset snapshots\n\
 Please enter a valid 'SNAP_ID' and 'ASSET_ID'\nExpected Command Format : \
-cldpt show assets -i <ASSET_ID> snapshots -i <SNAP_ID> granules\n"
+cloudpoint show assets -i <ASSET_ID> snapshots -i <SNAP_ID> granules\n"
 
 EXIT_3 = "\nERROR : Unknown option passed\n"
 
 EXIT_4 = "\nERROR : You need to provide an argument to SHOW\n\
-Expected Command Format : cldpt show assets ; cldpt show reports\n"
+Expected Command Format : cloudpoint show assets ; cloudpoint show reports\n"
 
 EXIT_5 = "\nERROR : Argument 'plugins' requires -i flag for 'AGENT_ID'\n\
-Expected Command Format : cldpt show agents -i <AGENT_ID> plugins\n"
+Expected Command Format : cloudpoint show agents -i <AGENT_ID> plugins\n"
 
 EXIT_6 = "\nERROR:Argument 'description' requires -i flag for 'PLUGIN_NAME'\n\
-Expected Command Format : cldpt show plugins -i <PLUGIN_NAME> description\n"
+Expected Command Format : cloudpoint show plugins -i <PLUGIN_NAME> description\n"
 
 
 VALID_PRIVILEGES = ["REPLICATION_POLICY_MANAGEMENT", "REPORT_MANAGEMENT",

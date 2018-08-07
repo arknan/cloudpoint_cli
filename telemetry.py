@@ -3,7 +3,7 @@
 import sys
 
 import api
-import cldpt
+import cloudpoint
 
 
 def entry_point(args):
@@ -22,7 +22,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'telemetry'\n")
-        cldpt.run(["telemetry", "-h"])
+        cloudpoint.run(["telemetry", "-h"])
         sys.exit(-1)
 
     return output

@@ -3,7 +3,7 @@
 import sys
 import json
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -37,7 +37,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'roles'\n")
-        cldpt.run(["roles", "-h"])
+        cloudpoint.run(["roles", "-h"])
         sys.exit(-1)
 
     return output
@@ -52,7 +52,7 @@ def create():
 
     # print("\nPlease choose a name that you want this role to be called")
     role_name = input("Role name : ")
-    roles = json.loads(cldpt.run(["privileges", "show"]))
+    roles = json.loads(cloudpoint.run(["privileges", "show"]))
     roles_list = []
     for row in roles:
         roles_list.append(row["name"])
@@ -89,7 +89,7 @@ def delete(args, endpoint):
 
 def modify(endpoint):
     data = create()
-    roles_dict = json.loads(cldpt.run(["roles", "show"]))
+    roles_dict = json.loads(cloudpoint.run(["roles", "show"]))
     role_id = None
     for num, _ in enumerate(roles_dict):
         if data["name"] == roles_dict[num]['name']:

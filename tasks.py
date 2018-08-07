@@ -2,7 +2,7 @@
 
 import sys
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -20,7 +20,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'tasks'\n")
-        cldpt.run(["tasks", "-h"])
+        cloudpoint.run(["tasks", "-h"])
         sys.exit(-1)
 
     return output
@@ -40,7 +40,7 @@ def delete(args, endpoint):
 
         endpoint.append(''.join(temp_endpoint))
     else:
-        cldpt.run(["tasks", "delete", "-h"])
+        cloudpoint.run(["tasks", "delete", "-h"])
 
 
 def show(args, endpoint):

@@ -3,7 +3,7 @@
 import sys
 import json
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -14,7 +14,7 @@ def entry_point(args):
     if args.replication_command == "create":
         if not co.check_attr(args, 'replication_create_command'):
             print("No arguments provided for 'create'\n")
-            cldpt.run(["replication", "create", "-h"])
+            cloudpoint.run(["replication", "create", "-h"])
             sys.exit(-1)
 
         endpoint.append('/replication/default/rules/')
@@ -24,7 +24,7 @@ def entry_point(args):
     elif args.replication_command == "delete":
         if not co.check_attr(args, 'replication_delete_command'):
             print("No arguments provided for 'delete'\n")
-            cldpt.run(["replication", "delete", "-h"])
+            cloudpoint.run(["replication", "delete", "-h"])
             sys.exit(-1)
 
         endpoint.append('/replication/default/rules/')
@@ -34,7 +34,7 @@ def entry_point(args):
     elif args.replication_command == "modify":
         if not co.check_attr(args, 'replication_modify_command'):
             print("No arguments provided for 'modify'\n")
-            cldpt.run(["replication", "modify", "-h"])
+            cloudpoint.run(["replication", "modify", "-h"])
             sys.exit()
 
         endpoint.append('/replication/default/rules/')
@@ -49,7 +49,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'replication'\n")
-        cldpt.run(["replication", "-h"])
+        cloudpoint.run(["replication", "-h"])
         sys.exit(-1)
 
     return output
@@ -106,7 +106,7 @@ def delete(endpoint):
         '/replica-locations/'))
     valid_sources = {x['region']: x['id'] for x in repl_locations}
 
-    existing_locations = json.loads(cldpt.run(
+    existing_locations = json.loads(cloudpoint.run(
         ["replication", "show", "rules"]))
     existing_sources = [existing_locations[x]['source'] for x, _ in enumerate(
         existing_locations)]

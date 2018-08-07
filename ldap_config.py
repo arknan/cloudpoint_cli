@@ -2,7 +2,7 @@
 
 import sys
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -19,7 +19,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'ldap_config'\n")
-        cldpt.run(["ldap_config", "-h"])
+        cloudpoint.run(["ldap_config", "-h"])
         sys.exit(-1)
 
     return output

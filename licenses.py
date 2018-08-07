@@ -3,7 +3,7 @@
 import sys
 import os
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -25,7 +25,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'licenses'\n")
-        cldpt.run(["licenses", "-h"])
+        cloudpoint.run(["licenses", "-h"])
         sys.exit(-1)
 
     return output

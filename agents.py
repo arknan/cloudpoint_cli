@@ -3,7 +3,7 @@
 import sys
 import api
 import constants as co
-import cldpt
+import cloudpoint
 
 
 def entry_point(args):
@@ -20,7 +20,7 @@ def entry_point(args):
 
     else:
         print("No arguments provided for 'agents'\n")
-        cldpt.run(["agents", "-h"])
+        cloudpoint.run(["agents", "-h"])
         sys.exit(-1)
 
     return output
@@ -37,7 +37,7 @@ def delete(args, endpoint):
                 endpoint.append('/configs')
                 endpoint.append('/' + args.config_id)
     else:
-        cldpt.run(["agents", "delete", "-h"])
+        cloudpoint.run(["agents", "delete", "-h"])
 
 
 def show(args, endpoint):

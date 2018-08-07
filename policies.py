@@ -2,7 +2,7 @@
 
 import sys
 import api
-import cldpt
+import cloudpoint
 import constants as co
 
 
@@ -26,7 +26,7 @@ def entry_point(args):
                 '/'.join(endpoint))
     else:
         print("No arguments provided for 'policies'\n")
-        cldpt.run(["policies", "-h"])
+        cloudpoint.run(["policies", "-h"])
         sys.exit(-1)
 
     return output
@@ -98,7 +98,7 @@ def asset(args, endpoint):
         endpoint.append(args.policy_id)
     else:
         print("No arguments provided for 'asset'\n")
-        cldpt.run(["policies", "asset", "-h"])
+        cloudpoint.run(["policies", "asset", "-h"])
         sys.exit(-1)
 
     if args.policies_asset_command == 'add':

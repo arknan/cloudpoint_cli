@@ -23,7 +23,7 @@ class Command():
         self.data = None
 
         try:
-            with open("/root/.cldpt_token", "r") as file_handle:
+            with open("/root/.cloudpoint_token", "r") as file_handle:
                 self.token = file_handle.readline()
         except FileNotFoundError:
             self.token = None
@@ -47,7 +47,7 @@ class Command():
             self.token = (
                 (json.loads(response.content.decode('utf-8')))["accessToken"])
 
-            with open("/root/.cldpt_token", "w") as file_handle:
+            with open("/root/.cloudpoint_token", "w") as file_handle:
                 file_handle.write(self.token)
 
         else:
