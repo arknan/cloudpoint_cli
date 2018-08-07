@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 import api
 
 
@@ -9,6 +8,7 @@ def entry_point(args):
     output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     return output
+
 
 def pretty_print(data):
     # This function has to be tailor suited for each command's output

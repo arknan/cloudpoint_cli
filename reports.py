@@ -24,7 +24,7 @@ def entry_point(args):
         endpoint.append('/reports/')
         re_run(args, endpoint)
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
-        
+
     elif args.reports_command == 'show':
         show(args, endpoint)
         print(endpoint)
@@ -42,15 +42,15 @@ def create():
 
     valid_cols = [
         "classification", "replicas", "sourceName", "consistent", "createdBy",
-        "snapType", "id", "ctime", "name", "region", "provider" ]
+        "snapType", "id", "ctime", "name", "region", "provider"]
 
     report_id = input("Report Name : ")
-    # Defaulting report_type to 'snapshot' since there are no other types 
+    # Defaulting report_type to 'snapshot' since there are no other types
     # As of CP 2.0.2
     report_type = 'snapshot'
     print("\nEnter a comma separated list of Report fields/columns")
     print("Valid values are : ", sorted(valid_cols), "\n")
-    given_cols = (input("Report Fields/Columns :\n")).replace(' ', '').split(',')
+    given_cols = (input("Report Columns :\n")).replace(' ', '').split(',')
     for col_type in given_cols:
         if col_type not in valid_cols:
             print("{} is not a valid column type.\nValid types are {}".format(
@@ -91,7 +91,7 @@ def pretty_print(data):
 def re_run(args, endpoint):
     report_id = None
     if co.check_attr(args, 'report_id'):
-         report_id = args.report_id
+        report_id = args.report_id
     else:
         report_id = input("Enter the report id you want to re-run : ")
 
@@ -123,5 +123,3 @@ def show(args, endpoint):
         endpoint.append('/reports/')
         if co.check_attr(args, 'report_id'):
             endpoint.append(args.report_id)
-
-
