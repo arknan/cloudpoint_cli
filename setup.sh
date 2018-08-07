@@ -73,4 +73,5 @@ else
     source /etc/profile
     echo -e "Setup is complete...\n" 
     echo -e "Please open up a new session for command completion to work\n"
+    echo -e "Run 'cloudpoint -h' to get CloudPoint CLI help\n\n"
 fi
