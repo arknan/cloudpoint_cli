@@ -13,7 +13,7 @@ Installation
 
 ```./setup.sh ```
 
-Refresh your bash environment (start a new shell)
+> After setup completes, refresh your bash environment (start a new shell)
 
 Usage/Examples
 -------------
