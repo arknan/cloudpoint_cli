@@ -343,6 +343,24 @@ def create_parser():
         "reports", help="Report related operations")
     subparser_reports = parser_reports.add_subparsers(
         dest="reports_command", metavar='<positional argument>')
+    # CREATE [POST] PARSING
+    parser_reports_create = subparser_reports.add_parser(
+        "create", help="Create report related information in CloudPoint")
+    # DELETE PARSING
+    parser_reports_delete = subparser_reports.add_parser(
+        "delete", help="Delete report related information in CloudPoint")
+    parser_reports_delete.add_argument(
+        "-i", "--report-id",
+        help="Delete ONLY DATA related to a specific REPORT_ID in CloudPoint")
+    subparser_reports_delete = parser_reports_delete.add_subparsers(
+        dest="reports_delete_command", metavar='<positional argument>')
+    parser_reports_delete_full = subparser_reports_delete.add_parser(
+        "full", help="Delete both report data and report in CloudPoint")
+    # RE_RUN [PUT] PARSING
+    parser_reports_re_run = subparser_reports.add_parser(
+        "re_run", help="Re-Run an existing report in CloudPoint")
+    parser_reports_re_run.add_argument(
+        "-i", "--report-id", help="Re-Run a specific REPORT_ID in CloudPoint")
     # SHOW [GET] PARSING
     parser_reports_show = subparser_reports.add_parser(
         "show", help="Show information on reports")
@@ -354,18 +372,8 @@ def create_parser():
         "preview", help="Show first 10 lines of data for a particular report")
     parser_reports_show_report_data = subparser_reports_show.add_parser(
         "report-data", help="Show data collected by a specific report")
-    # CREATE [PUT/POST] PARSING
-    parser_reports_create = subparser_reports.add_parser(
-        "create", help="Create report related information in CloudPoint")
-    # DELETE PARSING
-    parser_reports_delete = subparser_reports.add_parser(
-        "delete", help="Delete report related information in CloudPoint")
-    parser_reports_delete.add_argument(
-        "-i", "--report-id",
-        help="Delete data related to a specific REPORT_ID in CloudPoint")
-    parser_reports_delete.add_argument(
-        "-f", "--full", dest='option',
-        help="Delete both report data and report in CloudPoint")
+    parser_reports_show_report_types = subparser_reports_show.add_parser(
+        "report-types", help="Show available report types")
 
     """ ROLE RELATED PARSING """
     parser_roles = subparser_main.add_parser(

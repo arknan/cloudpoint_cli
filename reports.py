@@ -9,22 +9,26 @@ import constants as co
 def entry_point(args):
 
     endpoint = []
-    if args.reports_command == 'show':
-        endpoint.append(co.GETS_DICT[args.command])
-        show(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT[args.reports_command])(
-                '/'.join(endpoint))
 
-    elif args.reports_command == 'create':
-        # create(args, endpoint)
-        create()
+    if args.reports_command == 'create':
+        endpoint.append('/reports/')
+        data = create()
+        output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.reports_command == 'delete':
-        endpoint.append(co.GETS_DICT[args.command])
+        endpoint.append('/reports/')
         delete(args, endpoint)
-        output = getattr(
-            api.Command(), co.METHOD_DICT['delete'])('/'.join(endpoint))
+        output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    elif args.reports_command == 're_run':
+        endpoint.append('/reports/')
+        re_run(args, endpoint)
+        output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
+        
+    elif args.reports_command == 'show':
+        show(args, endpoint)
+        print(endpoint)
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
         print("No arguments provided for 'reports'\n")
@@ -34,40 +38,34 @@ def entry_point(args):
     return output
 
 
-def show(args, endpoint):
-
-    if co.check_attr(args, 'report_id'):
-        endpoint.append(getattr(args, 'report_id'))
-
-    if co.check_attr(args, 'reports_show_command'):
-        if co.check_attr(args, 'report_id'):
-            if getattr(args, 'reports_show_command') == "preview":
-                endpoint.append('/preview')
-            else:
-                endpoint.append('/data')
-        else:
-            print("\nSpecify a REPORT_ID for getting",
-                  getattr(args, 'reports_show_command'), "\n")
-            sys.exit(9)
-
-
-# def create(args, endpoint):
 def create():
 
-    """
+    valid_cols = [
+        "classification", "replicas", "sourceName", "consistent", "createdBy",
+        "snapType", "id", "ctime", "name", "region", "provider" ]
+
     report_id = input("Report Name : ")
-    first_name = input("Firstname : ")
-    last_name = input("Lastname : ")
-    email_addr = input("Email : ")
+    # Defaulting report_type to 'snapshot' since there are no other types 
+    # As of CP 2.0.2
+    report_type = 'snapshot'
+    print("\nEnter a comma separated list of Report fields/columns")
+    print("Valid values are : ", sorted(valid_cols), "\n")
+    given_cols = (input("Report Fields/Columns :\n")).replace(' ', '').split(',')
+    for col_type in given_cols:
+        if col_type not in valid_cols:
+            print("{} is not a valid column type.\nValid types are {}".format(
+                col_type, valid_cols))
+            sys.exit(-2)
+    expiry_days = input("Report Expiry (in days): ")
+    expiry = 86400 * int(expiry_days)
     data = {
-        "lastName": last_name,
-        "email": email_addr,
-        "firstName": first_name
+        "reportId": report_id,
+        "reportType": report_type,
+        "columns": given_cols,
+        "expire": expiry
     }
-    return (data, endpoint)
-    """
-    print("Not implemented")
-    sys.exit(-1)
+
+    return data
 
 
 def delete(args, endpoint):
@@ -80,7 +78,7 @@ def delete(args, endpoint):
 
     endpoint.append(report_id)
 
-    if not co.check_attr(args, 'option'):
+    if not co.check_attr(args, 'reports_delete_command'):
         endpoint.append('/data')
 
 
@@ -88,3 +86,42 @@ def pretty_print(data):
     # This function has to be tailor suited for each command's output
     # Since all commands don't have a standard output format
     print(data)
+
+
+def re_run(args, endpoint):
+    report_id = None
+    if co.check_attr(args, 'report_id'):
+         report_id = args.report_id
+    else:
+        report_id = input("Enter the report id you want to re-run : ")
+
+    endpoint.append(report_id)
+    endpoint.append('/data')
+
+
+def show(args, endpoint):
+
+    if co.check_attr(args, 'reports_show_command'):
+        if args.reports_show_command == 'report-types':
+            endpoint.append('/report-types/')
+        else:
+            endpoint.append('/reports/')
+            if co.check_attr(args, 'report_id'):
+                endpoint.append(args.report_id)
+
+            if co.check_attr(args, 'reports_show_command'):
+                if co.check_attr(args, 'report_id'):
+                    if args.reports_show_command == "preview":
+                        endpoint.append('/preview')
+                    else:
+                        endpoint.append('/data')
+                else:
+                    print("\nSpecify a REPORT_ID for getting {}\n".format(
+                        args.reports_show_command))
+                    sys.exit(9)
+    else:
+        endpoint.append('/reports/')
+        if co.check_attr(args, 'report_id'):
+            endpoint.append(args.report_id)
+
+

@@ -11,3 +11,5 @@
 15) Have to work on assets - granules
 16) Policy creation + modification .. lotts of work needed ... 
 17) Move away from ID's to names ! (dont make customers user policy_id ... instead let them use policy_name)
+18) Need to add filters in REPORT CREATION
+19) Modifying REPORTS doesn't have the right method listed in the guide
