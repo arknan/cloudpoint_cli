@@ -41,3 +41,6 @@ If command completion is not working after running the setup script, start a new
 License
 -------
 Licensed under the terms of the [MIT LICENSE](https://opensource.org/licenses/MIT)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.org/arknan/cloudpoint_cli.svg?branch=master)](https://travis-ci.org/arknan/cloudpoint_cli)
