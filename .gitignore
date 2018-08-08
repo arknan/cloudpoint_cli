@@ -38,5 +38,5 @@ coverage.xml
 *.log
 *.pot
 
-#Miscellaneous
+# Miscellaneous
 .gitattributes
