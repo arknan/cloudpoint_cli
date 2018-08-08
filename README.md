@@ -5,13 +5,14 @@ _A Command Line Interface for Veritas CloudPoint_
 It makes two assumptions:
 
 
-* You have installed Veritas CloudPoint
+* You're using **Ubuntu** or **Red Hat Enterprise Linux** to run this program 
 * You're using bash as your shell (**_for command completion only_**)
 
 Installation
 -------------
 
-```./setup.sh ```
+* _Download cloudpoint_cli_ : **```git clone https://github.com/arknan/cloudpoint_cli.git```**
+* _Run the setup shell script inside it_ : **```./cloudpoint_cli/setup.sh ```**
 
 > After setup completes, refresh your bash environment (start a new shell)
 
