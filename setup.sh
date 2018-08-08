@@ -69,6 +69,7 @@ else
 
     pip3 install -r ./requirements.txt
     ln -s "$(pwd)"/src/cloudpoint.py /usr/bin/cloudpoint
+    ln -s "$(pwd)"/cloudpoint_cli.config /root/.cloudpoint_cli.config
     activate-global-python-argcomplete
     source /etc/profile
     echo -e "Setup is complete...\n" 

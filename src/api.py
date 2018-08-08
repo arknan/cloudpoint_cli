@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+import configparser
 import json
 import sys
 from getpass import getpass
@@ -14,16 +15,31 @@ class Command():
 
     def __init__(self):
 
-        self.endpoint = ''
-        self.ip_addr = '127.0.0.1'
-        self.base_url = 'https://' + self.ip_addr + ':/cloudpoint/api/v2'
-        self.verify = False
-        self.token_header = None
-        self.token_endpoint = None
-        self.data = None
+        config = configparser.ConfigParser()
+        if not config.read('/root/.cloudpoint_cli.config'):
+            print("\ncloudpoint_cli.config is empty or missing\n")
+            sys.exit(-1)
+        try:
+            self.ip_addr = config['GLOBAL']['cloudpoint_ip']
+            self.token_file = config['GLOBAL']['cp_token_file']
+        except KeyError:
+            print("Please ensure config file has 'cloudpoint_ip' & 'cp_token_file' values\n")
+            sys.exit(-1)
 
         try:
-            with open("/root/.cloudpoint_token", "r") as file_handle:
+            self.username = config['GLOBAL']['cloudpoint_username']
+            self.password = config['GLOBAL']['cloudpoint_password']
+        except KeyError:
+            self.username = None
+            self.password = None
+
+        self.endpoint = None
+        self.base_url = 'https://' + self.ip_addr + ':/cloudpoint/api/v2'
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
+        self.verify = False
+        self.data = None
+        try:
+            with open(self.token_file, "r") as file_handle:
                 self.token = file_handle.readline()
         except FileNotFoundError:
             self.token = None
@@ -31,101 +47,103 @@ class Command():
         self.header = {'Content-Type': 'application/json',
                        'Authorization': 'Bearer {0}'.format(self.token)}
 
-    def authenticates(self):
-
         self.token_header = {'Content-Type': 'application/json'}
         self.token_endpoint = self.base_url + '/idm/login'
-        username = input("Username: ")
-        passwd = getpass("Password: ")
+
+
+    def authenticates(self):
+
+        if not (self.username and self.password):
+            self.username = input("Username: ")
+            self.password = getpass("Password: ")
+
         self.data = json.dumps({
-            "email": username,
-            "password": passwd})
+            "email": self.username,
+            "password": self.password})
 
         response = requests.post(self.token_endpoint, verify=self.verify,
                                  headers=self.token_header, data=self.data)
         if response.status_code == 200:
-            self.token = (
-                (json.loads(response.content.decode('utf-8')))["accessToken"])
+            self.token = json.loads(
+                response.content.decode('utf-8'))["accessToken"]
 
-            with open("/root/.cloudpoint_token", "w") as file_handle:
-                file_handle.write(self.token)
+            try:
+                with open(self.token_file, "w") as file_handle:
+                    file_handle.write(self.token)
+            except:
+                print("Error opening {}".format(self.token_file))
+
+            print("Authentication Success !!")
 
         else:
-            print(
-                (json.loads(response.content.decode('utf-8'))["errorMessage"]))
-            sys.exit()
+            print(json.loads(response.content.decode('utf-8'))["errorMessage"])
+            sys.exit(-1)
 
     def deletes(self, endpoint):
-
+        self.verify_token()
         self.endpoint = endpoint
-        self.header = {'Content-Type': 'application/json',
-                       'Authorization': 'Bearer {0}'.format(self.token)}
-        if not self.token:
-            print("Please authenticate first !")
-            sys.exit()
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
 
-        api_url = '{}{}'.format(self.base_url, self.endpoint)
         response = requests.delete(
-            api_url, verify=self.verify, headers=self.header)
+            self.api_url, verify=self.verify, headers=self.header)
 
         return response.content.decode('utf-8')
 
     def gets(self, endpoint):
+        self.verify_token()
         self.endpoint = endpoint
-        if not self.token:
-            print("\nPlease authenticate first !\n")
-            sys.exit()
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
 
-        api_url = '{}/{}'.format(self.base_url, self.endpoint)
-        response = requests.get(api_url,
-                                headers=self.header, verify=self.verify)
+        response = requests.get(
+            self.api_url, headers=self.header, verify=self.verify)
 
         return response.content.decode('utf-8')
 
     def patches(self, endpoint, data):
+        self.verify_token()
         self.endpoint = endpoint
-        self.header = {'Content-Type': 'application/json',
-                       'Authorization': 'Bearer {0}'.format(self.token)}
-        if not self.token:
-            print("Please authenticate first !")
-            sys.exit()
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
 
-        api_url = '{}{}'.format(self.base_url, self.endpoint)
         response = requests.patch(
-            api_url, verify=self.verify, headers=self.header)
+            self.api_url, verify=self.verify, headers=self.header)
 
         return response.content.decode('utf-8')
 
     def posts(self, endpoint, data):
+        self.verify_token()
         self.endpoint = endpoint
-        self.header = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer {0}'.format(self.token)
-        }
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.data = data
-        if not self.token:
-            print("Please authenticate first !")
-            sys.exit()
 
-        api_url = '{}{}'.format(self.base_url, self.endpoint)
         response = requests.post(
-            api_url, json=self.data, verify=self.verify, headers=self.header)
+            self.api_url, json=self.data, verify=self.verify, headers=self.header)
 
         return response.content.decode('utf-8')
 
     def puts(self, endpoint, data):
+        self.verify_token()
         self.endpoint = endpoint
-        self.header = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer {0}'.format(self.token)
-        }
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.data = data
+
+        response = requests.put(
+            self.api_url, json=self.data, verify=self.verify, headers=self.header)
+
+        return response.content.decode('utf-8')
+
+        
+    def verify_token(self):
+        self.endpoint = '/version'
+        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         if not self.token:
             print("Please authenticate first !")
             sys.exit()
 
-        api_url = '{}{}'.format(self.base_url, self.endpoint)
-        response = requests.put(
-            api_url, json=self.data, verify=self.verify, headers=self.header)
+        try:
+            response = requests.get(
+                self.api_url, headers=self.header, verify=self.verify)
+        except:
+            print("Invalid token !\nPlease Authenticate again")
+            sys.exit(-1)
 
-        return response.content.decode('utf-8')
+        return True
