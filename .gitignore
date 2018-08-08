@@ -37,3 +37,6 @@ coverage.xml
 # Django stuff:
 *.log
 *.pot
+
+#Miscellaneous
+.gitattributes
