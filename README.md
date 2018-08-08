@@ -11,7 +11,8 @@ It makes two assumptions:
 Installation
 -------------
 
-**```./setup.sh ```**
+* _Download cloudpoint_cli_ : **```git clone https://github.com/arknan/cloudpoint_cli.git```**
+* _Run the setup shell script inside it_ : **```./cloudpoint_cli/setup.sh ```**
 
 > After setup completes, refresh your bash environment (start a new shell)
 
