@@ -40,3 +40,4 @@ coverage.xml
 
 # Miscellaneous
 .gitattributes
+_config.yml
