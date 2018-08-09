@@ -2,6 +2,7 @@
 
 # PYTHON_ARGCOMPLETE_OK
 
+import configparser
 import sys
 import argparse
 import argcomplete
@@ -505,6 +506,11 @@ def run(pass_args=None):
 
 
 if __name__ == '__main__':
+
+    config = configparser.ConfigParser()
+    if not config.read('/root/.cloudpoint_cli.config'):
+	   print("\ncloudpoint_cli.config is empty or missing\n")
+	   sys.exit()
 
     parser_main = create_parser()
     argcomplete.autocomplete(parser_main)

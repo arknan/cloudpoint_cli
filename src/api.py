@@ -8,6 +8,8 @@ from getpass import getpass
 import requests
 import urllib3
 from urllib3.exceptions import InsecureRequestWarning
+import logs
+
 urllib3.disable_warnings(InsecureRequestWarning)
 
 
@@ -15,16 +17,19 @@ class Command():
 
     def __init__(self):
 
+        self.logger_f = logs.setup(__name__, 'f')
+        self.logger_c = logs.setup(__name__, 'c')
+        self.logger_fc = logs.setup(__name__)
+
         config = configparser.ConfigParser()
-        if not config.read('/root/.cloudpoint_cli.config'):
-            print("\ncloudpoint_cli.config is empty or missing\n")
-            sys.exit(-1)
         try:
             self.ip_addr = config['GLOBAL']['cloudpoint_ip']
+            self.logger_f.debug("CP server IP found from config file : %s", self.ip_addr)
             self.token_file = config['GLOBAL']['cp_token_file']
         except KeyError:
-            print("Please ensure config file has 'cloudpoint_ip' & 'cp_token_file' values\n")
-            sys.exit(-1)
+            self.logger_fc("Please ensure config file has 'cloudpoint_ip' &\
+'cp_token_file' values\n")
+            sys.exit()
 
         try:
             self.username = config['GLOBAL']['cloudpoint_username']
@@ -36,6 +41,7 @@ class Command():
         self.endpoint = None
         self.base_url = 'https://' + self.ip_addr + ':/cloudpoint/api/v2'
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
+        self.logger_f.debug("Base URL used for API queries : %s", self.api_url)
         self.verify = False
         self.data = None
         try:
@@ -71,9 +77,9 @@ class Command():
                 with open(self.token_file, "w") as file_handle:
                     file_handle.write(self.token)
             except:
-                print("Error opening {}".format(self.token_file))
+                self.logger_fc.error("Error opening {}".format(self.token_file))
 
-            print("Authentication Success !!")
+            self.logger_c.info("Authentication Success !!")
 
         else:
             print(json.loads(response.content.decode('utf-8'))["errorMessage"])
@@ -136,7 +142,7 @@ class Command():
         self.endpoint = '/version'
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         if not self.token:
-            print("Please authenticate first !")
+            self.logger_c.error("Please authenticate first !")
             sys.exit(-1)
 
         try:
