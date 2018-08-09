@@ -137,12 +137,17 @@ class Command():
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         if not self.token:
             print("Please authenticate first !")
-            sys.exit()
+            sys.exit(-1)
 
         try:
             response = requests.get(
                 self.api_url, headers=self.header, verify=self.verify)
-        except:
+        except requests.exceptions.ConnectionError:
+            print("\nConnection timed out. Verify if :\n\
+1)CloudPoint server's IP address is {}\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n ".format(self.ip_addr))
+            sys.exit(-1)
+        except ValueError:
             print("Invalid token !\nPlease Authenticate again")
             sys.exit(-1)
 
