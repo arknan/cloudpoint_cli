@@ -4,7 +4,9 @@ import sys
 import api
 import constants as co
 import cloudpoint
+import logs
 
+logger_c = logs.setup(__name__, 'c')
 
 def entry_point(args):
 
@@ -21,7 +23,7 @@ def entry_point(args):
     else:
         print("No arguments provided for 'agents'\n")
         cloudpoint.run(["agents", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
@@ -54,8 +56,8 @@ def show(args, endpoint):
                         endpoint.append('/configs/')
 
             elif args.agents_show_command == "summary":
-                print("\nSummary cannot be provided for a specific agent\n")
-                sys.exit(11)
+                logger_c.error("Summary cannot be provided for a specific agent")
+                sys.exit()
     else:
         if co.check_attr(args, 'agents_show_command'):
             if args.agents_show_command == 'summary':

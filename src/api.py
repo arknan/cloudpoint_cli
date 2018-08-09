@@ -122,6 +122,7 @@ class Command():
 
     def patches(self, endpoint, data):
         self.verify_token()
+        self.data = data
         self.endpoint = endpoint
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.logger_f.debug("Calling PATCH on %s", self.api_url)
@@ -134,10 +135,11 @@ class Command():
 
     def posts(self, endpoint, data):
         self.verify_token()
+        self.data = data
         self.endpoint = endpoint
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
-        self.logger_f.debug("Calling POST on %s", self.api_url)
-        self.data = data
+        self.logger_f.debug("Calling POST on {} with data : {}".format(
+            self.api_url, self.data))
 
         response = requests.post(
             self.api_url, json=self.data, verify=self.verify, headers=self.header)
@@ -147,10 +149,11 @@ class Command():
 
     def puts(self, endpoint, data):
         self.verify_token()
+        self.data = data
         self.endpoint = endpoint
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
-        self.logger_f.debug("Calling PUT on %s", self.api_url)
-        self.data = data
+        self.logger_f.debug("Calling PUT on {} with data {}".format(
+        self.api_url, self.data))
 
         response = requests.put(
             self.api_url, json=self.data, verify=self.verify, headers=self.header)
