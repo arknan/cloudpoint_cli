@@ -13,14 +13,12 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'ldap_config'\n")
         cloudpoint.run(["ldap_config", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
 
-# def show(args, endpoint):
 def show():
     # There is no work needed here, since our GETS_DICT provides
     # the whole endpoint ... retaining this for future ?

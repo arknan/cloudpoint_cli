@@ -4,6 +4,9 @@ import sys
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_c = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -30,9 +33,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'reports'\n")
+        logger_c.error("No arguments provided for 'reports'")
         cloudpoint.run(["reports", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
@@ -44,17 +47,20 @@ def create():
         "snapType", "id", "ctime", "name", "region", "provider"]
 
     report_id = input("Report Name : ")
+
     # Defaulting report_type to 'snapshot' since there are no other types
     # As of CP 2.0.2
     report_type = 'snapshot'
-    print("\nEnter a comma separated list of Report fields/columns")
-    print("Valid values are : ", sorted(valid_cols), "\n")
+    logger_c.info("Enter a comma separated list of Report fields/columns")
+    logger_c.info("Valid values are : ", sorted(valid_cols), "\n")
     given_cols = (input("Report Columns :\n")).replace(' ', '').split(',')
+
     for col_type in given_cols:
         if col_type not in valid_cols:
-            print("{} is not a valid column type.\nValid types are {}".format(
+            logger_c.error("{} is not a valid column type.\nValid types are {}".format(
                 col_type, valid_cols))
-            sys.exit(-2)
+            sys.exit()
+
     expiry_days = input("Report Expiry (in days): ")
     expiry = 86400 * int(expiry_days)
     data = {
@@ -91,6 +97,7 @@ def re_run(args, endpoint):
     report_id = None
     if co.check_attr(args, 'report_id'):
         report_id = args.report_id
+
     else:
         report_id = input("Enter the report id you want to re-run : ")
 
@@ -103,6 +110,7 @@ def show(args, endpoint):
     if co.check_attr(args, 'reports_show_command'):
         if args.reports_show_command == 'report-types':
             endpoint.append('/report-types/')
+
         else:
             endpoint.append('/reports/')
             if co.check_attr(args, 'report_id'):
@@ -115,9 +123,9 @@ def show(args, endpoint):
                     else:
                         endpoint.append('/data')
                 else:
-                    print("\nSpecify a REPORT_ID for getting {}\n".format(
+                    logger_c.error("Specify a REPORT_ID for getting {}".format(
                         args.reports_show_command))
-                    sys.exit(9)
+                    sys.exit()
     else:
         endpoint.append('/reports/')
         if co.check_attr(args, 'report_id'):

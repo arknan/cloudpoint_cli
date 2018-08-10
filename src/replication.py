@@ -5,6 +5,9 @@ import sys
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_c = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -18,9 +21,9 @@ def entry_point(args):
 
     elif args.replication_command == "delete":
         if not co.check_attr(args, 'replication_delete_command'):
-            print("No arguments provided for 'delete'\n")
+            logger_c.error("No arguments provided for 'delete'")
             cloudpoint.run(["replication", "delete", "-h"])
-            sys.exit(-1)
+            sys.exit()
 
         endpoint.append('/replication/default/rules/')
         delete(endpoint)
@@ -28,7 +31,7 @@ def entry_point(args):
 
     elif args.replication_command == "modify":
         if not co.check_attr(args, 'replication_modify_command'):
-            print("No arguments provided for 'modify'\n")
+            logger_c.error("No arguments provided for 'modify'")
             cloudpoint.run(["replication", "modify", "-h"])
             sys.exit()
 
@@ -43,9 +46,9 @@ def entry_point(args):
             api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'replication'\n")
+        logger_c.error("No arguments provided for 'replication'")
         cloudpoint.run(["replication", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
@@ -53,16 +56,16 @@ def entry_point(args):
 def create(args):
 
     if not co.check_attr(args, 'replication_create_command'):
-        print("No arguments provided for 'create'\n")
+        logger_c.error("No arguments provided for 'create'")
         cloudpoint.run(["replication", "create", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
         '/replica-locations/'))
     valid_sources = {x['region']: x['id'] for x in repl_locations}
     source = None
     while True:
-        print("Enter a source region, valid values are:\n{}".format(
+        logger_c.info("Enter a source region, valid values are:\n{}".format(
             list(valid_sources.keys())))
         source_region = input("Source region : ")
         if source_region in valid_sources:
@@ -70,12 +73,12 @@ def create(args):
             del valid_sources[source_region]
             break
         else:
-            print("Not a valid choice, please try again\n")
+            logger_c.error("Not a valid choice, please try again")
 
     dest_counter = 0
     dest = []
     while dest_counter < 3:
-        print("Valid destination regions are : {}".format(
+        logger_c.info("Valid destination regions are : {}".format(
             list(valid_sources.keys())))
         temp = input("Destination : (enter 'none' if you are done) ")
         if temp == 'none':
@@ -86,11 +89,11 @@ def create(args):
             dest_counter += 1
 
         else:
-            print("\nNot a valid location\n")
+            logger_c.error("Not a valid location")
 
     if not dest:
-        print("\nYou should provide atleast 1 region to replicate to !\n")
-        sys.exit(-1)
+        logger_c.error("You should provide atleast 1 region to replicate to !")
+        sys.exit()
 
     data = {
         "destination": dest,
@@ -116,15 +119,16 @@ def delete(endpoint):
             del valid_sources[k]
 
     src_region = None
-    print("Enter the source region of the replication rule to be deleted\n")
+    logger_c.info("Enter the source region of the replication rule to be deleted\n")
     while True:
-        print("Valid source regions :\n", sorted(valid_sources.keys()))
+        logger_c.info("Valid source regions :\n", sorted(valid_sources.keys()))
         src_region = input("Source Region : ")
         if src_region in valid_sources:
             break
         else:
-            print("No replication rule exists for the source region\n")
-            print("Enter a valid source region to delete\n")
+            logger_c.error("No replication rule exists for the source region\n")
+            logger_c.error("Enter a valid source region to delete\n")
+
     endpoint.append(valid_sources[src_region])
 
 

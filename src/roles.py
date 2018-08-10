@@ -5,6 +5,9 @@ import sys
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_c = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -28,30 +31,37 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'roles'\n")
+        logger_c.error("No arguments provided for 'roles'\n")
         cloudpoint.run(["roles", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
 
 def create():
 
-    # print("\nPlease choose a name that you want this role to be called")
+    VALID_PRIVILEGES = ["REPLICATION_POLICY_MANAGEMENT", "REPORT_MANAGEMENT",
+                    "SNAPSHOT_POLICY_MANAGEMENT", "ROLE_MANAGEMENT",
+                    "CLASSIFICATION_POLICY_MANAGEMENT", "USER_MANAGEMENT",
+                    "CLOUD_AND_ARRAY_MANAGEMENT", "ADMINISTRATOR"]
+
     role_name = input("Role name : ")
     roles = json.loads(cloudpoint.run(["privileges", "show"]))
     roles_list = []
     for row in roles:
         roles_list.append(row["name"])
-    print("\nPlease choose a role type, valid role types include : ",
+    logger_c.info("Please choose a role type, valid role types include : ",
           roles_list)
     role_type = (str(input("Role type to associate: "))).upper()
+
     if role_type not in co.VALID_PRIVILEGES:
-        print("\nThat is not a valid role type !\n")
-        sys.exit(-23)
-    print("\nEnter the user's email address that should be associated \
+        logger_c.error("That is not a valid role type !")
+        sys.exit()
+
+    logger_c.info("Enter the user's email address that should be associated \
 with this role")
     user_email = str(input("Email Address : "))
+
     data = {
         "name": role_name,
         "privileges": [{
@@ -78,12 +88,14 @@ def modify(endpoint):
     data = create()
     roles_dict = json.loads(cloudpoint.run(["roles", "show"]))
     role_id = None
+
     for num, _ in enumerate(roles_dict):
         if data["name"] == roles_dict[num]['name']:
             role_id = roles_dict[num]['id']
 
     if not role_id:
-        print("Role '{}' doesn't exist".format(data["name"]))
+        logger_c.error("Role '{}' doesn't exist".format(data["name"]))
+        sys.exit()
     else:
         endpoint.append(role_id)
 

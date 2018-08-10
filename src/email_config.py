@@ -6,6 +6,10 @@ from getpass import getpass
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_c = logs.setup(__name__, 'c')
+logger_fc = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -13,8 +17,7 @@ def entry_point(args):
     endpoint = ['/email/config']
     if args.email_config_command == 'show':
         show()
-        output = getattr(
-            api.Command(), 'gets')('/'.join(endpoint))
+        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
     elif args.email_config_command == 'create':
         data = create(args)
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
@@ -24,9 +27,8 @@ def entry_point(args):
         output = 'Email Configuration has been deleted'
 
     else:
-        print("No arguments provided for 'email_config'\n")
-        cloudpoint.run(["email_config", "-h"])
-        sys.exit(-1)
+        logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
+        sys.exit()
 
     return output
 
@@ -41,11 +43,11 @@ def create(args):
 
     if co.check_attr(args, 'email_config_create_command'):
         if args.email_config_create_command == 'aws_ses':
-            print("\nPlease enter the following AWS details :\n")
+            logger_c.info("Please enter the following AWS details :\n")
             aws_ak = input("Access Key :")
             aws_sk = getpass("Secret Key :")
             aws_region = input("Region :")
-            print("\nPlease enter the sender's email address")
+            logger_c.info("Please enter the sender's email address")
             aws_email = input("Sender Email : ")
 
             data = {
@@ -59,9 +61,9 @@ def create(args):
             })
 
         elif args.email_config_create_command == 'send_grid':
-            print("\nPlease enter the sender's email address")
+            logger_c.info("Please enter the sender's email address")
             sg_email = input("Sender Email : ")
-            print("\nPlease enter the API key for SendGrid\n")
+            logger_c.info("\nPlease enter the API key for SendGrid\n")
             sg_apikey = getpass("API Key :")
 
             data = {
@@ -73,21 +75,21 @@ def create(args):
             })
 
         elif args.email_config_create_command == 'smtp':
-            print("\nPlease enter the IP address of SMTP server")
+            logger_c.info("\nPlease enter the IP address of SMTP server")
             smtp_ip = input("IP Address : ")
-            print("\nPlease enter the port used by SMTP")
+            logger_c.info("\nPlease enter the port used by SMTP")
             smtp_port = input("Port (25) : ")
             if not smtp_port:
                 smtp_port = 25
-            print("\nPlease enter SMTP credentials\n")
-            print("[Hit enter to skip if anonymous authentication is used\n]")
+            logger_c.info("Please enter SMTP credentials\n")
+            logger_c.info("[Hit enter to skip if anonymous authentication is used\n]")
             smtp_user = input("User name : ")
             smtp_passwd = None
             auth = False
             if smtp_user:
                 auth = True
                 smtp_passwd = getpass("Password: ")
-            print("\nPlease enter the smtp sender email address")
+            logger_c.info("\nPlease enter the smtp sender email address")
             smtp_email = input("Sender Email : ")
 
             data = {
@@ -109,7 +111,7 @@ def create(args):
                     "authentication": False
                 })
         else:
-            print("INTERNAL ERROR")
+            logger_fc.critical("INTERNAL ERROR 2 IN {}".format(__file__))
             sys.exit()
 
     else:

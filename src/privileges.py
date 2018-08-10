@@ -14,9 +14,8 @@ def entry_point(args):
             api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'privileges'\n")
         cloudpoint.run(["privileges", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 

@@ -4,6 +4,9 @@ import sys
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_c = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -13,9 +16,8 @@ def entry_point(args):
         show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
     else:
-        print("No arguments provided for 'plugins'\n")
         cloudpoint.run(["plugins", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
@@ -30,13 +32,13 @@ def show(args, endpoint):
         if co.check_attr(args, 'available_plugin_name'):
             endpoint.append("description")
         else:
-            print(co.EXIT_6)
-            sys.exit(102)
+            logger_c.error("'description' requires -i flag for 'PLUGIN_NAME'")
+            sys.exit()
     elif (co.check_attr(args, 'plugins_show_command')) and \
          (args.plugins_show_command == "summary"):
         if co.check_attr(args, 'available_plugin_name'):
-            print("\nSummary cannot be provided for a specific plugin\n")
-            sys.exit(12)
+            logger_c.error("Summary cannot be provided for a specific plugin")
+            sys.exit()
         else:
             endpoint.append("summary")
 

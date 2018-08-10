@@ -5,6 +5,9 @@ import sys
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_fc = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -24,9 +27,8 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'licenses'\n")
         cloudpoint.run(["licenses", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
@@ -36,9 +38,9 @@ def add(args):
     slf = args.file_name
     contents = None
     if not os.path.isfile(args.file_name):
-        print("File {} doesn't exist.".format(args.file_name))
-        print("Check file name or ensure that a full path is provided")
-        sys.exit(-1)
+        logger_fc.error("File {} doesn't exist.".format(args.file_name))
+        logger_fc.warn("Check file name or ensure that a full path is provided")
+        sys.exit()
 
     with open(slf, "r") as slf_file:
         contents = slf_file.read()

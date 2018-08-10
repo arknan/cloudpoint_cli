@@ -4,6 +4,10 @@ import sys
 import api
 import cloudpoint
 import constants as co
+import logs
+
+logger_c = logs.setup(__name__, 'c')
+logger_fc = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -11,9 +15,10 @@ def entry_point(args):
     endpoint = []
     if args.policies_command == 'asset':
         output = asset(args, endpoint)
+
     elif args.policies_command == 'create':
-        # create(args, endpoint)
         create()
+
     elif args.policies_command == 'delete':
         delete(args, endpoint)
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
@@ -24,9 +29,8 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        print("No arguments provided for 'policies'\n")
         cloudpoint.run(["policies", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     return output
 
@@ -37,7 +41,6 @@ def show(args, endpoint):
         endpoint.append(args.policy_id)
 
 
-# def create(args, endpoint):
 def create():
 
     """
@@ -84,7 +87,7 @@ def create():
     }
     """
 
-    print("Not implemented")
+    logger_c.error("Not implemented")
     sys.exit()
 
 
@@ -96,15 +99,19 @@ def asset(args, endpoint):
         endpoint.append('/policies/')
         endpoint.append(args.policy_id)
     else:
-        print("No arguments provided for 'asset'\n")
+        logger_c.error("No arguments provided for 'asset'")
         cloudpoint.run(["policies", "asset", "-h"])
-        sys.exit(-1)
+        sys.exit()
 
     if args.policies_asset_command == 'add':
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
 
     elif args.policies_asset_command == 'remove':
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+
+    else:
+        logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
+        sys.exit()
 
     return output
 

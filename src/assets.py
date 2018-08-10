@@ -194,7 +194,7 @@ def restore(args):
             logger_c.info("\nSnapshot type is : ", snap_type)
             logger_c.error("\nOnly host type snapshots are supported thru CLI\n")
     else:
-        logger_c.error("INTERNAL ERROR")
+        logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
         sys.exit()
 
     return data
@@ -217,7 +217,8 @@ def show(args, endpoint):
                         elif args.snapshots_command == "restore-targets":
                             endpoint.append('/targets')
                         else:
-                            logger_c.error("INTERNAL ERROR")
+                            logger_fc.critical(
+                                "INTERNAL ERROR 2 IN {}".format(__file__))
                             sys.exit()
                 else:
                     logger_c.error("Argument '{}' needs a snapshot_id".format(
@@ -239,7 +240,7 @@ def show(args, endpoint):
             elif args.assets_show_command == "all":
                 pass
             else:
-                logger_c.error("INTERNAL ERROR")
+                logger_fc.critical("INTERNAL ERROR 3 IN {}".format(__file__))
                 sys.exit()
         else:
             endpoint.append('/?limit=3')

@@ -13,6 +13,7 @@ import authenticate
 import email_config
 import ldap_config
 import licenses
+import logs
 import plugins
 import policies
 import privileges
@@ -24,6 +25,8 @@ import telemetry
 import users
 import version
 
+logger_f = logs.setup(__name__, 'f')
+logger_fc = logs.setup(__name__)
 
 def create_parser():
 
@@ -499,6 +502,7 @@ def create_parser():
 
 
 def run(pass_args=None):
+    logger_f.debug("cloudpoint.run called with {}".format(pass_args))
     parser = create_parser()
     args = parser.parse_args(pass_args)
     output = getattr(globals()[args.command], "entry_point")(args)
@@ -509,7 +513,7 @@ if __name__ == '__main__':
 
     config = configparser.ConfigParser()
     if not config.read('/root/.cloudpoint_cli.config'):
-        print("\ncloudpoint_cli.config is empty or missing\n")
+        logger_fc.error("\ncloudpoint_cli.config is empty or missing\n")
         sys.exit()
 
     parser_main = create_parser()
@@ -519,5 +523,9 @@ if __name__ == '__main__':
         sys.exit(-1)
     else:
         args = parser_main.parse_args()
+        logger_f.debug("Calling {}.entry_point() with {}".format(
+           args.command, args))
         output = getattr(globals()[args.command], "entry_point")(args)
+        logger_f.debug("From {}.entry_point() Received :\n{}".format(
+            args.command, output))
         getattr(globals()[args.command], "pretty_print")(output)
