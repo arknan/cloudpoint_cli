@@ -3,7 +3,6 @@
 import sys
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -29,15 +28,16 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
+        logger_c.error("No arguments provided for 'policies'")
         cloudpoint.run(["policies", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
 
 def show(args, endpoint):
 
-    if co.check_attr(args, 'policy_id'):
+    if api.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
 
 
@@ -48,14 +48,15 @@ def create():
     while True:
         name = input("Policy Name : ")
         if (len(name) > 32) or (len(name) < 2):
-            print("Policy Name should be between 2 and 32 characters\n")
+            logger_c.error(
+                "Policy Name should be between 2 and 32 characters\n")
         else:
             break
     while True:
         appConsist = (input(
             "Application Consistent ['yes' or 'no'] : ")).lower()
         if appConsist not in ['yes', 'no']:
-            print("\nValid options are 'yes' or 'no'\n")
+            logger_c.error("\nValid options are 'yes' or 'no'\n")
         else:
             if appConsist == 'yes':
                 appConsist = True
@@ -67,11 +68,12 @@ def create():
     while True:
         snapTypePref = (input("Snapshot type ['cow', 'clone'] : ")).lower()
         if snapTypePref not in ['cow', 'clone']:
-            print("\nValid options are 'cow' or 'clone'\n")
+            logger_c.error("\nValid options are 'cow' or 'clone'\n")
         else:
             break
 
-    print("Schedule frequency options, Leave Blank if not applicable :\n")
+    logger_c.info(
+        "Schedule frequency options, Leave Blank if not applicable :\n")
     minute = input("Minute (0-59): ") or "0"
     hour = input("Hour (0-23): ") or "0"
     month = input("Month : ") or "*"
@@ -88,12 +90,12 @@ def create():
     """
 
     logger_c.error("Not implemented")
-    sys.exit()
+    sys.exit(1)
 
 
 def asset(args, endpoint):
 
-    if co.check_attr(args, 'policies_asset_command'):
+    if api.check_attr(args, 'policies_asset_command'):
         endpoint.append('/assets/')
         endpoint.append(args.asset_id)
         endpoint.append('/policies/')
@@ -101,7 +103,7 @@ def asset(args, endpoint):
     else:
         logger_c.error("No arguments provided for 'asset'")
         cloudpoint.run(["policies", "asset", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     if args.policies_asset_command == 'add':
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
@@ -111,7 +113,7 @@ def asset(args, endpoint):
 
     else:
         logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
-        sys.exit()
+        sys.exit(1)
 
     return output
 

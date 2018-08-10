@@ -3,6 +3,9 @@
 import sys
 import api
 import cloudpoint
+import logs
+
+logger_c = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -13,8 +16,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
+        logger_c.error("No arguments provided for 'ldap_config'")
         cloudpoint.run(["ldap_config", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 

@@ -4,7 +4,6 @@ import json
 import sys
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -31,32 +30,33 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'roles'\n")
+        logger_c.error("No arguments provided for 'roles'")
         cloudpoint.run(["roles", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
 
 def create():
 
-    VALID_PRIVILEGES = ["REPLICATION_POLICY_MANAGEMENT", "REPORT_MANAGEMENT",
-                    "SNAPSHOT_POLICY_MANAGEMENT", "ROLE_MANAGEMENT",
-                    "CLASSIFICATION_POLICY_MANAGEMENT", "USER_MANAGEMENT",
-                    "CLOUD_AND_ARRAY_MANAGEMENT", "ADMINISTRATOR"]
+    valid_privileges = ["REPLICATION_POLICY_MANAGEMENT", "REPORT_MANAGEMENT",
+                        "SNAPSHOT_POLICY_MANAGEMENT", "ROLE_MANAGEMENT",
+                        "CLASSIFICATION_POLICY_MANAGEMENT", "USER_MANAGEMENT",
+                        "CLOUD_AND_ARRAY_MANAGEMENT", "ADMINISTRATOR"]
 
     role_name = input("Role name : ")
     roles = json.loads(cloudpoint.run(["privileges", "show"]))
     roles_list = []
     for row in roles:
         roles_list.append(row["name"])
-    logger_c.info("Please choose a role type, valid role types include : ",
-          roles_list)
+    logger_c.info(
+        "Please choose a role type, valid role types include : {} ".format(
+            roles_list))
     role_type = (str(input("Role type to associate: "))).upper()
 
-    if role_type not in co.VALID_PRIVILEGES:
+    if role_type not in valid_privileges:
         logger_c.error("That is not a valid role type !")
-        sys.exit()
+        sys.exit(1)
 
     logger_c.info("Enter the user's email address that should be associated \
 with this role")
@@ -77,7 +77,7 @@ with this role")
 
 def delete(args, endpoint):
 
-    if co.check_attr(args, 'role_id'):
+    if api.check_attr(args, 'role_id'):
         endpoint.append('/' + args.role_id)
     else:
         role_id = input("Enter role id of the role you want to delete : ")
@@ -95,7 +95,7 @@ def modify(endpoint):
 
     if not role_id:
         logger_c.error("Role '{}' doesn't exist".format(data["name"]))
-        sys.exit()
+        sys.exit(1)
     else:
         endpoint.append(role_id)
 
@@ -109,5 +109,5 @@ def pretty_print(data):
 
 
 def show(args, endpoint):
-    if co.check_attr(args, 'role_id'):
+    if api.check_attr(args, 'role_id'):
         endpoint.append(args.role_id)

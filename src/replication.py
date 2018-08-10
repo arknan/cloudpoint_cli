@@ -4,7 +4,6 @@ import json
 import sys
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -20,20 +19,20 @@ def entry_point(args):
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.replication_command == "delete":
-        if not co.check_attr(args, 'replication_delete_command'):
+        if not api.check_attr(args, 'replication_delete_command'):
             logger_c.error("No arguments provided for 'delete'")
             cloudpoint.run(["replication", "delete", "-h"])
-            sys.exit()
+            sys.exit(1)
 
         endpoint.append('/replication/default/rules/')
         delete(endpoint)
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.replication_command == "modify":
-        if not co.check_attr(args, 'replication_modify_command'):
+        if not api.check_attr(args, 'replication_modify_command'):
             logger_c.error("No arguments provided for 'modify'")
             cloudpoint.run(["replication", "modify", "-h"])
-            sys.exit()
+            sys.exit(1)
 
         endpoint.append('/replication/default/rules/')
         data = modify(args, endpoint)
@@ -48,17 +47,17 @@ def entry_point(args):
     else:
         logger_c.error("No arguments provided for 'replication'")
         cloudpoint.run(["replication", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
 
 def create(args):
 
-    if not co.check_attr(args, 'replication_create_command'):
+    if not api.check_attr(args, 'replication_create_command'):
         logger_c.error("No arguments provided for 'create'")
         cloudpoint.run(["replication", "create", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     repl_locations = json.loads(getattr(api.Command(), 'gets')(
         '/replica-locations/'))
@@ -93,7 +92,7 @@ def create(args):
 
     if not dest:
         logger_c.error("You should provide atleast 1 region to replicate to !")
-        sys.exit()
+        sys.exit(1)
 
     data = {
         "destination": dest,
@@ -119,14 +118,17 @@ def delete(endpoint):
             del valid_sources[k]
 
     src_region = None
-    logger_c.info("Enter the source region of the replication rule to be deleted\n")
+    logger_c.info(
+        "Enter the source region of the replication rule to be deleted\n")
     while True:
-        logger_c.info("Valid source regions :\n", sorted(valid_sources.keys()))
+        logger_c.info("Valid source regions :{}\n".format(
+            sorted(valid_sources.keys())))
         src_region = input("Source Region : ")
         if src_region in valid_sources:
             break
         else:
-            logger_c.error("No replication rule exists for the source region\n")
+            logger_c.error(
+                "No replication rule exists for this source region\n")
             logger_c.error("Enter a valid source region to delete\n")
 
     endpoint.append(valid_sources[src_region])
@@ -145,11 +147,11 @@ def modify(args, endpoint):
 
 def show(args, endpoint):
 
-    if co.check_attr(args, 'policy_name'):
+    if api.check_attr(args, 'policy_name'):
         endpoint.append(getattr(args, 'policy_name'))
 
-    if co.check_attr(args, 'replication_show_command'):
-        if co.check_attr(args, 'policy_name'):
+    if api.check_attr(args, 'replication_show_command'):
+        if api.check_attr(args, 'policy_name'):
             endpoint.append('/rules/')
         else:
             endpoint.append('/default/rules/')

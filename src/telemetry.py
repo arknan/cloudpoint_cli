@@ -23,9 +23,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'telemetry'\n")
+        logger_c.error("No arguments provided for 'telemetry'")
         cloudpoint.run(["telemetry", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 

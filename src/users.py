@@ -4,7 +4,6 @@ import sys
 from getpass import getpass
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -33,7 +32,7 @@ def entry_point(args):
     else:
         logger_c.error("No arguments provided for 'users'")
         cloudpoint.run(["users", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
@@ -77,5 +76,5 @@ def reset_password():
 
 
 def show(args, endpoint):
-    if co.check_attr(args, 'user_id'):
+    if api.check_attr(args, 'user_id'):
         endpoint.append(args.user_id)

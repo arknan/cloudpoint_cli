@@ -4,19 +4,20 @@ import configparser
 import logging
 import sys
 
+
 def setup(mod_name, handler_type='fc'):
 
     config = configparser.ConfigParser()
     config.read('/root/.cloudpoint_cli.config')
     try:
-        log_level  = config['GLOBAL']['cli_log_level']
+        log_level = config['GLOBAL']['cli_log_level']
         log_file = config['GLOBAL']['cli_log_file']
     except KeyError:
         print("Please ensure config file has 'cli_log_level' &\
 'cli_log_file' values\n")
-        sys.exit()
+        sys.exit(1)
 
-    logger = logging.getLogger(mod_name + '_' +  handler_type)
+    logger = logging.getLogger(mod_name + '_' + handler_type)
     logger.setLevel(getattr(logging, log_level.upper()))
 
     file_formatter = logging.Formatter(

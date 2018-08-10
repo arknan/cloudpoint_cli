@@ -4,9 +4,9 @@ import os
 import sys
 import api
 import cloudpoint
-import constants as co
 import logs
 
+logger_c = logs.setup(__name__, 'c')
 logger_fc = logs.setup(__name__)
 
 
@@ -27,8 +27,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
+        logger_c.error("No arguments provided for 'licenses'")
         cloudpoint.run(["licenses", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
@@ -39,8 +40,8 @@ def add(args):
     contents = None
     if not os.path.isfile(args.file_name):
         logger_fc.error("File {} doesn't exist.".format(args.file_name))
-        logger_fc.warn("Check file name or ensure that a full path is provided")
-        sys.exit()
+        logger_fc.error("Check file name/Ensure that a full path is provided")
+        sys.exit(1)
 
     with open(slf, "r") as slf_file:
         contents = slf_file.read()
@@ -56,13 +57,13 @@ def delete(args, endpoint):
 
 def show(args, endpoint):
 
-    if co.check_attr(args, 'licenses_show_command'):
+    if api.check_attr(args, 'licenses_show_command'):
         if args.licenses_show_command == "active":
             endpoint.append('/?IsLicenseActive=true')
         elif args.licenses_show_command == "features":
             endpoint.append('/all/features')
 
-    if co.check_attr(args, 'license_id'):
+    if api.check_attr(args, 'license_id'):
         endpoint.append(getattr(args, 'license_id'))
 
 

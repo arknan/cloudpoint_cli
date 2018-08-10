@@ -6,4 +6,4 @@ import api
 
 def entry_point(args):
     getattr(api.Command(), 'authenticates')()
-    sys.exit()
+    sys.exit(1)

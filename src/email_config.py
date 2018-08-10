@@ -5,7 +5,6 @@ import sys
 from getpass import getpass
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -28,7 +27,7 @@ def entry_point(args):
 
     else:
         logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
-        sys.exit()
+        sys.exit(1)
 
     return output
 
@@ -41,7 +40,7 @@ def show():
 
 def create(args):
 
-    if co.check_attr(args, 'email_config_create_command'):
+    if api.check_attr(args, 'email_config_create_command'):
         if args.email_config_create_command == 'aws_ses':
             logger_c.info("Please enter the following AWS details :\n")
             aws_ak = input("Access Key :")
@@ -75,14 +74,15 @@ def create(args):
             })
 
         elif args.email_config_create_command == 'smtp':
-            logger_c.info("\nPlease enter the IP address of SMTP server")
+            logger_c.info("Please enter the IP address of SMTP server")
             smtp_ip = input("IP Address : ")
             logger_c.info("\nPlease enter the port used by SMTP")
             smtp_port = input("Port (25) : ")
             if not smtp_port:
                 smtp_port = 25
-            logger_c.info("Please enter SMTP credentials\n")
-            logger_c.info("[Hit enter to skip if anonymous authentication is used\n]")
+            logger_c.info("Please enter SMTP credentials")
+            logger_c.info(
+                "[Hit enter to skip if anonymous authentication is used\n]")
             smtp_user = input("User name : ")
             smtp_passwd = None
             auth = False
@@ -112,11 +112,12 @@ def create(args):
                 })
         else:
             logger_fc.critical("INTERNAL ERROR 2 IN {}".format(__file__))
-            sys.exit()
+            sys.exit(1)
 
     else:
+        logger_c.error("No arguments provided for 'create'")
         cloudpoint.run(["email_config", "create", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return data
 

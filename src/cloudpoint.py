@@ -28,6 +28,7 @@ import version
 logger_f = logs.setup(__name__, 'f')
 logger_fc = logs.setup(__name__)
 
+
 def create_parser():
 
     """ MAIN PARSER """
@@ -514,17 +515,17 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     if not config.read('/root/.cloudpoint_cli.config'):
         logger_fc.error("\ncloudpoint_cli.config is empty or missing\n")
-        sys.exit()
+        sys.exit(1)
 
     parser_main = create_parser()
     argcomplete.autocomplete(parser_main)
     if len(sys.argv) == 1:
         parser_main.print_help()
-        sys.exit(-1)
+        sys.exit(1)
     else:
         args = parser_main.parse_args()
         logger_f.debug("Calling {}.entry_point() with {}".format(
-           args.command, args))
+            args.command, args))
         output = getattr(globals()[args.command], "entry_point")(args)
         logger_f.debug("From {}.entry_point() Received :\n{}".format(
             args.command, output))

@@ -3,7 +3,6 @@
 import sys
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -35,7 +34,7 @@ def entry_point(args):
     else:
         logger_c.error("No arguments provided for 'reports'")
         cloudpoint.run(["reports", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
@@ -52,14 +51,15 @@ def create():
     # As of CP 2.0.2
     report_type = 'snapshot'
     logger_c.info("Enter a comma separated list of Report fields/columns")
-    logger_c.info("Valid values are : ", sorted(valid_cols), "\n")
+    logger_c.info("Valid values are : {}\n".format(sorted(valid_cols)))
     given_cols = (input("Report Columns :\n")).replace(' ', '').split(',')
 
     for col_type in given_cols:
         if col_type not in valid_cols:
-            logger_c.error("{} is not a valid column type.\nValid types are {}".format(
-                col_type, valid_cols))
-            sys.exit()
+            logger_c.error(
+                "{} is not a valid column type.\nValid types are {}".format(
+                    col_type, valid_cols))
+            sys.exit(1)
 
     expiry_days = input("Report Expiry (in days): ")
     expiry = 86400 * int(expiry_days)
@@ -76,14 +76,14 @@ def create():
 def delete(args, endpoint):
 
     report_id = None
-    if co.check_attr(args, 'report_id'):
+    if api.check_attr(args, 'report_id'):
         report_id = '/' + args.report_id
     else:
         report_id = input("Enter the report id you want to delete : ")
 
     endpoint.append(report_id)
 
-    if not co.check_attr(args, 'reports_delete_command'):
+    if not api.check_attr(args, 'reports_delete_command'):
         endpoint.append('/data')
 
 
@@ -95,7 +95,7 @@ def pretty_print(data):
 
 def re_run(args, endpoint):
     report_id = None
-    if co.check_attr(args, 'report_id'):
+    if api.check_attr(args, 'report_id'):
         report_id = args.report_id
 
     else:
@@ -107,17 +107,17 @@ def re_run(args, endpoint):
 
 def show(args, endpoint):
 
-    if co.check_attr(args, 'reports_show_command'):
+    if api.check_attr(args, 'reports_show_command'):
         if args.reports_show_command == 'report-types':
             endpoint.append('/report-types/')
 
         else:
             endpoint.append('/reports/')
-            if co.check_attr(args, 'report_id'):
+            if api.check_attr(args, 'report_id'):
                 endpoint.append(args.report_id)
 
-            if co.check_attr(args, 'reports_show_command'):
-                if co.check_attr(args, 'report_id'):
+            if api.check_attr(args, 'reports_show_command'):
+                if api.check_attr(args, 'report_id'):
                     if args.reports_show_command == "preview":
                         endpoint.append('/preview')
                     else:
@@ -125,8 +125,8 @@ def show(args, endpoint):
                 else:
                     logger_c.error("Specify a REPORT_ID for getting {}".format(
                         args.reports_show_command))
-                    sys.exit()
+                    sys.exit(1)
     else:
         endpoint.append('/reports/')
-        if co.check_attr(args, 'report_id'):
+        if api.check_attr(args, 'report_id'):
             endpoint.append(args.report_id)

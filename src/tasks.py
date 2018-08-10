@@ -3,7 +3,6 @@
 import sys
 import api
 import cloudpoint
-import constants as co
 import logs
 
 logger_c = logs.setup(__name__, 'c')
@@ -21,9 +20,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'tasks'\n")
+        logger_c.error("No arguments provided for 'tasks'")
         cloudpoint.run(["tasks", "-h"])
-        sys.exit()
+        sys.exit(1)
 
     return output
 
@@ -32,12 +31,12 @@ def delete(args, endpoint):
 
     # STATUS based deletion is failing :( Need to check with Engineering
 
-    if co.check_attr(args, 'task_id'):
+    if api.check_attr(args, 'task_id'):
         endpoint.append(args.task_id)
 
-    elif co.check_attr(args, 'status'):
+    elif api.check_attr(args, 'status'):
         temp_endpoint = ['?status=' + args.status]
-        if co.check_attr(args, 'older_than'):
+        if api.check_attr(args, 'older_than'):
             temp_endpoint.append('&olderThan=' + args.older_than)
 
         endpoint.append(''.join(temp_endpoint))
@@ -50,21 +49,21 @@ def show(args, endpoint):
 
     # MAYBE THE TASKS TYPE FILTER ISN'T WORKING ... PLEASE CHECK WHY LATER
 
-    if co.check_attr(args, 'task_id'):
-        if co.check_attr(args, 'tasks_show_command'):
-            logger_c.error("You cannot print summary of a specific task")
-            sys.exit()
+    if api.check_attr(args, 'task_id'):
+        if api.check_attr(args, 'tasks_show_command'):
+            logger_c.error("You cannot get summary of a specific task")
+            sys.exit(1)
 
         endpoint.append(getattr(args, 'task_id'))
 
-    elif co.check_attr(args, 'tasks_show_command'):
+    elif api.check_attr(args, 'tasks_show_command'):
         endpoint.append('/summary')
 
     else:
         filters = []
         temp_endpoint = []
         for i in 'run_since', 'limit', 'status', 'task_type':
-            if co.check_attr(args, i):
+            if api.check_attr(args, i):
                 filters.append(i)
 
         if (filters) and (filters[0]):
