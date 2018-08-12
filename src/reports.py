@@ -51,14 +51,14 @@ def create():
     # As of CP 2.0.2
     report_type = 'snapshot'
     logger_c.info("Enter a comma separated list of Report fields/columns")
-    logger_c.info("Valid values are : {}\n".format(sorted(valid_cols)))
+    logger_c.info("Valid values are : %s\n", sorted(valid_cols))
     given_cols = (input("Report Columns :\n")).replace(' ', '').split(',')
 
     for col_type in given_cols:
         if col_type not in valid_cols:
             logger_c.error(
-                "{} is not a valid column type.\nValid types are {}".format(
-                    col_type, valid_cols))
+                "'%s' is not a valid column type.\nValid types are %s", col_type,
+                valid_cols)
             sys.exit(1)
 
     expiry_days = input("Report Expiry (in days): ")
@@ -123,8 +123,8 @@ def show(args, endpoint):
                     else:
                         endpoint.append('/data')
                 else:
-                    logger_c.error("Specify a REPORT_ID for getting {}".format(
-                        args.reports_show_command))
+                    logger_c.error("Specify a REPORT_ID for getting %s",
+                                   args.reports_show_command)
                     sys.exit(1)
     else:
         endpoint.append('/reports/')

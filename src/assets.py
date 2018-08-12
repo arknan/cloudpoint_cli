@@ -73,7 +73,7 @@ def create_replica(endpoint):
     for i in repl_locations:
         valid_locations.append(i["region"])
 
-    logger_c.info("Valid destination regions are : {}".format(valid_locations))
+    logger_c.info("Valid destination regions are : %s", valid_locations)
 
     dest_counter = 0
     dest = []
@@ -91,7 +91,7 @@ def create_replica(endpoint):
         else:
             logger_c.error("\nNot a valid location\n")
             logger_c.info(
-                "Valid destination regions are : {}".format(valid_locations))
+                "Valid destination regions are : %s}", valid_locations)
 
     if not dest:
         logger_c.error("You should provide atleast 1 region to replicate to !")
@@ -119,7 +119,7 @@ def create_snapshot(args, endpoint):
     snap_types = json.loads(cloudpoint.run(
         ["assets", "show", "-i", args.asset_id]))["snapMethods"]
     logger_c.info("Please enter a snapshot type")
-    logger_c.info("Valid types for this asset include :{}".format(snap_types))
+    logger_c.info("Valid types for this asset include :{}", snap_types)
     snap_type = input("SnapType : ")
     snap_name = input("Snapshot Name : ")
     snap_descr = input("Description : ")
@@ -195,10 +195,10 @@ def restore(args):
         if snap_type == 'host':
             data["dest"] = snap_source_id
         else:
-            logger_c.info("Snapshot type is : {}".format(snap_type))
+            logger_c.info("Snapshot type is : %s", snap_type)
             logger_c.error("Only host type snapshots are supported thru CLI")
     else:
-        logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
+        logger_fc.critical("INTERNAL ERROR 1 IN %s", __file__)
         sys.exit(1)
 
     return data
@@ -222,11 +222,11 @@ def show(args, endpoint):
                             endpoint.append('/targets')
                         else:
                             logger_fc.critical(
-                                "INTERNAL ERROR 2 IN {}".format(__file__))
+                                "INTERNAL ERROR 2 IN %s", __file__)
                             sys.exit(1)
                 else:
-                    logger_c.error("Argument '{}' needs a snapshot_id".format(
-                        args.snapshots_command))
+                    logger_c.error("Argument '%s' needs a snapshot_id",
+                                   args.snapshots_command)
                     sys.exit(1)
 
             elif args.assets_show_command == "policies":
@@ -234,8 +234,8 @@ def show(args, endpoint):
 
     else:
         if args.assets_show_command in ['snapshots', 'policies']:
-            logger_c.error("Argument '{}' needs an asset_id".format(
-                args.assets_show_command))
+            logger_c.error("Argument '%s' needs an asset_id",
+                           args.assets_show_command)
             sys.exit(1)
 
         if api.check_attr(args, 'assets_show_command'):
@@ -244,7 +244,7 @@ def show(args, endpoint):
             elif args.assets_show_command == "all":
                 pass
             else:
-                logger_fc.critical("INTERNAL ERROR 3 IN {}".format(__file__))
+                logger_fc.critical("INTERNAL ERROR 3 IN '%s'", __file__)
                 sys.exit(1)
         else:
             endpoint.append('/?limit=3')

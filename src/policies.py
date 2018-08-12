@@ -112,7 +112,7 @@ def asset(args, endpoint):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     else:
-        logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
+        logger_fc.critical("INTERNAL ERROR 1 IN '%s'", __file__)
         sys.exit(1)
 
     return output

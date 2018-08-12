@@ -39,7 +39,7 @@ def add(args):
     slf = args.file_name
     contents = None
     if not os.path.isfile(args.file_name):
-        logger_fc.error("File {} doesn't exist.".format(args.file_name))
+        logger_fc.error("File '%s' doesn't exist.", args.file_name)
         logger_fc.error("Check file name/Ensure that a full path is provided")
         sys.exit(1)
 

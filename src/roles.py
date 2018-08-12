@@ -50,8 +50,7 @@ def create():
     for row in roles:
         roles_list.append(row["name"])
     logger_c.info(
-        "Please choose a role type, valid role types include : {} ".format(
-            roles_list))
+        "Please choose a role type. Valid role types include:\n%s", roles_list)
     role_type = (str(input("Role type to associate: "))).upper()
 
     if role_type not in valid_privileges:
@@ -94,7 +93,7 @@ def modify(endpoint):
             role_id = roles_dict[num]['id']
 
     if not role_id:
-        logger_c.error("Role '{}' doesn't exist".format(data["name"]))
+        logger_c.error("Role '%s' doesn't exist", data["name"])
         sys.exit(1)
     else:
         endpoint.append(role_id)

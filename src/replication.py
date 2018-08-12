@@ -64,8 +64,8 @@ def create(args):
     valid_sources = {x['region']: x['id'] for x in repl_locations}
     source = None
     while True:
-        logger_c.info("Enter a source region, valid values are:\n{}".format(
-            list(valid_sources.keys())))
+        logger_c.info("Enter a source region, valid values are:\n%s",
+                      list(valid_sources.keys()))
         source_region = input("Source region : ")
         if source_region in valid_sources:
             source = (valid_sources[source_region])
@@ -77,8 +77,8 @@ def create(args):
     dest_counter = 0
     dest = []
     while dest_counter < 3:
-        logger_c.info("Valid destination regions are : {}".format(
-            list(valid_sources.keys())))
+        logger_c.info("Valid destination regions are : %s",
+                      list(valid_sources.keys()))
         temp = input("Destination : (enter 'none' if you are done) ")
         if temp == 'none':
             break
@@ -121,8 +121,8 @@ def delete(endpoint):
     logger_c.info(
         "Enter the source region of the replication rule to be deleted\n")
     while True:
-        logger_c.info("Valid source regions :{}\n".format(
-            sorted(valid_sources.keys())))
+        logger_c.info("Valid source regions :%s\n",
+                      sorted(valid_sources.keys()))
         src_region = input("Source Region : ")
         if src_region in valid_sources:
             break

@@ -22,8 +22,8 @@ def entry_point(args):
         endpoint.append('/forgotPassword')
         data = reset_password()
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
-        logger_fc.info("Password reset successful for user '{}'".format(
-            data['email']))
+        logger_fc.info("Password reset successful for user '%s'",
+                       data['email'])
 
     elif args.users_command == "show":
         show(args, endpoint)

@@ -26,7 +26,7 @@ def entry_point(args):
         output = 'Email Configuration has been deleted'
 
     else:
-        logger_fc.critical("INTERNAL ERROR 1 IN {}".format(__file__))
+        logger_fc.critical("INTERNAL ERROR 1 IN '%s'", __file__)
         sys.exit(1)
 
     return output
@@ -111,7 +111,7 @@ def create(args):
                     "authentication": False
                 })
         else:
-            logger_fc.critical("INTERNAL ERROR 2 IN {}".format(__file__))
+            logger_fc.critical("INTERNAL ERROR 2 IN '%s'", __file__)
             sys.exit(1)
 
     else:
