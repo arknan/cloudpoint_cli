@@ -16,8 +16,12 @@ Installation
 
 > After setup completes, refresh your bash environment (start a new shell)
 
+Configuration File
+-------------------
+**cloudpoint_cli.config** contains all the configurable information for cloudpoint_cli
+
 Usage/Examples
--------------
+---------------
 
 **For running any commands with the CLI, you first need to _authenticate_ with CloudPoint**
 
