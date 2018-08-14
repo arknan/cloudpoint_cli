@@ -5,7 +5,7 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
+LOG_C = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -20,7 +20,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'tasks'")
+        LOG_C.error("No arguments provided for 'tasks'")
         cloudpoint.run(["tasks", "-h"])
         sys.exit(1)
 
@@ -41,7 +41,7 @@ def delete(args, endpoint):
 
         endpoint.append(''.join(temp_endpoint))
     else:
-        logger_c.error("Invalid option for 'delete'")
+        LOG_C.error("Invalid option for 'delete'")
         cloudpoint.run(["tasks", "delete", "-h"])
 
 
@@ -51,7 +51,7 @@ def show(args, endpoint):
 
     if api.check_attr(args, 'task_id'):
         if api.check_attr(args, 'tasks_show_command'):
-            logger_c.error("You cannot get summary of a specific task")
+            LOG_C.error("You cannot get summary of a specific task")
             sys.exit(1)
 
         endpoint.append(getattr(args, 'task_id'))

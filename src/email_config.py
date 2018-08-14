@@ -7,8 +7,8 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
-logger_fc = logs.setup(__name__)
+LOG_C = logs.setup(__name__, 'c')
+LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -26,7 +26,7 @@ def entry_point(args):
         output = 'Email Configuration has been deleted'
 
     else:
-        logger_fc.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+        LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
         sys.exit(1)
 
     return output
@@ -42,11 +42,11 @@ def create(args):
 
     if api.check_attr(args, 'email_config_create_command'):
         if args.email_config_create_command == 'aws_ses':
-            logger_c.info("Please enter the following AWS details :\n")
+            LOG_C.info("Please enter the following AWS details :\n")
             aws_ak = input("Access Key :")
             aws_sk = getpass("Secret Key :")
             aws_region = input("Region :")
-            logger_c.info("Please enter the sender's email address")
+            LOG_C.info("Please enter the sender's email address")
             aws_email = input("Sender Email : ")
 
             data = {
@@ -60,9 +60,9 @@ def create(args):
             })
 
         elif args.email_config_create_command == 'send_grid':
-            logger_c.info("Please enter the sender's email address")
+            LOG_C.info("Please enter the sender's email address")
             sg_email = input("Sender Email : ")
-            logger_c.info("\nPlease enter the API key for SendGrid\n")
+            LOG_C.info("\nPlease enter the API key for SendGrid\n")
             sg_apikey = getpass("API Key :")
 
             data = {
@@ -74,14 +74,14 @@ def create(args):
             })
 
         elif args.email_config_create_command == 'smtp':
-            logger_c.info("Please enter the IP address of SMTP server")
+            LOG_C.info("Please enter the IP address of SMTP server")
             smtp_ip = input("IP Address : ")
-            logger_c.info("\nPlease enter the port used by SMTP")
+            LOG_C.info("\nPlease enter the port used by SMTP")
             smtp_port = input("Port (25) : ")
             if not smtp_port:
                 smtp_port = 25
-            logger_c.info("Please enter SMTP credentials")
-            logger_c.info(
+            LOG_C.info("Please enter SMTP credentials")
+            LOG_C.info(
                 "[Hit enter to skip if anonymous authentication is used\n]")
             smtp_user = input("User name : ")
             smtp_passwd = None
@@ -89,7 +89,7 @@ def create(args):
             if smtp_user:
                 auth = True
                 smtp_passwd = getpass("Password: ")
-            logger_c.info("\nPlease enter the smtp sender email address")
+            LOG_C.info("\nPlease enter the smtp sender email address")
             smtp_email = input("Sender Email : ")
 
             data = {
@@ -111,11 +111,11 @@ def create(args):
                     "authentication": False
                 })
         else:
-            logger_fc.critical("INTERNAL ERROR 2 IN '%s'", __file__)
+            LOG_FC.critical("INTERNAL ERROR 2 IN '%s'", __file__)
             sys.exit(1)
 
     else:
-        logger_c.error("No arguments provided for 'create'")
+        LOG_C.error("No arguments provided for 'create'")
         cloudpoint.run(["email_config", "create", "-h"])
         sys.exit(1)
 

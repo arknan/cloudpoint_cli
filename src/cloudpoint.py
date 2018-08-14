@@ -25,8 +25,8 @@ import telemetry
 import users
 import version
 
-logger_f = logs.setup(__name__, 'f')
-logger_fc = logs.setup(__name__)
+LOG_F = logs.setup(__name__, 'f')
+LOG_FC = logs.setup(__name__)
 
 
 def create_parser():
@@ -503,7 +503,7 @@ def create_parser():
 
 
 def run(pass_args=None):
-    logger_f.debug("cloudpoint.run called with {}".format(pass_args))
+    LOG_F.debug("cloudpoint.run called with %s", pass_args)
     parser = create_parser()
     args = parser.parse_args(pass_args)
     output = getattr(globals()[args.command], "entry_point")(args)
@@ -514,7 +514,7 @@ if __name__ == '__main__':
 
     config = configparser.ConfigParser()
     if not config.read('/root/.cloudpoint_cli.config'):
-        logger_fc.error("\ncloudpoint_cli.config is empty or missing\n")
+        LOG_FC.error("cloudpoint_cli.config is empty or missing\n")
         sys.exit(1)
 
     parser_main = create_parser()
@@ -524,9 +524,8 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         args = parser_main.parse_args()
-        logger_f.debug("Calling {}.entry_point() with {}".format(
-            args.command, args))
+        LOG_F.debug("Calling %s.entry_point() with %s", args.command, args)
         output = getattr(globals()[args.command], "entry_point")(args)
-        logger_f.debug("From {}.entry_point() Received :\n{}".format(
-            args.command, output))
+        LOG_F.debug("From %s.entry_point() Received :\n%s",
+                    args.command, output)
         getattr(globals()[args.command], "pretty_print")(output)

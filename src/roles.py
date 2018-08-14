@@ -6,7 +6,7 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
+LOG_C = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -30,7 +30,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'roles'")
+        LOG_C.error("No arguments provided for 'roles'")
         cloudpoint.run(["roles", "-h"])
         sys.exit(1)
 
@@ -49,15 +49,15 @@ def create():
     roles_list = []
     for row in roles:
         roles_list.append(row["name"])
-    logger_c.info(
+    LOG_C.info(
         "Please choose a role type. Valid role types include:\n%s", roles_list)
     role_type = (str(input("Role type to associate: "))).upper()
 
     if role_type not in valid_privileges:
-        logger_c.error("That is not a valid role type !")
+        LOG_C.error("That is not a valid role type !")
         sys.exit(1)
 
-    logger_c.info("Enter the user's email address that should be associated \
+    LOG_C.info("Enter the user's email address that should be associated \
 with this role")
     user_email = str(input("Email Address : "))
 
@@ -93,7 +93,7 @@ def modify(endpoint):
             role_id = roles_dict[num]['id']
 
     if not role_id:
-        logger_c.error("Role '%s' doesn't exist", data["name"])
+        LOG_C.error("Role '%s' doesn't exist", data["name"])
         sys.exit(1)
     else:
         endpoint.append(role_id)

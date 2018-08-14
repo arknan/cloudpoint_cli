@@ -27,20 +27,20 @@ def setup(mod_name, handler_type='fc'):
     console_formatter = logging.Formatter(
         '%(levelname)s : %(message)s')
 
-    ch = logging.StreamHandler()
-    ch.setLevel(getattr(logging, log_level.upper()))
-    ch.setFormatter(console_formatter)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(getattr(logging, log_level.upper()))
+    console_handler.setFormatter(console_formatter)
 
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(getattr(logging, log_level.upper()))
-    fh.setFormatter(file_formatter)
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(getattr(logging, log_level.upper()))
+    file_handler.setFormatter(file_formatter)
 
     if handler_type == 'c':
-        logger.addHandler(ch)
+        logger.addHandler(console_handler)
     elif handler_type == 'f':
-        logger.addHandler(fh)
+        logger.addHandler(file_handler)
     else:
-        logger.addHandler(ch)
-        logger.addHandler(fh)
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
 
     return logger

@@ -5,7 +5,7 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
+LOG_C = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -21,7 +21,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'agents'")
+        LOG_C.error("No arguments provided for 'agents'")
         cloudpoint.run(["agents", "-h"])
         sys.exit(1)
 
@@ -41,7 +41,7 @@ def delete(args, endpoint):
                 endpoint.append('/configs')
                 endpoint.append('/' + args.config_id)
     else:
-        logger_c.error("No arguments provided for 'delete'")
+        LOG_C.error("No arguments provided for 'delete'")
         cloudpoint.run(["agents", "delete", "-h"])
         sys.exit(1)
 
@@ -63,7 +63,7 @@ def show(args, endpoint):
                         endpoint.append('/configs/')
 
             elif args.agents_show_command == "summary":
-                logger_c.error(
+                LOG_C.error(
                     "Summary cannot be provided for a specific agent")
                 sys.exit(1)
     else:

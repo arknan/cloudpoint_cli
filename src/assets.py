@@ -6,8 +6,8 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
-logger_fc = logs.setup(__name__)
+LOG_C = logs.setup(__name__, 'c')
+LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -34,7 +34,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'assets'")
+        LOG_C.error("No arguments provided for 'assets'")
         cloudpoint.run(["assets", "-h"])
         sys.exit(1)
 
@@ -49,7 +49,7 @@ def create(args, endpoint):
         elif args.assets_create_command == 'replica':
             data = create_replica(endpoint)
     else:
-        logger_c.error("No arguments provided for 'create'")
+        LOG_C.error("No arguments provided for 'create'")
         cloudpoint.run(["assets", "create", "-h"])
         sys.exit(1)
 
@@ -58,8 +58,8 @@ def create(args, endpoint):
 
 def create_replica(endpoint):
 
-    logger_c.info("Enter the snapshot ID to replicate and the destination(s)")
-    logger_c.info("A maximum of 3 destinations are allowed\n")
+    LOG_C.info("Enter the snapshot ID to replicate and the destination(s)")
+    LOG_C.info("A maximum of 3 destinations are allowed\n")
     snap_id = input("Snapshot ID : ")
 
     snap_info = json.loads(getattr(api.Command(), 'gets')(
@@ -73,7 +73,7 @@ def create_replica(endpoint):
     for i in repl_locations:
         valid_locations.append(i["region"])
 
-    logger_c.info("Valid destination regions are : %s", valid_locations)
+    LOG_C.info("Valid destination regions are : %s", valid_locations)
 
     dest_counter = 0
     dest = []
@@ -89,12 +89,12 @@ def create_replica(endpoint):
                     dest_counter += 1
 
         else:
-            logger_c.error("\nNot a valid location\n")
-            logger_c.info(
+            LOG_C.error("\nNot a valid location\n")
+            LOG_C.info(
                 "Valid destination regions are : %s}", valid_locations)
 
     if not dest:
-        logger_c.error("You should provide atleast 1 region to replicate to !")
+        LOG_C.error("You should provide atleast 1 region to replicate to !")
         sys.exit(1)
 
     data = {
@@ -113,13 +113,13 @@ def create_snapshot(args, endpoint):
         endpoint.append(args.asset_id)
         endpoint.append('/snapshots/')
     else:
-        logger_c.error("Please mention an ASSET_ID for taking snapshot")
+        LOG_C.error("Please mention an ASSET_ID for taking snapshot")
         sys.exit(1)
 
     snap_types = json.loads(cloudpoint.run(
         ["assets", "show", "-i", args.asset_id]))["snapMethods"]
-    logger_c.info("Please enter a snapshot type")
-    logger_c.info("Valid types for this asset include :{}", snap_types)
+    LOG_C.info("Please enter a snapshot type")
+    LOG_C.info("Valid types for this asset include :%s", snap_types)
     snap_type = input("SnapType : ")
     snap_name = input("Snapshot Name : ")
     snap_descr = input("Description : ")
@@ -129,7 +129,7 @@ def create_snapshot(args, endpoint):
         if snap_bool in ["True", "False"]:
             break
         else:
-            logger_c.error("Choose either 'True' or 'False'")
+            LOG_C.error("Choose either 'True' or 'False'")
     data = {
         "snapType": snap_type,
         "name": snap_name,
@@ -158,7 +158,7 @@ def policy(args, endpoint):
         endpoint.append('/policies/')
         endpoint.append(args.policy_id)
     else:
-        logger_c.error("No arguments provided for 'policy'")
+        LOG_C.error("No arguments provided for 'policy'")
         cloudpoint.run(["assets", "policy", "-h"])
         sys.exit(1)
 
@@ -174,11 +174,11 @@ def policy(args, endpoint):
 def restore(args):
 
     if not api.check_attr(args, "snapshot_id"):
-        logger_c.error("Please mention a SNAP_ID for doing restores")
+        LOG_C.error("Please mention a SNAP_ID for doing restores")
         sys.exit(1)
 
-    logger_c.info("\nPlease enter a restore location type.\n")
-    logger_c.info("Valid values are [new, original]\n")
+    LOG_C.info("\nPlease enter a restore location type.\n")
+    LOG_C.info("Valid values are [new, original]\n")
     restore_loc = None
     data = {
         "snapid": args.snapshot_id
@@ -195,10 +195,10 @@ def restore(args):
         if snap_type == 'host':
             data["dest"] = snap_source_id
         else:
-            logger_c.info("Snapshot type is : %s", snap_type)
-            logger_c.error("Only host type snapshots are supported thru CLI")
+            LOG_C.info("Snapshot type is : %s", snap_type)
+            LOG_C.error("Only host type snapshots are supported thru CLI")
     else:
-        logger_fc.critical("INTERNAL ERROR 1 IN %s", __file__)
+        LOG_FC.critical("INTERNAL ERROR 1 IN %s", __file__)
         sys.exit(1)
 
     return data
@@ -221,12 +221,12 @@ def show(args, endpoint):
                         elif args.snapshots_command == "restore-targets":
                             endpoint.append('/targets')
                         else:
-                            logger_fc.critical(
+                            LOG_FC.critical(
                                 "INTERNAL ERROR 2 IN %s", __file__)
                             sys.exit(1)
                 else:
-                    logger_c.error("Argument '%s' needs a snapshot_id",
-                                   args.snapshots_command)
+                    LOG_C.error("Argument '%s' needs a snapshot_id",
+                                args.snapshots_command)
                     sys.exit(1)
 
             elif args.assets_show_command == "policies":
@@ -234,8 +234,8 @@ def show(args, endpoint):
 
     else:
         if args.assets_show_command in ['snapshots', 'policies']:
-            logger_c.error("Argument '%s' needs an asset_id",
-                           args.assets_show_command)
+            LOG_C.error("Argument '%s' needs an asset_id",
+                        args.assets_show_command)
             sys.exit(1)
 
         if api.check_attr(args, 'assets_show_command'):
@@ -244,12 +244,12 @@ def show(args, endpoint):
             elif args.assets_show_command == "all":
                 pass
             else:
-                logger_fc.critical("INTERNAL ERROR 3 IN '%s'", __file__)
+                LOG_FC.critical("INTERNAL ERROR 3 IN '%s'", __file__)
                 sys.exit(1)
         else:
             endpoint.append('/?limit=3')
-            logger_c.info("BY DEFAULT ONLY 3 ASSETS ARE SHOWN")
-            logger_c.info("TO SEE ALL ASSETS : 'cloudpoint assets show all'")
+            LOG_C.info("BY DEFAULT ONLY 3 ASSETS ARE SHOWN")
+            LOG_C.info("TO SEE ALL ASSETS : 'cloudpoint assets show all'")
 
 
 def pretty_print(data):

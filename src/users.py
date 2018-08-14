@@ -6,8 +6,8 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
-logger_fc = logs.setup(__name__)
+LOG_C = logs.setup(__name__, 'c')
+LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -22,15 +22,15 @@ def entry_point(args):
         endpoint.append('/forgotPassword')
         data = reset_password()
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
-        logger_fc.info("Password reset successful for user '%s'",
-                       data['email'])
+        LOG_FC.info("Password reset successful for user '%s'",
+                    data['email'])
 
     elif args.users_command == "show":
         show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'users'")
+        LOG_C.error("No arguments provided for 'users'")
         cloudpoint.run(["users", "-h"])
         sys.exit(1)
 
@@ -40,7 +40,7 @@ def entry_point(args):
 # def create(args, endpoint):
 def create():
 
-    logger_c.warning("User must be verifiable by both LDAP and SMTP")
+    LOG_C.warning("User must be verifiable by both LDAP and SMTP")
     first_name = input("Firstname : ")
     last_name = input("Lastname : ")
     email_addr = input("Email : ")
@@ -63,7 +63,7 @@ def pretty_print(data):
 def reset_password():
 
     # API endpoint is messed up .. this doesn't work either :(
-    logger_c.info("Please enter the following details of the user :")
+    LOG_C.info("Please enter the following details of the user :")
     email_addr = input("Email Address : ")
     new_passwd = getpass("New Password : ")
 

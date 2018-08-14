@@ -5,7 +5,7 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
+LOG_C = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -17,7 +17,7 @@ def entry_point(args):
             api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'privileges'")
+        LOG_C.error("No arguments provided for 'privileges'")
         cloudpoint.run(["privileges", "-h"])
         sys.exit(1)
 

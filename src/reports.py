@@ -5,7 +5,7 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
+LOG_C = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -32,7 +32,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'reports'")
+        LOG_C.error("No arguments provided for 'reports'")
         cloudpoint.run(["reports", "-h"])
         sys.exit(1)
 
@@ -50,15 +50,14 @@ def create():
     # Defaulting report_type to 'snapshot' since there are no other types
     # As of CP 2.0.2
     report_type = 'snapshot'
-    logger_c.info("Enter a comma separated list of Report fields/columns")
-    logger_c.info("Valid values are : %s\n", sorted(valid_cols))
+    LOG_C.info("Enter a comma separated list of Report fields/columns")
+    LOG_C.info("Valid values are : %s\n", sorted(valid_cols))
     given_cols = (input("Report Columns :\n")).replace(' ', '').split(',')
 
     for col_type in given_cols:
         if col_type not in valid_cols:
-            logger_c.error(
-                "'%s' is not a valid column type.\nValid types are %s", col_type,
-                valid_cols)
+            LOG_C.error("'%s' isn't a valid column type.\nValid types are %s",
+                        col_type, valid_cols)
             sys.exit(1)
 
     expiry_days = input("Report Expiry (in days): ")
@@ -123,8 +122,8 @@ def show(args, endpoint):
                     else:
                         endpoint.append('/data')
                 else:
-                    logger_c.error("Specify a REPORT_ID for getting %s",
-                                   args.reports_show_command)
+                    LOG_C.error("Specify a REPORT_ID for getting %s",
+                                args.reports_show_command)
                     sys.exit(1)
     else:
         endpoint.append('/reports/')

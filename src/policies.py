@@ -5,8 +5,8 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
-logger_fc = logs.setup(__name__)
+LOG_C = logs.setup(__name__, 'c')
+LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -33,7 +33,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'policies'")
+        LOG_C.error("No arguments provided for 'policies'")
         cloudpoint.run(["policies", "-h"])
         sys.exit(1)
 
@@ -48,7 +48,7 @@ def asset(args, endpoint):
         endpoint.append('/policies/')
         endpoint.append(args.policy_id)
     else:
-        logger_c.error("No arguments provided for 'asset'")
+        LOG_C.error("No arguments provided for 'asset'")
         cloudpoint.run(["policies", "asset", "-h"])
         sys.exit(1)
 
@@ -59,7 +59,7 @@ def asset(args, endpoint):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     else:
-        logger_fc.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+        LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
         sys.exit(1)
 
     return output
@@ -76,23 +76,23 @@ def create():
     while True:
         name = input("Policy Name : ")
         if (len(name) > 32) or (len(name) < 2):
-            logger_c.error(
+            LOG_C.error(
                 "Policy Name should be between 2 and 32 characters\n")
         else:
             break
 
-    appConsist = True
+    app_consist = True
     while True:
-        appConsist = (input(
+        app_consist = (input(
             "Application Consistent ['y' or 'n'] (y) : ")).lower() or 'y'
-        if appConsist not in ['y', 'n']:
-            logger_c.error("Valid options are 'y' or 'n'\n")
+        if app_consist not in ['y', 'n']:
+            LOG_C.error("Valid options are 'y' or 'n'\n")
         else:
-            if appConsist == 'y':
-                appConsist = True
+            if app_consist == 'y':
+                app_consist = True
                 break
             else:
-                appConsist = False
+                app_consist = False
                 break
 
     tag = input("Description of Policy : ") or ""
@@ -101,13 +101,13 @@ def create():
     prot_levels = ['disk', 'host', 'application']
 
     while True:
-        logger_c.info("Specify Storage/Protection Type. Valid values are %s",
-                      prot_levels)
+        LOG_C.info("Specify Storage/Protection Type. Valid values are %s",
+                   prot_levels)
         prot_level = input("Protection Type : ")
         if prot_level in prot_levels:
             break
         else:
-            logger_c.error("Invalid Protection Type '%s'\n", prot_level)
+            LOG_C.error("Invalid Protection Type '%s'\n", prot_level)
 
     replica = False
     while True:
@@ -120,21 +120,21 @@ def create():
             replica = False
             break
         else:
-            logger_c.error("Invalid Value. Valid options are 'y' OR 'n'\n")
+            LOG_C.error("Invalid Value. Valid options are 'y' OR 'n'\n")
 
     sched_types = ['minutes', 'hourly', 'daily', 'weekly', 'monthly']
     sched_type = None
     while True:
-        logger_c.info("Specify schedule type, valid options are %s", sched_types)
+        LOG_C.info("Specify schedule type, valid options are %s", sched_types)
         sched_type = input("Schedule Type : ")
         if sched_type not in sched_types:
-            logger_c.info("'%s' Not a valid schedule type\n", sched_type)
+            LOG_C.info("'%s' Not a valid schedule type\n", sched_type)
         else:
             break
 
     minute = "0"
     hour = "0"
-    month =  "*"
+    month = "*"
     wday = "*"
     mday = "*"
     valid_wkdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
@@ -142,65 +142,64 @@ def create():
 
     if sched_type == 'minutes':
         while True:
-            logger_c.info("Snapshot every _ minutes? Valid range:%s", '[0-59]')
+            LOG_C.info("Snapshot every _ minutes? Valid range:%s", '[0-59]')
             minute = input("minutes : ")
             if minute in str(list(range(60))):
                 break
             else:
-                logger_c.error("Invalid Value '%s'\n", minute)
+                LOG_C.error("Invalid Value '%s'\n", minute)
 
     elif sched_type == 'hourly':
         while True:
-            logger_c.info("Snapshot every _ hours? Valid range:%s", '[0-23]')
+            LOG_C.info("Snapshot every _ hours? Valid range:%s", '[0-23]')
             hour = input("hour : ")
             if hour in str(list(range(24))):
                 break
             else:
-                logger_c.error("Invalid Value '%s'\n", hour)
+                LOG_C.error("Invalid Value '%s'\n", hour)
 
     elif sched_type == 'daily':
         while True:
-            logger_c.info("Snapshot every day at _ ? Valid range:%s", '[0-23]')
+            LOG_C.info("Snapshot every day at _ ? Valid range:%s", '[0-23]')
             hour = input("hour (0): ") or "0"
             if hour in str(list(range(24))):
                 break
             else:
-                logger_c.error("Invalid Value '%s'\n", hour)
+                LOG_C.error("Invalid Value '%s'\n", hour)
 
     elif sched_type == 'weekly':
         while True:
-            logger_c.info("Snapshot every week on _ ? Valid values:%s",
-                          valid_wkdays)
+            LOG_C.info("Snapshot every week on _ ? Valid values:%s",
+                       valid_wkdays)
             wday = input("Day of the week : ")
             if wday in valid_wkdays:
                 while True:
-                    logger_c.info("Snapshot at _ ? Valid range:%s", '[0-23]')
+                    LOG_C.info("Snapshot at _ ? Valid range:%s", '[0-23]')
                     hour = input("hour (0): ") or "0"
                     if hour in str(list(range(24))):
                         break
                     else:
-                        logger_c.error("Invalid Value '%s'\n", hour)
+                        LOG_C.error("Invalid Value '%s'\n", hour)
                 break
             else:
-                logger_c.error("Invalid Value '%s'\n", wday)
+                LOG_C.error("Invalid Value '%s'\n", wday)
 
     else:
         while True:
-            logger_c.info("Snapshot every month on _ ? Valid values:%s",
-                          '[1-31]')
+            LOG_C.info("Snapshot every month on _ ? Valid values:%s",
+                       '[1-31]')
             mday = input("Date : ")
             if mday in str(list(range(1, 32))):
                 while True:
-                    logger_c.info("Snapshot at _ ? Valid range:%s", '[0-23]')
+                    LOG_C.info("Snapshot at _ ? Valid range:%s", '[0-23]')
                     hour = input("hour (0): ") or "0"
                     if hour in str(list(range(24))):
                         break
                     else:
-                        logger_c.error("Invalid Value '%s'\n", hour)
+                        LOG_C.error("Invalid Value '%s'\n", hour)
                 break
             else:
-                logger_c.error("Invalid Value '%s'\n", mday)
-
+                LOG_C.error("Invalid Value '%s'\n", mday)
 
     schedule = {
         "minute": minute,
@@ -213,8 +212,8 @@ def create():
     ret_unit_types = ['snapshots', 'days', 'weeks', 'months', 'years']
     ret_unit_type = None
     while True:
-        logger_c.info("Enter the retention unit type. Valid values are %s",
-                      ret_unit_types)
+        LOG_C.info("Enter the retention unit type. Valid values are %s",
+                   ret_unit_types)
         ret_unit_type = input("Retention unit type : ")
         if ret_unit_type in ret_unit_types:
             break
@@ -231,7 +230,7 @@ def create():
         "tag": tag,
         "protectionLevel": prot_level,
         "replicate": replica,
-        "appConsist": appConsist,
+        "appConsist": app_consist,
         "retention": retention,
         "schedule": schedule
     }
@@ -249,5 +248,3 @@ def show(args, endpoint):
 
     if api.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
-
-

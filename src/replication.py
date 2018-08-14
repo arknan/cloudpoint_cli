@@ -6,7 +6,7 @@ import api
 import cloudpoint
 import logs
 
-logger_c = logs.setup(__name__, 'c')
+LOG_C = logs.setup(__name__, 'c')
 
 
 def entry_point(args):
@@ -20,7 +20,7 @@ def entry_point(args):
 
     elif args.replication_command == "delete":
         if not api.check_attr(args, 'replication_delete_command'):
-            logger_c.error("No arguments provided for 'delete'")
+            LOG_C.error("No arguments provided for 'delete'")
             cloudpoint.run(["replication", "delete", "-h"])
             sys.exit(1)
 
@@ -30,7 +30,7 @@ def entry_point(args):
 
     elif args.replication_command == "modify":
         if not api.check_attr(args, 'replication_modify_command'):
-            logger_c.error("No arguments provided for 'modify'")
+            LOG_C.error("No arguments provided for 'modify'")
             cloudpoint.run(["replication", "modify", "-h"])
             sys.exit(1)
 
@@ -45,7 +45,7 @@ def entry_point(args):
             api.Command(), 'gets')('/'.join(endpoint))
 
     else:
-        logger_c.error("No arguments provided for 'replication'")
+        LOG_C.error("No arguments provided for 'replication'")
         cloudpoint.run(["replication", "-h"])
         sys.exit(1)
 
@@ -55,7 +55,7 @@ def entry_point(args):
 def create(args):
 
     if not api.check_attr(args, 'replication_create_command'):
-        logger_c.error("No arguments provided for 'create'")
+        LOG_C.error("No arguments provided for 'create'")
         cloudpoint.run(["replication", "create", "-h"])
         sys.exit(1)
 
@@ -64,21 +64,21 @@ def create(args):
     valid_sources = {x['region']: x['id'] for x in repl_locations}
     source = None
     while True:
-        logger_c.info("Enter a source region, valid values are:\n%s",
-                      list(valid_sources.keys()))
+        LOG_C.info("Enter a source region, valid values are:\n%s",
+                   list(valid_sources.keys()))
         source_region = input("Source region : ")
         if source_region in valid_sources:
             source = (valid_sources[source_region])
             del valid_sources[source_region]
             break
         else:
-            logger_c.error("Not a valid choice, please try again")
+            LOG_C.error("Not a valid choice, please try again")
 
     dest_counter = 0
     dest = []
     while dest_counter < 3:
-        logger_c.info("Valid destination regions are : %s",
-                      list(valid_sources.keys()))
+        LOG_C.info("Valid destination regions are : %s",
+                   list(valid_sources.keys()))
         temp = input("Destination : (enter 'none' if you are done) ")
         if temp == 'none':
             break
@@ -88,10 +88,10 @@ def create(args):
             dest_counter += 1
 
         else:
-            logger_c.error("Not a valid location")
+            LOG_C.error("Not a valid location")
 
     if not dest:
-        logger_c.error("You should provide atleast 1 region to replicate to !")
+        LOG_C.error("You should provide atleast 1 region to replicate to !")
         sys.exit(1)
 
     data = {
@@ -118,18 +118,18 @@ def delete(endpoint):
             del valid_sources[k]
 
     src_region = None
-    logger_c.info(
+    LOG_C.info(
         "Enter the source region of the replication rule to be deleted\n")
     while True:
-        logger_c.info("Valid source regions :%s\n",
-                      sorted(valid_sources.keys()))
+        LOG_C.info("Valid source regions :%s\n",
+                   sorted(valid_sources.keys()))
         src_region = input("Source Region : ")
         if src_region in valid_sources:
             break
         else:
-            logger_c.error(
+            LOG_C.error(
                 "No replication rule exists for this source region\n")
-            logger_c.error("Enter a valid source region to delete\n")
+            LOG_C.error("Enter a valid source region to delete\n")
 
     endpoint.append(valid_sources[src_region])
 
