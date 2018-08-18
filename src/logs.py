@@ -2,6 +2,7 @@
 
 import configparser
 import logging
+import os
 import sys
 
 
@@ -30,6 +31,9 @@ def setup(mod_name, handler_type='fc'):
     console_handler = logging.StreamHandler()
     console_handler.setLevel(getattr(logging, log_level.upper()))
     console_handler.setFormatter(console_formatter)
+
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    open(log_file, 'a').close()
 
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(getattr(logging, log_level.upper()))

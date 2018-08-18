@@ -5,12 +5,13 @@ import configparser
 import json
 import sys
 from getpass import getpass
-import requests
-import urllib3
-from urllib3.exceptions import InsecureRequestWarning
 import logs
-
-urllib3.disable_warnings(InsecureRequestWarning)
+try:
+    import requests
+    from requests.packages.urllib3.exceptions import InsecureRequestWarning
+    requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+except ImportError:
+    print("Please install requests for python3 and try again\n")
 
 
 class Command():

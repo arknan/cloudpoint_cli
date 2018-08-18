@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import json
+import re
 import sys
 import api
 import cloudpoint
@@ -246,5 +248,24 @@ def pretty_print(data):
 
 def show(args, endpoint):
 
+    if api.check_attr(args, 'policy_id') and \
+       api.check_attr(args, 'policy_name'):
+        LOG_C.error("Either provide %s or %s, not both",
+                    "policy_id", "policy_name")
+        sys.exit(1)
+
     if api.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
+    else:
+        if api.check_attr(args, 'policy_name'):
+            pol_id = pol_name_to_id(args.policy_name)
+            endpoint.append(pol_id)
+
+
+def pol_name_to_id(pol_name):
+
+    policy_list = cloudpoint.run(["policies", "show"])
+    matches = re.findall(r'"id":(.*),\s+\n\s+"name":(.*),\s+', policy_list)
+    pol_dict = {json.loads(i[1]): json.loads(i[0]) for i in matches}
+
+    return pol_dict[pol_name]

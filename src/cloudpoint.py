@@ -264,7 +264,10 @@ def create_parser():
     parser_policies_show = subparser_policies.add_parser(
         "show", help="Show policy related information")
     parser_policies_show.add_argument(
-        "-i", "--policy-id", help="Show information on a particular policy")
+        "-i", "--policy-id", help="Show information on a particular policy id")
+    parser_policies_show.add_argument(
+        "-n", "--policy-name",
+        help="Show information on a particular policy name")
     # CREATE [PUT/POST] PARSING
     parser_policies_create = subparser_policies.add_parser(
         "create", help="Create policy related information in CloudPoint")
