@@ -8,7 +8,7 @@ Near Future :
 5) Figure out what to do additionally for snapshot restores(dest param)  
 6) Have to work on assets - granules  
 7) Policy modification ..
-8) Move away from ID's to names ! (dont make customers use policy_id ... instead let them use policy_name)  
+~~8) Move away from ID's to names ! (dont make customers use policy_id ... instead let them use policy_name)~~
 9) Need to add filters in REPORT CREATION  
 10) Modifying REPORTS doesn't have the right method listed in the guide  
 ~~11) Policy creation~~
