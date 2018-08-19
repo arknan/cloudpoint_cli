@@ -4,6 +4,7 @@ sig_trap () {
 
     echo -e "\n\n\n\nCleaning up & Terminating on user request .................\n\n"
     rm -f /usr/bin/cloudpoint
+    rm -f /root/.cloudpoint_cli.config
 
 }
 
@@ -68,10 +69,27 @@ else
     fi
 
     pip3 install -r ./requirements.txt
-    ln -s "$(pwd)"/src/cloudpoint.py /usr/bin/cloudpoint
-    ln -s "$(pwd)"/cloudpoint_cli.config /root/.cloudpoint_cli.config
+
+    if ! [ "/usr/bin/cloudpoint" -ef "/$(pwd)/src/cloudpoint.py" ]; 
+    then
+        if [ -L /usr/bin/cloudpoint ];
+        then
+            unlink /usr/bin/cloudpoint
+        fi
+        ln -s "$(pwd)"/src/cloudpoint.py /usr/bin/cloudpoint
+    fi
+
+    if ! [ "/root/.cloudpoint_cli.config" -ef "$(pwd)/cloudpoint_cli.config"];
+    then
+        if [ -L "/root/.cloudpoint_cli.config" ];
+        then
+            unlink /root/.cloudpoint_cli.config
+        fi
+        ln -s "$(pwd)"/cloudpoint_cli.config /root/.cloudpoint_cli.config
+    fi
+
     activate-global-python-argcomplete
-    source /etc/profile
+
     echo -e "Setup is complete...\n" 
     echo -e "Please open up a new session for command completion to work\n"
     echo -e "Run 'cloudpoint -h' to get CloudPoint CLI help\n\n"

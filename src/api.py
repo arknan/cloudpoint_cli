@@ -78,8 +78,21 @@ class Command():
             "email": self.username,
             "password": self.password})
 
-        response = requests.post(self.token_endpoint, verify=self.verify,
-                                 headers=self.token_header, data=self.data)
+        try:
+            response = requests.post(self.token_endpoint, verify=self.verify,
+                                     headers=self.token_header, data=self.data)
+
+        except requests.exceptions.ConnectionError:
+            self.log_fc.error("Connection timed out. Verify if :\n\
+1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n3)Verify if CloudPoint is running\n",
+                              self.ip_addr)
+            sys.exit(1)
+
+        except ValueError:
+            self.log_fc.error("Invalid token! Please Authenticate again\n")
+            sys.exit(1)
+
         self.log_f.debug(
             "Received status code '%s' for AUTHENTICATE", response.status_code)
         if response.status_code == 200:
@@ -107,8 +120,21 @@ class Command():
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.log_f.debug("Calling DELETE on '%s'", self.api_url)
 
-        response = requests.delete(
-            self.api_url, verify=self.verify, headers=self.header)
+        try:
+            response = requests.delete(
+                self.api_url, verify=self.verify, headers=self.header)
+
+        except requests.exceptions.ConnectionError:
+            self.log_fc.error("Connection timed out. Verify if :\n\
+1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n3)Verify if CloudPoint is running\n",
+                              self.ip_addr)
+            sys.exit(1)
+
+        except ValueError:
+            self.log_fc.error("Invalid token! Please Authenticate again")
+            sys.exit(1)
+
         self.log_f.debug("Received '%s' for DELETE", response.status_code)
 
         return response.content.decode('utf-8')
@@ -119,8 +145,21 @@ class Command():
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.log_f.debug("Calling GET on '%s'", self.api_url)
 
-        response = requests.get(
-            self.api_url, headers=self.header, verify=self.verify)
+        try:
+            response = requests.get(
+                self.api_url, headers=self.header, verify=self.verify)
+
+        except requests.exceptions.ConnectionError:
+            self.log_fc.error("Connection timed out. Verify if :\n\
+1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n3)Verify if CloudPoint is running\n",
+                              self.ip_addr)
+            sys.exit(1)
+
+        except ValueError:
+            self.log_fc.error("Invalid token! Please Authenticate again")
+            sys.exit(1)
+
         self.log_f.debug("Received '%s' for GET", response.status_code)
 
         return response.content.decode('utf-8')
@@ -132,8 +171,21 @@ class Command():
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.log_f.debug("Calling PATCH on '%s'", self.api_url)
 
-        response = requests.patch(
-            self.api_url, verify=self.verify, headers=self.header)
+        try:
+            response = requests.patch(
+                self.api_url, verify=self.verify, headers=self.header)
+
+        except requests.exceptions.ConnectionError:
+            self.log_fc.error("Connection timed out. Verify if :\n\
+1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n3)Verify if CloudPoint is running\n",
+                              self.ip_addr)
+            sys.exit(1)
+
+        except ValueError:
+            self.log_fc.error("Invalid token! Please Authenticate again")
+            sys.exit(1)
+
         self.log_f.debug("Received '%s' for PATCH", response.status_code)
 
         return response.content.decode('utf-8')
@@ -146,8 +198,21 @@ class Command():
         self.log_f.debug(
             "Calling POST on '%s' with data : %s", self.api_url, self.data)
 
-        response = requests.post(self.api_url, json=self.data,
-                                 verify=self.verify, headers=self.header)
+        try:
+            response = requests.post(self.api_url, json=self.data,
+                                     verify=self.verify, headers=self.header)
+
+        except requests.exceptions.ConnectionError:
+            self.log_fc.error("Connection timed out. Verify if :\n\
+1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n3)Verify if CloudPoint is running\n",
+                              self.ip_addr)
+            sys.exit(1)
+
+        except ValueError:
+            self.log_fc.error("Invalid token! Please Authenticate again")
+            sys.exit(1)
+
         self.log_f.debug("Received '%s' for POST", response.status_code)
 
         return response.content.decode('utf-8')
@@ -159,32 +224,30 @@ class Command():
         self.api_url = '{}{}'.format(self.base_url, self.endpoint)
         self.log_f.debug(
             "Calling PUT on '%s' with data %s", self.api_url, self.data)
-        response = requests.put(self.api_url, json=self.data,
-                                verify=self.verify, headers=self.header)
+        try:
+            response = requests.put(self.api_url, json=self.data,
+                                    verify=self.verify, headers=self.header)
+
+        except requests.exceptions.ConnectionError:
+            self.log_fc.error("Connection timed out. Verify if :\n\
+1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
+2)Port 443 is open at both ends\n3)Verify if CloudPoint is running\n",
+                              self.ip_addr)
+            sys.exit(1)
+
+        except ValueError:
+            self.log_fc.error("Invalid token! Please Authenticate again")
+            sys.exit(1)
+
         self.log_f.debug("Received '%s' for PUT", response.status_code)
 
         return response.content.decode('utf-8')
 
     def verify_token(self):
-        self.endpoint = '/version'
-        self.api_url = '{}{}'.format(self.base_url, self.endpoint)
+
         if not self.token:
             self.log_c.error("Please authenticate first !")
-            sys.exit(1)
-
-        try:
-            response = requests.get(
-                self.api_url, headers=self.header, verify=self.verify)
-            self.log_f.debug(
-                "Received '%s' for VERIFY_TOKEN", response.status_code)
-        except requests.exceptions.ConnectionError:
-            self.log_fc.error("Connection timed out. Verify if :\n\
-1)CloudPoint server's IP address is %s\n---> Update config file if it isn't\n\
-2)Port 443 is open at both ends\n ", self.ip_addr)
-            sys.exit(1)
-        except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again")
-            sys.exit(1)
+            self.authenticates()
 
         return True
 
