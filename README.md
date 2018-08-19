@@ -21,6 +21,10 @@ Configuration File
 -------------------
 **cloudpoint_cli.config** contains all the configurable information for cloudpoint_cli
 
+Configuration File
+-------------------
+**cloudpoint_cli.config** contains all the configurable information for cloudpoint_cli
+
 Usage/Examples
 ---------------
 
