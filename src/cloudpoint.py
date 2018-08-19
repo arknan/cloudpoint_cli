@@ -276,25 +276,30 @@ def create_parser():
     parser_policies_asset = subparser_policies.add_parser(
         "asset", help="Add/Remove assets to policies")
     parser_policies_asset.add_argument(
-        "-i", "--policy-id", required=True,
-        help="Policy_id to add/remove asset to(from)")
+        "-i", "--policy-id", help="policy_id to add/remove asset to/from")
+    parser_policies_asset.add_argument(
+        "-n", "--policy-name", help="policy_name to add/remove asset to/from")
     subparser_policies_asset = parser_policies_asset.add_subparsers(
         dest="policies_asset_command", metavar='<positional argument>')
     parser_policies_asset_add = subparser_policies_asset.add_parser(
         "add", help="Add asset(s) to a policy")
     parser_policies_asset_add.add_argument(
-        "-i", "--asset-id", required=True,
-        help="Asset_id to add to the policy")
+        "-i", "--asset-id", help="Asset_id to add to the policy")
+    parser_policies_asset_add.add_argument(
+        "-f", "--file-name", help="File containing assets to be added")
     parser_policies_asset_remove = subparser_policies_asset.add_parser(
         "remove", help="Remove asset(s) from a policy")
     parser_policies_asset_remove.add_argument(
-        "-i", "--asset-id", required=True,
-        help="Asset_id to remove from the policy")
+        "-i", "--asset-id", help="Asset_id to remove from the policy")
+    parser_policies_asset_remove.add_argument(
+        "-f", "--file-name", help="File containing assets to be removed")
     # DELETE PARSING
     parser_policies_delete = subparser_policies.add_parser(
         "delete", help="Delete a policy from CloudPoint")
     parser_policies_delete.add_argument(
-        "-i", "--policy-id", required=True, help="Policy_id to delete")
+        "-i", "--policy-id", help="policy_id to delete")
+    parser_policies_delete.add_argument(
+        "-n", "--policy-name", help="policy_name to delete")
 
     """ PRIVILEGE RELATED PARSING """
     parser_privileges = subparser_main.add_parser(
