@@ -129,8 +129,9 @@ def create_parser():
     parser_assets_delete_snapshot = subparser_assets.add_parser(
         "delete-snapshot", help="Delete snapshots")
     parser_assets_delete_snapshot.add_argument(
-        "-i", "--snapshot-id", required=True,
-        help="Delete a specific snapshot")
+        "-i", "--snapshot-id", help="Delete a specific snapshot_id")
+    parser_assets_delete_snapshot.add_argument(
+        "-f", "--file-name", help="File containing snapshot_ids to be deleted")
 
     parser_assets_restore = subparser_assets.add_parser(
         "restore", help="Restore snapshots")

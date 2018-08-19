@@ -19,8 +19,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.assets_command == "delete-snapshot":
-        delete(args, endpoint)
-        output = getattr(api.Command(), "deletes")('/'.join(endpoint))
+        output = delete(args, endpoint)
 
     elif args.assets_command == "policy":
         output = policy(args, endpoint)
@@ -142,13 +141,55 @@ def create_snapshot(args, endpoint):
 
 def delete(args, endpoint):
 
-    snap_info = json.loads(getattr(api.Command(), 'gets')(
-        '/assets/' + args.snapshot_id))
-    snap_source_asset = snap_info["snapSourceId"]
-    endpoint.append('/assets/')
-    endpoint.append(snap_source_asset)
-    endpoint.append('/snapshots/')
-    endpoint.append(args.snapshot_id)
+    def del_snap(snap_id, tmp_endpt):
+
+        err = True
+        snap_info = json.loads(cloudpoint.run(
+            ['assets', 'show', '-i', snap_id]))
+        try:
+            snap_source_asset = snap_info["snapSourceId"]
+            tmp_endpt.append(snap_source_asset)
+            tmp_endpt.append('/snapshots/')
+            tmp_endpt.append(snap_id)
+        except KeyError:
+            err = False
+
+        return err
+
+    if api.check_attr(args, 'snapshot_id') and \
+       api.check_attr(args, 'file_name'):
+        LOG_C.error("Either provide %s or %s, not both", "snapshot_id",
+                    "file_name")
+        sys.exit(1)
+
+    output = None
+    if api.check_attr(args, 'snapshot_id'):
+        if del_snap(args.snapshot_id, endpoint):
+            output = getattr(api.Command(), "deletes")('/'.join(endpoint))
+        else:
+            LOG_C.error("%s not a valid snapshot_id", args.snapshot_id)
+
+        return output
+
+    else:
+        file_input = None
+        if api.check_attr(args, 'file_name'):
+            try:
+                with open(args.file_name, 'r') as infile:
+                    file_input = infile.readlines()
+            except FileNotFoundError as fnfe:
+                LOG_C.error("Please check if file %s exists", args.file_name)
+                LOG_C.info(fnfe)
+                sys.exit(1)
+
+        for snap_ids in file_input:
+            snap_id = snap_ids.strip().replace('\"', '')
+            output = cloudpoint.run(
+                ['assets', 'delete-snapshot', '-i', snap_id])
+            if output:
+                pretty_print(output)
+
+        return "\n"
 
 
 def policy(args, endpoint):
@@ -210,7 +251,7 @@ def show(args, endpoint):
         endpoint.append(args.asset_id)
         if api.check_attr(args, 'assets_show_command'):
             if args.assets_show_command == "snapshots":
-                endpoint.append(args.assets_show_command)
+                endpoint.append("/snapshots")
                 if api.check_attr(args, 'snapshot_id'):
                     endpoint.append(args.snapshot_id)
                     if api.check_attr(args, 'snapshots_command'):
@@ -224,10 +265,6 @@ def show(args, endpoint):
                             LOG_FC.critical(
                                 "INTERNAL ERROR 2 IN %s", __file__)
                             sys.exit(1)
-                else:
-                    LOG_C.error("Argument '%s' needs a snapshot_id",
-                                args.snapshots_command)
-                    sys.exit(1)
 
             elif args.assets_show_command == "policies":
                 endpoint.append(args.assets_show_command)
