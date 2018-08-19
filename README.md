@@ -2,11 +2,12 @@
 
 _A Command Line Interface for Veritas CloudPoint_
 
-It makes two assumptions:
+It makes three assumptions:
 
 
 * You're using **Ubuntu** or **Red Hat Enterprise Linux** to run this program 
 * You're using bash as your shell (**_for command completion only_**)
+* Your system has internet access (**_for downloading python libraries_**)
 
 Installation
 -------------
@@ -14,10 +15,14 @@ Installation
 * _Download cloudpoint_cli_ : **```git clone https://github.com/arknan/cloudpoint_cli.git```**
 * _Run the setup shell script inside it_ : **```./cloudpoint_cli/setup.sh ```**
 
-> After setup completes, refresh your bash environment (start a new shell)
+> After setup completes, start a new shell session  
+
+Configuration File
+-------------------
+**cloudpoint_cli.config** contains all the configurable information for cloudpoint_cli
 
 Usage/Examples
--------------
+---------------
 
 **For running any commands with the CLI, you first need to _authenticate_ with CloudPoint**
 
