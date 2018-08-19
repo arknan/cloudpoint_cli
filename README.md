@@ -2,11 +2,12 @@
 
 _A Command Line Interface for Veritas CloudPoint_
 
-It makes two assumptions:
+It makes three assumptions:
 
 
 * You're using **Ubuntu** or **Red Hat Enterprise Linux** to run this program 
 * You're using bash as your shell (**_for command completion only_**)
+* Your system has internet access (**_for downloading python libraries_**)
 
 Installation
 -------------
