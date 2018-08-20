@@ -20,6 +20,7 @@ import privileges
 import replication
 import reports
 import roles
+import tags
 import tasks
 import telemetry
 import users
@@ -419,7 +420,7 @@ def create_parser():
 
     """ TAG RELATED PARSING """
     parser_tags = subparser_main.add_parser(
-        "tags", help="Tag related operations")
+        "tags", help="Classification tag related operations")
     subparser_tags = parser_tags.add_subparsers(
         dest="tags_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
