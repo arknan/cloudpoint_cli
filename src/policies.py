@@ -330,6 +330,38 @@ def pretty_print(data):
 
 def show(args, endpoint):
 
+    if api.check_attr(args, 'policies_show_command'):
+
+        if api.check_attr(args, 'policy_id') or \
+           api.check_attr(args, 'policy_name'):
+            LOG_C.error("protected-assets subcommand doesn't take \
+policy_id argument")
+            sys.exit(1)
+
+        if args.policies_show_command == 'protected-assets':
+
+            if api.check_attr(args, 'policies_show_protected_assets_command'):
+                data = protected_assets(ast_only=1)
+                print("\n")
+                for i in data:
+                    print(i)
+                print("\n")
+
+            else:
+                data = protected_assets(ast_only=0)
+                print("\n")
+                for key, value in sorted(data.items()):
+                    print("{}: {}\n".format(key, value))
+
+        else:
+            data = unprotected_assets()
+            print("\n")
+            for i in data:
+                print(i)
+            print("\n")
+
+        sys.exit(0)
+
     if api.check_attr(args, 'policy_id') and \
        api.check_attr(args, 'policy_name'):
         LOG_C.error("Either provide %s or %s, not both",
@@ -377,3 +409,52 @@ def pol_name_to_id(pol_name):
         pass
 
     return pl_id
+
+
+def protected_assets(ast_only=0):
+
+    prot_ast = {}
+    assets_only = []
+    all_pols = json.loads(cloudpoint.run(["policies", "show"]))
+    ret_val = None
+
+    if ast_only == 0:
+        prot_ast = {
+            all_pols[i]['name']: all_pols[i]['assets']
+            for i, _ in enumerate(all_pols)}
+
+        ret_val = prot_ast
+
+    else:
+        for i, _ in enumerate(all_pols):
+            for j in all_pols[i]['assets']:
+                assets_only.append(j)
+
+        ret_val = assets_only
+
+    return ret_val
+
+
+def unprotected_assets():
+    all_asset_list = []
+    prot_asset_list = protected_assets(ast_only=1)
+    all_assets = json.loads(cloudpoint.run(["assets", "show", "all"]))['items']
+
+    tmp = []
+    for i, _ in enumerate(all_assets):
+        for key, value in sorted(all_assets[i].items()):
+            if key in ['id', 'type']:
+                tmp.append(value)
+
+    tmp_len = len(tmp)
+    if tmp_len % 2 != 0:
+        LOG_FC.error("INTERNAL ERROR 2 IN '%s'", __file__)
+        sys.exit(1)
+
+    for i in range(0, tmp_len, 2):
+        if tmp[i+1] in ["disk", "host"]:
+            all_asset_list.append((tmp[i]).strip().replace('"', ''))
+
+    unprot_asset_list = list(set(all_asset_list).difference(prot_asset_list))
+
+    return unprot_asset_list

@@ -259,17 +259,6 @@ def create_parser():
         "policies", help="Policy related operations")
     subparser_policies = parser_policies.add_subparsers(
         dest="policies_command", metavar='<positional argument>')
-    # SHOW [GET] PARSING
-    parser_policies_show = subparser_policies.add_parser(
-        "show", help="Show policy related information")
-    parser_policies_show.add_argument(
-        "-i", "--policy-id", help="Show information on a particular policy id")
-    parser_policies_show.add_argument(
-        "-n", "--policy-name",
-        help="Show information on a particular policy name")
-    # CREATE [PUT/POST] PARSING
-    parser_policies_create = subparser_policies.add_parser(
-        "create", help="Create policy related information in CloudPoint")
     # ADD/REMOVE ASSETS [PATCH] PARSING
     parser_policies_asset = subparser_policies.add_parser(
         "asset", help="Add/Remove assets to policies")
@@ -291,6 +280,9 @@ def create_parser():
         "-i", "--asset-id", help="Asset_id to remove from the policy")
     parser_policies_asset_remove.add_argument(
         "-f", "--file-name", help="File containing assets to be removed")
+    # CREATE [PUT/POST] PARSING
+    parser_policies_create = subparser_policies.add_parser(
+        "create", help="Create policy related information in CloudPoint")
     # DELETE PARSING
     parser_policies_delete = subparser_policies.add_parser(
         "delete", help="Delete a policy from CloudPoint")
@@ -298,6 +290,29 @@ def create_parser():
         "-i", "--policy-id", help="policy_id to delete")
     parser_policies_delete.add_argument(
         "-n", "--policy-name", help="policy_name to delete")
+    # SHOW [GET] PARSING
+    parser_policies_show = subparser_policies.add_parser(
+        "show", help="Show policy related information")
+    parser_policies_show.add_argument(
+        "-i", "--policy-id", help="Show information on a particular policy id")
+    parser_policies_show.add_argument(
+        "-n", "--policy-name",
+        help="Show information on a particular policy name")
+    subparser_policies_show = parser_policies_show.add_subparsers(
+        dest="policies_show_command", metavar='<positional argument>')
+    parser_policies_show_protected_assets = subparser_policies_show.add_parser(
+        "protected-assets",
+        help="Show all protected assets and policies protecting them")
+    subparser_policies_show_protected_assets = \
+        parser_policies_show_protected_assets.add_subparsers(
+            dest="policies_show_protected_assets_command",
+            metavar='<positional argument>')
+    parser_policies_show_protected_assets_assets_only = \
+        subparser_policies_show_protected_assets.add_parser(
+            "assets-only",
+            help="Show a list of protected assets, not their policy")
+    parser_policies_show_unprotected_assets = subparser_policies_show.add_parser(
+        "unprotected-assets", help="Show all unprotected assets")
 
     """ PRIVILEGE RELATED PARSING """
     parser_privileges = subparser_main.add_parser(
