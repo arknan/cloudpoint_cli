@@ -97,10 +97,18 @@ def create_parser():
         dest="assets_command", metavar='<positional argument>')
 
     # CREATE [PUT/POST] PARSING
-    parser_assets_create = subparser_assets.add_parser(
-        "create", help="Create asset related information in CloudPoint")
-    subparser_assets_create = parser_assets_create.add_subparsers(
-        dest="assets_create_command", metavar='<positional argument>')
+    parser_assets_create_snapshot = subparser_assets.add_parser(
+        "create-snapshot", help="Take snapshots of assets")
+    parser_assets_create_snapshot.add_argument(
+        "-i", "--asset-id", help="Provide an ASSET_ID to snap")
+    # DELETE PARSING
+    parser_assets_delete_snapshot = subparser_assets.add_parser(
+        "delete-snapshot", help="Delete snapshots")
+    parser_assets_delete_snapshot.add_argument(
+        "-i", "--snapshot-id", help="Delete a specific snapshot_id")
+    parser_assets_delete_snapshot.add_argument(
+        "-f", "--file-name", help="File containing snapshot_ids to be deleted")
+    # CREATE [PUT/POST] PARSING - ROUND 2 
     parser_assets_policy = subparser_assets.add_parser(
         "policy", help="Assign/Remove a policy to/from an asset")
     parser_assets_policy.add_argument(
@@ -118,21 +126,10 @@ def create_parser():
     parser_assets_policy_remove.add_argument(
         "-i", "--policy-id", required=True,
         help="Provide a policy_id to remove from an asset")
-    parser_assets_create_snapshot = subparser_assets_create.add_parser(
-        "snapshot", help="Take snapshots of assets")
-    parser_assets_create_snapshot.add_argument(
-        "-i", "--asset-id", help="Provide an ASSET_ID to snap")
-    parser_assets_create_replica = subparser_assets_create.add_parser(
-        "replica", help="Replicate Existing snapshots")
-    parser_assets_create_replica.add_argument(
+    parser_assets_replicate = subparser_assets.add_parser(
+        "replicate", help="Replicate Existing snapshots")
+    parser_assets_replicate.add_argument(
         "-i", "--snapshot-id", help="Provide a SNAPSHOT_ID to replicate")
-    # DELETE PARSING
-    parser_assets_delete_snapshot = subparser_assets.add_parser(
-        "delete-snapshot", help="Delete snapshots")
-    parser_assets_delete_snapshot.add_argument(
-        "-i", "--snapshot-id", help="Delete a specific snapshot_id")
-    parser_assets_delete_snapshot.add_argument(
-        "-f", "--file-name", help="File containing snapshot_ids to be deleted")
 
     parser_assets_restore = subparser_assets.add_parser(
         "restore", help="Restore snapshots")

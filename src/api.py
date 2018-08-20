@@ -90,7 +90,7 @@ class Command():
             sys.exit(1)
 
         except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again\n")
+            self.log_c.error("Invalid token! Please Authenticate again\n")
             sys.exit(1)
 
         self.log_f.debug(
@@ -132,7 +132,7 @@ class Command():
             sys.exit(1)
 
         except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again")
+            self.log_c.error("Invalid token! Please Authenticate again")
             sys.exit(1)
 
         self.log_f.debug("Received '%s' for DELETE", response.status_code)
@@ -157,7 +157,7 @@ class Command():
             sys.exit(1)
 
         except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again")
+            self.log_c.error("Invalid token! Please Authenticate again")
             sys.exit(1)
 
         self.log_f.debug("Received '%s' for GET", response.status_code)
@@ -183,7 +183,7 @@ class Command():
             sys.exit(1)
 
         except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again")
+            self.log_c.error("Invalid token! Please Authenticate again")
             sys.exit(1)
 
         self.log_f.debug("Received '%s' for PATCH", response.status_code)
@@ -210,7 +210,7 @@ class Command():
             sys.exit(1)
 
         except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again")
+            self.log_c.error("Invalid token! Please Authenticate again")
             sys.exit(1)
 
         self.log_f.debug("Received '%s' for POST", response.status_code)
@@ -236,7 +236,7 @@ class Command():
             sys.exit(1)
 
         except ValueError:
-            self.log_fc.error("Invalid token! Please Authenticate again")
+            self.log_c.error("Invalid token! Please Authenticate again")
             sys.exit(1)
 
         self.log_f.debug("Received '%s' for PUT", response.status_code)

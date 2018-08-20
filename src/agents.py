@@ -54,22 +54,47 @@ def show(args, endpoint):
         if api.check_attr(args, 'agents_show_command'):
 
             if args.agents_show_command == "plugins":
-                endpoint.append("plugins/")
+                if api.check_attr(args, 'agent_id'):
+                    endpoint.append("plugins/")
+                else:
+                    LOG_C.error("Plugins sub-command needs an agent_id")
+                    sys.exit(1)
 
-                if api.check_attr(args, "configured_plugin_name"):
-                    endpoint.append(args.configured_plugin_name)
-
-                    if api.check_attr(args, 'agents_show_plugins_command'):
-                        endpoint.append('/configs/')
-
-            elif args.agents_show_command == "summary":
+            else:
                 LOG_C.error(
                     "Summary cannot be provided for a specific agent")
                 sys.exit(1)
+
+            if api.check_attr(args, "configured_plugin_name"):
+                endpoint.append(args.configured_plugin_name)
+
+                if api.check_attr(args, 'agents_show_plugins_command'):
+                    if api.check_attr(args, 'agent_id') and \
+                       api.check_attr(args, "configure_plugin_name"):
+                        endpoint.append('/configs/')
+                    else:
+                        LOG_C.error("Configs sub-command needs an \
+agent_id and plugin_name")
+                        sys.exit(1)
+
+            else:
+                if api.check_attr(args, 'agents_show_plugins_command'):
+                    LOG_C.error("Configs sub-command needs an agent_id \
+and plugin_name")
+                    sys.exit(1)
+
     else:
         if api.check_attr(args, 'agents_show_command'):
             if args.agents_show_command == 'summary':
                 endpoint.append("summary")
+            else:
+                if api.check_attr(args, 'agents_show_plugins_command'):
+                    LOG_C.error("Configs sub-command needs an agent_id \
+and plugin_name")
+                    sys.exit(1)
+                else:
+                    LOG_C.error("Plugins sub-command needs an agent_id")
+                    sys.exit(1)
 
 
 def pretty_print(data):

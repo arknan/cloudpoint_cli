@@ -14,15 +14,19 @@ def entry_point(args):
 
     endpoint = ['/assets/']
 
-    if args.assets_command == "create":
-        data = create(args, endpoint)
+    if args.assets_command == "create-snapshot":
+        data = create_snapshot(args, endpoint)
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.assets_command == "delete-snapshot":
-        output = delete(args, endpoint)
+        output = delete_snapshot(args, endpoint)
 
     elif args.assets_command == "policy":
         output = policy(args, endpoint)
+
+    elif args.assets_command == 'replicate':
+        data = replicate(args, endpoint)
+        output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.assets_command == "restore":
         data = restore(args)
@@ -40,73 +44,6 @@ def entry_point(args):
     return output
 
 
-def create(args, endpoint):
-    data = None
-    if api.check_attr(args, 'assets_create_command'):
-        if args.assets_create_command == 'snapshot':
-            data = create_snapshot(args, endpoint)
-        elif args.assets_create_command == 'replica':
-            data = create_replica(endpoint)
-    else:
-        LOG_C.error("No arguments provided for 'create'")
-        cloudpoint.run(["assets", "create", "-h"])
-        sys.exit(1)
-
-    return data
-
-
-def create_replica(endpoint):
-
-    LOG_C.info("Enter the snapshot ID to replicate and the destination(s)")
-    LOG_C.info("A maximum of 3 destinations are allowed\n")
-    snap_id = input("Snapshot ID : ")
-
-    snap_info = json.loads(getattr(api.Command(), 'gets')(
-        '/assets/' + snap_id))
-    snap_source_asset = snap_info["snapSourceId"]
-    repl_locations = json.loads(getattr(api.Command(), 'gets')(
-        '/assets/' + snap_source_asset + '/snapshots/' + snap_id +
-        '/repl-targets/'))
-
-    valid_locations = []
-    for i in repl_locations:
-        valid_locations.append(i["region"])
-
-    LOG_C.info("Valid destination regions are : %s", valid_locations)
-
-    dest_counter = 0
-    dest = []
-    while dest_counter < 3:
-        temp = input("Destination (enter 'none' if you are done) : ")
-        if temp == 'none':
-            break
-
-        elif temp in valid_locations:
-            for i in repl_locations:
-                if temp == i["region"]:
-                    dest.append(i["id"])
-                    dest_counter += 1
-
-        else:
-            LOG_C.error("\nNot a valid location\n")
-            LOG_C.info(
-                "Valid destination regions are : %s}", valid_locations)
-
-    if not dest:
-        LOG_C.error("You should provide atleast 1 region to replicate to !")
-        sys.exit(1)
-
-    data = {
-        "snapType": "replica",
-        "srcSnapId": snap_id,
-        "dest": dest
-    }
-    endpoint.append(snap_source_asset)
-    endpoint.append('/snapshots/')
-
-    return data
-
-
 def create_snapshot(args, endpoint):
     if api.check_attr(args, "asset_id"):
         endpoint.append(args.asset_id)
@@ -115,13 +52,18 @@ def create_snapshot(args, endpoint):
         LOG_C.error("Please mention an ASSET_ID for taking snapshot")
         sys.exit(1)
 
+    # The GUI asks only 2 questions, hence commenting out the complexities
+    # More questions can always be asked ;)
+    """
     snap_types = json.loads(cloudpoint.run(
         ["assets", "show", "-i", args.asset_id]))["snapMethods"]
     LOG_C.info("Please enter a snapshot type")
     LOG_C.info("Valid types for this asset include :%s", snap_types)
     snap_type = input("SnapType : ")
+    """
     snap_name = input("Snapshot Name : ")
     snap_descr = input("Description : ")
+    """
     snap_bool = None
     while True:
         snap_bool = input("Consistent ? [True / False] : ")
@@ -135,11 +77,16 @@ def create_snapshot(args, endpoint):
         "description": snap_descr,
         "consistent": snap_bool
     }
+    """
+    data = {
+        "name": snap_name,
+        "description": snap_descr
+    }
 
     return data
 
 
-def delete(args, endpoint):
+def delete_snapshot(args, endpoint):
 
     def del_snap(snap_id, tmp_endpt):
 
@@ -168,6 +115,7 @@ def delete(args, endpoint):
             output = getattr(api.Command(), "deletes")('/'.join(endpoint))
         else:
             LOG_C.error("%s not a valid snapshot_id", args.snapshot_id)
+            output = ""
 
         return output
 
@@ -249,34 +197,45 @@ def show(args, endpoint):
 
     if api.check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
+
         if api.check_attr(args, 'assets_show_command'):
             if args.assets_show_command == "snapshots":
                 endpoint.append("/snapshots")
+
                 if api.check_attr(args, 'snapshot_id'):
                     endpoint.append(args.snapshot_id)
+
                     if api.check_attr(args, 'snapshots_command'):
+
                         if args.snapshots_command == "granules":
                             endpoint.append(args.snapshots_command + '/')
+
                             if api.check_attr(args, 'granule_id'):
                                 endpoint.append(args.granule_id)
+
                         elif args.snapshots_command == "restore-targets":
                             endpoint.append('/targets')
+
                         else:
                             LOG_FC.critical(
                                 "INTERNAL ERROR 2 IN %s", __file__)
                             sys.exit(1)
 
             elif args.assets_show_command == "policies":
-                endpoint.append(args.assets_show_command)
+                endpoint.append("/policies/")
+
+            elif args.assets_show_command == "all":
+                LOG_C.error("'all' sub-command doesn't work with an asset_id")
+                sys.exit(1)
 
     else:
-        if args.assets_show_command in ['snapshots', 'policies']:
-            LOG_C.error("Argument '%s' needs an asset_id",
-                        args.assets_show_command)
-            sys.exit(1)
-
         if api.check_attr(args, 'assets_show_command'):
-            if args.assets_show_command == "summary":
+            if args.assets_show_command in ['snapshots', 'policies']:
+                LOG_C.error("Argument '%s' needs an asset_id",
+                            args.assets_show_command)
+                sys.exit(1)
+
+            elif args.assets_show_command == "summary":
                 endpoint.append('/summary')
             elif args.assets_show_command == "all":
                 pass
@@ -293,3 +252,59 @@ def pretty_print(data):
     # This function has to be tailor suited for each command's output
     # Since all commands don't have a standard output format
     print(data)
+
+
+def replicate(args, endpoint):
+
+    snap_id = None
+    if api.check_attr(args, 'snapshot_id'):
+        snap_id = args.snapshot_id
+    else:
+        LOG_C.info("Enter the snapshot ID to replicate and the destination(s)")
+        snap_id = input("Snapshot ID : ")
+
+    LOG_C.info("A maximum of 3 destinations are allowed for replication\n")
+    snap_info = json.loads(getattr(api.Command(), 'gets')(
+        '/assets/' + snap_id))
+    snap_source_asset = snap_info["snapSourceId"]
+    repl_locations = json.loads(getattr(api.Command(), 'gets')(
+        '/assets/' + snap_source_asset + '/snapshots/' + snap_id +
+        '/repl-targets/'))
+
+    valid_locations = []
+    for i in repl_locations:
+        valid_locations.append(i["region"])
+
+    LOG_C.info("Valid destination regions are : %s", valid_locations)
+
+    dest_counter = 0
+    dest = []
+    while dest_counter < 3:
+        temp = input("Destination (enter 'none' if you are done) : ")
+        if temp == 'none':
+            break
+
+        elif temp in valid_locations:
+            for i in repl_locations:
+                if temp == i["region"]:
+                    dest.append(i["id"])
+                    dest_counter += 1
+
+        else:
+            LOG_C.error("\nNot a valid location\n")
+            LOG_C.info(
+                "Valid destination regions are : %s}", valid_locations)
+
+    if not dest:
+        LOG_C.error("You should provide atleast 1 region to replicate to !")
+        sys.exit(1)
+
+    data = {
+        "snapType": "replica",
+        "srcSnapId": snap_id,
+        "dest": dest
+    }
+    endpoint.append(snap_source_asset)
+    endpoint.append('/snapshots/')
+
+    return data
