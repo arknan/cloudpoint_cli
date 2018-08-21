@@ -19,7 +19,7 @@ def entry_point(args):
         data = None
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
-    elif args.telemetry_command == 'show':
+    elif args.telemetry_command == 'status':
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
     else:

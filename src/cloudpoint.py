@@ -495,8 +495,8 @@ def create_parser():
     parser_telemetry_disable = subparser_telemetry.add_parser(
         "disable", help="Turn OFF telemetry for CloudPoint")
     # SHOW [GET] PARSING
-    parser_telemetry_show = subparser_telemetry.add_parser(
-        "show", help="Show CloudPoint's Telemetry status [on/off]")
+    parser_telemetry_status = subparser_telemetry.add_parser(
+        "status", help="Show CloudPoint's Telemetry status [on/off]")
 
     """ USER RELATED PARSING """
     parser_users = subparser_main.add_parser(
