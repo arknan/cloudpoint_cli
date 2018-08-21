@@ -13,20 +13,28 @@ LOG_FC = logs.setup(__name__)
 
 def entry_point(args):
 
+    output = None
     endpoint = ['/email/config']
-    if args.email_config_command == 'show':
-        show()
-        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-    elif args.email_config_command == 'create':
-        data = create(args)
-        output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
+    if api.check_attr(args, 'email_config_command'):
+        if args.email_config_command == 'show':
+            show()
+            output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
-    elif args.email_config_command == 'delete':
-        getattr(api.Command(), 'deletes')('/'.join(endpoint))
-        output = 'Email Configuration has been deleted'
+        elif args.email_config_command == 'create':
+            data = create(args)
+            output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
+
+        elif args.email_config_command == 'delete':
+            getattr(api.Command(), 'deletes')('/'.join(endpoint))
+            output = 'Email Configuration has been deleted'
+
+        else:
+            LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+            sys.exit(1)
 
     else:
-        LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+        LOG_C.error("No arguments passed for email_config")
+        cloudpoint.run(["email_config", "-h"])
         sys.exit(1)
 
     return output

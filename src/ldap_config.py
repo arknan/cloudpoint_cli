@@ -6,14 +6,21 @@ import cloudpoint
 import logs
 
 LOG_C = logs.setup(__name__, 'c')
+LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
 
+    output = None
     endpoint = ['/idm/config/ad']
-    if args.ldap_config_command == 'show':
-        show()
-        output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+    if api.check_attr(args, 'ldap_config_command'):
+        if args.ldap_config_command == 'show':
+            show()
+            output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+
+        else:
+            LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+            sys.exit(1)
 
     else:
         LOG_C.error("No arguments provided for 'ldap_config'")
