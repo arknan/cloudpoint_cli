@@ -70,7 +70,7 @@ def show(args, endpoint):
 
                 if api.check_attr(args, 'agents_show_plugins_command'):
                     if api.check_attr(args, 'agent_id') and \
-                       api.check_attr(args, "configure_plugin_name"):
+                       api.check_attr(args, "configured_plugin_name"):
                         endpoint.append('/configs/')
                     else:
                         LOG_C.error("Configs sub-command needs an \
