@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import json
-from tabulate import tabulate
+from texttable import Texttable
 import api
 
 
@@ -12,8 +12,13 @@ def entry_point(args):
     return output
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    jdata = json.loads(data)
-    print(tabulate(sorted(jdata.items()), tablefmt="grid"))
+def pretty_print(args, output):
+
+    data = json.loads(output)
+    table = Texttable()
+    table.header([k for k, v in sorted(data.items())])
+    for i, _ in enumerate(data):
+        table.add_row(list(v for k, v in sorted(data.items())))
+
+    print(table.draw())
+

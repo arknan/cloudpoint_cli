@@ -2,6 +2,8 @@
 
 import json
 import sys
+from texttable import Texttable
+from pprint import pprint
 import api
 import cloudpoint
 import logs
@@ -248,12 +250,6 @@ def show(args, endpoint):
             LOG_C.info("TO SEE ALL ASSETS : 'cloudpoint assets show all'")
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
-
-
 def replicate(args, endpoint):
 
     snap_id = None
@@ -308,3 +304,33 @@ def replicate(args, endpoint):
     endpoint.append('/snapshots/')
 
     return data
+
+
+def pretty_print(args, output):
+
+    def cleanse(data, req_fields):
+        for k in list(data.keys()):
+            if k not in req_fields:
+                del data[k]
+
+    table = Texttable()
+
+    if api.check_attr(args, 'asset_id'):
+        data = json.loads(output)
+        ignore = ['parentId', 'snapMethods', 'plugin', '_links',
+                         'protectionLevels', 'actions']
+        required_fields = [k for k, v in data.items() if k not in ignore]
+        cleanse(data, required_fields)
+        table.add_rows(list((k, v) for k, v in sorted(data.items())), header=False)
+
+    else:
+        print_fields = ["id", "type", "location"]
+        data = json.loads(output)['items']
+        table.header(sorted(print_fields))
+
+        for i, _ in enumerate(data):
+            if data[i]['type'] in ['disk', 'host']:
+                cleanse(data[i], print_fields)
+                table.add_row(list(v for k, v in sorted(data[i].items()) if k in print_fields))
+
+    print(table.draw())

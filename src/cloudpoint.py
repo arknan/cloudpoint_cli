@@ -550,4 +550,4 @@ if __name__ == '__main__':
         output = getattr(globals()[args.command], "entry_point")(args)
         LOG_F.debug("From %s.entry_point() Received :\n%s",
                     args.command, output)
-        getattr(globals()[args.command], "pretty_print")(output)
+        getattr(globals()[args.command], "pretty_print")(args, output)

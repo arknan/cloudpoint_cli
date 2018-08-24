@@ -21,8 +21,6 @@ def entry_point(args):
     elif args.agents_command == 'show':
         show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print2(output, args)
-        sys.exit(0)
 
     else:
         LOG_C.error("No arguments provided for 'agents'")
@@ -101,9 +99,7 @@ and plugin_name")
                     sys.exit(1)
 
 
-def pretty_print2(output, args):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
+def pretty_print(output, args):
 
     data = json.loads(output)
     print_fields = ["agentid", "osName", "onHost", "status"]
@@ -124,7 +120,3 @@ def pretty_print2(output, args):
             table.add_row(list(v for k, v in sorted(data[i].items()) if k in print_fields))
 
     print(table.draw())
-
-
-def pretty_print(data):
-    print(data)
