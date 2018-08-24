@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import json
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -19,6 +21,8 @@ def entry_point(args):
     elif args.agents_command == 'show':
         show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print2(output, args)
+        sys.exit(0)
 
     else:
         LOG_C.error("No arguments provided for 'agents'")
@@ -97,7 +101,30 @@ and plugin_name")
                     sys.exit(1)
 
 
-def pretty_print(data):
+def pretty_print2(output, args):
     # This function has to be tailor suited for each command's output
     # Since all commands don't have a standard output format
+
+    data = json.loads(output)
+    print_fields = ["agentid", "osName", "onHost", "status"]
+    table = Texttable()
+    table.header(sorted(print_fields))
+
+    def cleanse(data):
+        for k in list(data.keys()):
+            if k not in print_fields:
+                del data[k]
+    
+    if api.check_attr(args, 'agent_id'):
+        table.add_row(list(v for k, v in sorted(data.items()) if k in print_fields))
+        cleanse(data)
+    else:
+        for i, _ in enumerate(data):
+            cleanse(data[i])
+            table.add_row(list(v for k, v in sorted(data[i].items()) if k in print_fields))
+
+    print(table.draw())
+
+
+def pretty_print(data):
     print(data)
