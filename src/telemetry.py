@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import json
 import sys
+from tabulate import tabulate
 import api
 import cloudpoint
 import logs
@@ -33,4 +35,5 @@ def entry_point(args):
 def pretty_print(data):
     # This function has to be tailor suited for each command's output
     # Since all commands don't have a standard output format
-    print(data)
+    jdata = json.loads(data)
+    print(tabulate(jdata.items(), tablefmt="grid"))
