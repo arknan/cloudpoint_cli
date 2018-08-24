@@ -3,6 +3,7 @@
 import json
 import sys
 from getpass import getpass
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -130,7 +131,22 @@ def create(args):
     return data
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
+def pretty_print(args, output):
+
+    data = json.loads(output)
+    data_data = json.loads(data['data'])
+    table = Texttable()
+    print_dict = {}
+
+    for k, v in sorted(data.items()):
+        if k not in ['data', 'configKey']:
+            print_dict[k] = v
+
+    for k, v in sorted(data_data.items()):
+        if k not in ['authentication']:
+            print_dict[k] = v
+
+    table.header([k for k, v in sorted(print_dict.items())])
+    table.add_row([v for k, v in sorted(print_dict.items())])
+
+    print(table.draw())
