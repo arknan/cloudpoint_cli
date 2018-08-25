@@ -36,7 +36,6 @@ def pretty_print(args, output):
 
     data = json.loads(output)
     table = Texttable()
-    table.header([k for k, v in sorted(data.items())])
-    table.add_row([v for k, v in sorted(data.items())])
+    table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
 
     print(table.draw())
