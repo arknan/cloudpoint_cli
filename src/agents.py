@@ -99,24 +99,18 @@ and plugin_name")
                     sys.exit(1)
 
 
-def pretty_print(output, args):
+def pretty_print(args, output):
 
     data = json.loads(output)
-    print_fields = ["agentid", "osName", "onHost", "status"]
+    required = ["agentid", "osName", "onHost", "status"]
     table = Texttable()
-    table.header(sorted(print_fields))
+    table.header(sorted(required))
 
-    def cleanse(data):
-        for k in list(data.keys()):
-            if k not in print_fields:
-                del data[k]
-    
     if api.check_attr(args, 'agent_id'):
-        table.add_row(list(v for k, v in sorted(data.items()) if k in print_fields))
-        cleanse(data)
+        table.add_row([v for k, v in sorted(data.items()) if k in required])
     else:
         for i, _ in enumerate(data):
-            cleanse(data[i])
-            table.add_row(list(v for k, v in sorted(data[i].items()) if k in print_fields))
+            table.add_row(
+                [v for k, v in sorted(data[i].items()) if k in required])
 
     print(table.draw())

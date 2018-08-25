@@ -143,8 +143,6 @@ def create_parser():
         help="Show information related to a specific asset")
     subparser_assets_show = parser_assets_show.add_subparsers(
         dest="assets_show_command", metavar='<positional argument>')
-    parser_assets_show_all = subparser_assets_show.add_parser(
-        "all", help="Show all the asssets discovered by CloudPoint")
     parser_assets_show_policies = subparser_assets_show.add_parser(
         "policies", help="Show policies associated with an asset")
     parser_assets_show_snapshots = subparser_assets_show.add_parser(

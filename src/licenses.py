@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -64,10 +66,32 @@ def show(args, endpoint):
             endpoint.append('/all/features')
 
     if api.check_attr(args, 'license_id'):
-        endpoint.append(getattr(args, 'license_id'))
+        endpoint.append(args.license_id)
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
+def pretty_print(args, output):
+
+    data = json.loads(output)
+    table = Texttable()
+
+    if api.check_attr(args, 'license_id'):
+        ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
+                   'IsLicenseActive', 'SerialId', 'SvcPolicy']
+        table.add_row(("License Key ID", args.license_id))
+        for k, v in sorted(data.items()):
+            table.add_rows([(i, j) for i, j in sorted(
+                data[k].items()) if i not in ignored], header=False)
+    else:
+        required = ["EndDate", "LicenseState", "ProductEdition"]
+        headers = ["License Key ID"]
+        rows = sorted(data.keys())
+        for i in sorted(data.keys()):
+            for k, v in sorted(data[i].items()):
+                if k in required:
+                    headers.append(k)
+                    rows.append(v)
+
+        table.header(headers)
+        table.add_row(rows)
+
+    print(table.draw())

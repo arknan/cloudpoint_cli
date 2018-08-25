@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import json
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -36,7 +38,12 @@ def show():
     pass
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
+def pretty_print(args, output):
+
+    data = json.loads(output.replace('ldap', ''))
+    ignored = ['configKey', 'QueryAttribute']
+    table = Texttable()
+    table.header([k for k, v in sorted(data.items()) if k not in ignored ])
+    table.add_row([v for k, v in sorted(data.items()) if k not in ignored ])
+
+    print(table.draw())

@@ -226,10 +226,6 @@ def show(args, endpoint):
             elif args.assets_show_command == "policies":
                 endpoint.append("/policies/")
 
-            elif args.assets_show_command == "all":
-                LOG_C.error("'all' sub-command doesn't work with an asset_id")
-                sys.exit(1)
-
     else:
         if api.check_attr(args, 'assets_show_command'):
             if args.assets_show_command in ['snapshots', 'policies']:
@@ -239,15 +235,9 @@ def show(args, endpoint):
 
             elif args.assets_show_command == "summary":
                 endpoint.append('/summary')
-            elif args.assets_show_command == "all":
-                pass
             else:
                 LOG_FC.critical("INTERNAL ERROR 3 IN '%s'", __file__)
                 sys.exit(1)
-        else:
-            endpoint.append('/?limit=3')
-            LOG_C.info("BY DEFAULT ONLY 3 ASSETS ARE SHOWN")
-            LOG_C.info("TO SEE ALL ASSETS : 'cloudpoint assets show all'")
 
 
 def replicate(args, endpoint):
@@ -308,29 +298,25 @@ def replicate(args, endpoint):
 
 def pretty_print(args, output):
 
-    def cleanse(data, req_fields):
-        for k in list(data.keys()):
-            if k not in req_fields:
-                del data[k]
-
     table = Texttable()
 
     if api.check_attr(args, 'asset_id'):
         data = json.loads(output)
         ignore = ['parentId', 'snapMethods', 'plugin', '_links',
                          'protectionLevels', 'actions']
-        required_fields = [k for k, v in data.items() if k not in ignore]
-        cleanse(data, required_fields)
-        table.add_rows(list((k, v) for k, v in sorted(data.items())), header=False)
+
+        table.add_rows(
+            [(k, v) for k, v in sorted(data.items()) if k not in ignore],
+            header=False)
 
     else:
-        print_fields = ["id", "type", "location"]
         data = json.loads(output)['items']
-        table.header(sorted(print_fields))
+        required = ["id", "type", "location"]
+        table.header(sorted(required))
 
         for i, _ in enumerate(data):
             if data[i]['type'] in ['disk', 'host']:
-                cleanse(data[i], print_fields)
-                table.add_row(list(v for k, v in sorted(data[i].items()) if k in print_fields))
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
 
     print(table.draw())
