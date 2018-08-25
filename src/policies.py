@@ -3,6 +3,7 @@
 import json
 import re
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -74,6 +75,7 @@ def asset(args):
         else:
             LOG_C.error("Either provide %s or %s\n",
                         "policy_id", "policy_name")
+            cloudpoint.run(["policies", "asset", "-h"])
             sys.exit(1)
 
         return pol_id
@@ -322,12 +324,6 @@ def create():
     return data
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
-
-
 def show(args, endpoint):
 
     if api.check_attr(args, 'policies_show_command'):
@@ -339,26 +335,17 @@ policy_id argument")
             sys.exit(1)
 
         if args.policies_show_command == 'protected-assets':
-
             if api.check_attr(args, 'policies_show_protected_assets_command'):
                 data = protected_assets(ast_only=1)
-                print("\n")
-                for i in data:
-                    print(i)
-                print("\n")
+                pretty_print("protected_assets_1", data)
 
             else:
                 data = protected_assets(ast_only=0)
-                print("\n")
-                for key, value in sorted(data.items()):
-                    print("{}: {}\n".format(key, value))
+                pretty_print("protected_assets_0", data)
 
         else:
             data = unprotected_assets()
-            print("\n")
-            for i in data:
-                print(i)
-            print("\n")
+            pretty_print("unprotected_assets", data)
 
         sys.exit(0)
 
@@ -406,7 +393,8 @@ def pol_name_to_id(pol_name):
     try:
         pl_id = pol_dict[pol_name]
     except KeyError:
-        pass
+        LOG_C.error("Invalid policy name : '%s'", pol_name)
+        sys.exit(1)
 
     return pl_id
 
@@ -438,7 +426,7 @@ def protected_assets(ast_only=0):
 def unprotected_assets():
     all_asset_list = []
     prot_asset_list = protected_assets(ast_only=1)
-    all_assets = json.loads(cloudpoint.run(["assets", "show", "all"]))['items']
+    all_assets = json.loads(cloudpoint.run(["assets", "show"]))['items']
 
     tmp = []
     for i, _ in enumerate(all_assets):
@@ -458,3 +446,44 @@ def unprotected_assets():
     unprot_asset_list = list(set(all_asset_list).difference(prot_asset_list))
 
     return unprot_asset_list
+
+
+def pretty_print(args, output):
+
+    table = Texttable()
+    if args == "protected_assets_0":
+        table.add_rows([(k,v) for k, v in sorted(output.items())], header=False)
+        print(table.draw())
+        sys.exit()
+
+    elif args == "protected_assets_1":
+        table.header(["PROTECTED ASSETS"])
+        for i in output:
+            table.add_row([i])
+        print(table.draw())
+        sys.exit()
+
+    elif args == "unprotected_assets":
+        table.header(["UNPROTECTED ASSETS"])
+        for i in output:
+            table.add_row([i])
+        print(table.draw())
+        sys.exit()
+
+    data = json.loads(output)
+
+    if api.check_attr(args, 'policy_id') or \
+       api.check_attr(args, 'policy_name'):
+        for k, v in sorted(data.items()):
+            if isinstance(v, dict):
+                table.add_row([k, sorted(v.items())])
+            else:
+                table.add_row([k, v])
+
+    else:
+        required = ["name", "id"]
+        table.header(sorted(required))
+        for i, _ in enumerate(data):
+            table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+
+    print(table.draw())
