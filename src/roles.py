@@ -2,6 +2,7 @@
 
 import json
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -101,12 +102,10 @@ def modify(endpoint):
     return data
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
-
-
 def show(args, endpoint):
     if api.check_attr(args, 'role_id'):
         endpoint.append(args.role_id)
+
+
+def pretty_print(args, output):
+    print(output)

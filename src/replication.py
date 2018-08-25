@@ -2,6 +2,7 @@
 
 import json
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -157,7 +158,5 @@ def show(args, endpoint):
             endpoint.append('/default/rules/')
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
+def pretty_print(args, output):
+    print(output)

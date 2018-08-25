@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import json
 import sys
 from getpass import getpass
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -54,12 +56,6 @@ def create():
     return data
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
-
-
 def reset_password():
 
     # API endpoint is messed up .. this doesn't work either :(
@@ -78,3 +74,7 @@ def reset_password():
 def show(args, endpoint):
     if api.check_attr(args, 'user_id'):
         endpoint.append(args.user_id)
+
+
+def pretty_print(args, output):
+    print(output)
