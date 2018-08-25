@@ -242,7 +242,7 @@ def create_parser():
     parser_plugins_show = subparser_plugins.add_parser(
         "show", help="Show plugin related information")
     parser_plugins_show.add_argument(
-        "-i", "--plugin-name", dest="available_plugin_name",
+        "-n", "--plugin-name", dest="available_plugin_name",
         help="Show information on a specific available plugin")
     subparser_plugins_show = parser_plugins_show.add_subparsers(
         dest="plugins_show_command", metavar='<positional argument>')

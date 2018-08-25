@@ -160,7 +160,8 @@ class Command():
             self.log_c.error("Invalid token! Please Authenticate again")
             sys.exit(1)
 
-        self.log_f.debug("Received '%s' for GET", response.status_code)
+        self.log_f.debug("Received '%s' for GET on %s", response.status_code,
+                         self.api_url)
 
         return response.content.decode('utf-8')
 

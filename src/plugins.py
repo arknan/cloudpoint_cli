@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import json
 import sys
+from texttable import Texttable
 import api
 import cloudpoint
 import logs
@@ -25,7 +27,17 @@ def entry_point(args):
 def show(args, endpoint):
 
     if api.check_attr(args, 'available_plugin_name'):
-        endpoint.append(getattr(args, 'available_plugin_name'))
+        plugin_cmd = json.loads(cloudpoint.run(["plugins", "show"]))
+        plugin_list = []
+        for i, _ in enumerate(plugin_cmd):
+            for k, v in sorted(plugin_cmd[i].items()):
+                if k == "name":
+                    plugin_list.append(v)
+        if args.available_plugin_name in plugin_list:
+            endpoint.append(args.available_plugin_name)
+        else:
+            LOG_C.error("Please provide a valid plugin name (ex: mongo)")
+            sys.exit(1)
 
     if (api.check_attr(args, 'plugins_show_command')) and \
        (args.plugins_show_command == "description"):
@@ -43,7 +55,36 @@ def show(args, endpoint):
             endpoint.append("summary")
 
 
-def pretty_print(data):
-    # This function has to be tailor suited for each command's output
-    # Since all commands don't have a standard output format
-    print(data)
+def pretty_print(args, output):
+    if api.check_attr(args, 'plugins_show_command') and \
+       args.plugins_show_command == "description":
+         print(output)
+         sys.exit(0)
+
+    data = json.loads(output)
+    table = Texttable()
+
+    if api.check_attr(args, 'available_plugin_name'):
+        table.add_rows([(k, v) for k, v in sorted(data.items()) if k != "configTemplate"], header=False)
+
+        for i, _ in enumerate(data["configTemplate"]):
+            table.add_rows([("", "")], header=False)
+            table.add_rows([(k, v) for k, v in sorted(data["configTemplate"][i].items())], header=False)
+
+    elif api.check_attr(args, 'plugins_show_command') and \
+         args.plugins_show_command == "summary":
+            table.header(["", "onHost", "offHost"])
+            table.add_row(["configured", data["onHost"]["yes"]["configured"],
+                           data["onHost"]["no"]["configured"]])
+            table.add_row(["supported", data["onHost"]["yes"]["supported"],
+                           data["onHost"]["no"]["supported"]])
+            
+    else:
+        print(output)
+        required = [ "displayName", "name", "onHost" ]
+        table.header(sorted(required))
+        for i, _ in enumerate(data):
+            table.add_row(
+                [v for k, v in sorted(data[i].items()) if k in required])
+
+    print(table.draw())
