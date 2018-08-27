@@ -8,8 +8,8 @@ import argparse
 import argcomplete
 
 import agents
+import api
 import assets
-import authenticate
 import email_config
 import ldap_config
 import licenses
@@ -545,7 +545,12 @@ if __name__ == '__main__':
     else:
         args = parser_main.parse_args()
         LOG_F.debug("Calling %s.entry_point() with %s", args.command, args)
-        output = getattr(globals()[args.command], "entry_point")(args)
-        LOG_F.debug("From %s.entry_point() Received :\n%s",
-                    args.command, output)
-        getattr(globals()[args.command], "pretty_print")(args, output)
+        if args.command == 'authenticate':
+            getattr(api.Command(), 'authenticates')()
+        else:
+            output = getattr(globals()[args.command], "entry_point")(args)
+            LOG_F.debug("From %s.entry_point() Received :\n%s",
+                        args.command, output)
+            getattr(globals()[args.command], "pretty_print")(args, output)
+
+        sys.exit(0)

@@ -24,5 +24,5 @@ def show(args, endpoint):
 def pretty_print(args, output):
     try:
         print(output)
-    except KeyError, AttributeError:
+    except(KeyError, AttributeError):
         print(output)

@@ -176,5 +176,5 @@ def pretty_print(args, output):
         if table.draw():
             print(table.draw())
 
-    except KeyError, AttributeError:
+    except(KeyError, AttributeError):
         print(output)

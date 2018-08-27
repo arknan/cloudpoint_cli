@@ -48,5 +48,5 @@ def pretty_print(args, output):
         table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
 
         print(table.draw())
-    except KeyError, AttributeError:
+    except(KeyError, AttributeError):
         print(output)
