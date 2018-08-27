@@ -109,30 +109,34 @@ def show(args, endpoint):
 
 def pretty_print(args, output):
 
-    table = Texttable()
-    data = json.loads(output)
+    try:
+        table = Texttable()
+        data = json.loads(output)
 
-    if args.role_id:
-        ignored = ["links", "uri"]
-        for k, v in sorted(data.items()):
-            if isinstance(v, list) and v:
-                for i, _ in enumerate(v):
-                    if isinstance(v[i], dict):
-                        for key, value in sorted(v[i].items()):
-                            if key not in ignored and k not in ignored:
-                                table.add_row([k, (key, value)])
-                    else:
-                        table.add_row([k, v])
+        if args.role_id:
+            ignored = ["links", "uri"]
+            for k, v in sorted(data.items()):
+                if isinstance(v, list) and v:
+                    for i, _ in enumerate(v):
+                        if isinstance(v[i], dict):
+                            for key, value in sorted(v[i].items()):
+                                if key not in ignored and k not in ignored:
+                                    table.add_row([k, (key, value)])
+                        else:
+                            table.add_row([k, v])
 
-            else:
-                table.add_row([k, v])
-    else:
-        required = ["id", "name"]
+                else:
+                    table.add_row([k, v])
+        else:
+            required = ["id", "name"]
 
-        for i, _ in enumerate(data):
-            table.header(sorted(required))
-            table.add_row(
-                [v for k, v in sorted(data[i].items()) if k in required])
+            for i, _ in enumerate(data):
+                table.header(sorted(required))
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
 
-    if table.draw():
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
+
+    except KeyError, AttributeError:
+        print(output)

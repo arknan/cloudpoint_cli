@@ -71,27 +71,30 @@ def show(args, endpoint):
 
 def pretty_print(args, output):
 
-    data = json.loads(output)
-    table = Texttable()
+    try:
+        data = json.loads(output)
+        table = Texttable()
 
-    if api.check_attr(args, 'license_id'):
-        ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
-                   'IsLicenseActive', 'SerialId', 'SvcPolicy']
-        table.add_row(("License Key ID", args.license_id))
-        for k, v in sorted(data.items()):
-            table.add_rows([(i, j) for i, j in sorted(
-                data[k].items()) if i not in ignored], header=False)
-    else:
-        required = ["EndDate", "LicenseState", "ProductEdition"]
-        headers = ["License Key ID"]
-        rows = sorted(data.keys())
-        for i in sorted(data.keys()):
-            for k, v in sorted(data[i].items()):
-                if k in required:
-                    headers.append(k)
-                    rows.append(v)
+        if api.check_attr(args, 'license_id'):
+            ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
+                       'IsLicenseActive', 'SerialId', 'SvcPolicy']
+            table.add_row(("License Key ID", args.license_id))
+            for k, v in sorted(data.items()):
+                table.add_rows([(i, j) for i, j in sorted(
+                    data[k].items()) if i not in ignored], header=False)
+        else:
+            required = ["EndDate", "LicenseState", "ProductEdition"]
+            headers = ["License Key ID"]
+            rows = sorted(data.keys())
+            for i in sorted(data.keys()):
+                for k, v in sorted(data[i].items()):
+                    if k in required:
+                        headers.append(k)
+                        rows.append(v)
 
-        table.header(headers)
-        table.add_row(rows)
+            table.header(headers)
+            table.add_row(rows)
 
-    print(table.draw())
+        print(table.draw())
+    except KeyError, AttributeError:
+        print(output)

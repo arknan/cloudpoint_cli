@@ -78,21 +78,25 @@ def show(args, endpoint):
 
 def pretty_print(args, output):
 
-    data = json.loads(output)
-    table = Texttable()
+    try:
+        data = json.loads(output)
+        table = Texttable()
 
-    if args.user_id:
-        print(data)
-        ignored = ["links", "uri"]
-        table.add_rows(
-            [(k, v) for k, v in sorted(data.items()) if k not in ignored],
-            header=False)
-    else:
-        required = ["id", "email"]
-        for i, _ in enumerate(data):
-            table.header(sorted(required))
-            table.add_row(
-                [v for k, v in sorted(data[i].items()) if k in required])
+        if args.user_id:
+            print(data)
+            ignored = ["links", "uri"]
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items()) if k not in ignored],
+                header=False)
+        else:
+            required = ["id", "email"]
+            for i, _ in enumerate(data):
+                table.header(sorted(required))
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
 
-    if table.draw():
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
+
+    except KeyError, AttributeError:
+        print(output)

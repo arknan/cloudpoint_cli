@@ -133,20 +133,23 @@ def create(args):
 
 def pretty_print(args, output):
 
-    data = json.loads(output)
-    data_data = json.loads(data['data'])
-    table = Texttable()
-    print_dict = {}
+    try:
+        data = json.loads(output)
+        data_data = json.loads(data['data'])
+        table = Texttable()
+        print_dict = {}
 
-    for k, v in sorted(data.items()):
-        if k not in ['data', 'configKey']:
-            print_dict[k] = v
+        for k, v in sorted(data.items()):
+            if k not in ['data', 'configKey']:
+                print_dict[k] = v
 
-    for k, v in sorted(data_data.items()):
-        if k not in ['authentication']:
-            print_dict[k] = v
+        for k, v in sorted(data_data.items()):
+            if k not in ['authentication']:
+                print_dict[k] = v
 
-    table.header([k for k, v in sorted(print_dict.items())])
-    table.add_row([v for k, v in sorted(print_dict.items())])
+        table.header([k for k, v in sorted(print_dict.items())])
+        table.add_row([v for k, v in sorted(print_dict.items())])
 
-    print(table.draw())
+        print(table.draw())
+    except KeyError, AttributeError:
+        print(output)

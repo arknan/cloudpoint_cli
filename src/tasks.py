@@ -80,18 +80,22 @@ def show(args, endpoint):
 
 def pretty_print(args, output):
 
-    data = json.loads(output)
-    table = Texttable()
+    try:
+        data = json.loads(output)
+        table = Texttable()
 
-    if args.task_id:
-        table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
-    else:
-        required = ["name", "status", "taskid"]
-        table.header(sorted(required))
+        if args.task_id:
+            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+        else:
+            required = ["name", "status", "taskid"]
+            table.header(sorted(required))
 
-        for i, _ in enumerate(data):
-            table.add_row(
-                [v for k, v in sorted(data[i].items()) if k in required])
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
 
-    if table.draw():
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
+
+    except KeyError, AttributeError:
+        print(output)

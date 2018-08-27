@@ -450,42 +450,46 @@ def unprotected_assets():
 
 def pretty_print(args, output):
 
-    table = Texttable()
-    if args == "protected_assets_0":
-        table.add_rows([(k, v) for k, v in sorted(output.items())],
-                       header=False)
+    try:
+        table = Texttable()
+        if args == "protected_assets_0":
+            table.add_rows([(k, v) for k, v in sorted(output.items())],
+                           header=False)
+            print(table.draw())
+            sys.exit()
+
+        elif args == "protected_assets_1":
+            table.header(["PROTECTED ASSETS"])
+            for i in output:
+                table.add_row([i])
+            print(table.draw())
+            sys.exit()
+
+        elif args == "unprotected_assets":
+            table.header(["UNPROTECTED ASSETS"])
+            for i in output:
+                table.add_row([i])
+            print(table.draw())
+            sys.exit()
+
+        data = json.loads(output)
+
+        if api.check_attr(args, 'policy_id') or \
+           api.check_attr(args, 'policy_name'):
+            for k, v in sorted(data.items()):
+                if isinstance(v, dict):
+                    table.add_row([k, sorted(v.items())])
+                else:
+                    table.add_row([k, v])
+
+        else:
+            required = ["name", "id"]
+            table.header(sorted(required))
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
+
         print(table.draw())
-        sys.exit()
 
-    elif args == "protected_assets_1":
-        table.header(["PROTECTED ASSETS"])
-        for i in output:
-            table.add_row([i])
-        print(table.draw())
-        sys.exit()
-
-    elif args == "unprotected_assets":
-        table.header(["UNPROTECTED ASSETS"])
-        for i in output:
-            table.add_row([i])
-        print(table.draw())
-        sys.exit()
-
-    data = json.loads(output)
-
-    if api.check_attr(args, 'policy_id') or \
-       api.check_attr(args, 'policy_name'):
-        for k, v in sorted(data.items()):
-            if isinstance(v, dict):
-                table.add_row([k, sorted(v.items())])
-            else:
-                table.add_row([k, v])
-
-    else:
-        required = ["name", "id"]
-        table.header(sorted(required))
-        for i, _ in enumerate(data):
-            table.add_row(
-                [v for k, v in sorted(data[i].items()) if k in required])
-
-    print(table.draw())
+    except KeyError, AttributeError:
+        print(output)

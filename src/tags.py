@@ -22,4 +22,7 @@ def show(args, endpoint):
 
 
 def pretty_print(args, output):
-    print(output)
+    try:
+        print(output)
+    except KeyError, AttributeError:
+        print(output)

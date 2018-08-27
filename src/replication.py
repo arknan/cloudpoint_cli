@@ -160,23 +160,21 @@ def show(args, endpoint):
 
 def pretty_print(args, output):
 
-    table = Texttable()
+    try:
+        table = Texttable()
+        data = json.loads(output)
 
-    """
-    if api.check_attr(args, 'replication_show_command'):
+        if args.policy_name:
+            table.header([k for k, v in sorted(data.items())])
+            table.add_row([v for k, v in sorted(data.items())])
+
+        else:
+            for i, _ in enumerate(data):
+                table.header([k for k, v in sorted(data[i].items())])
+                table.add_row([v for k, v in sorted(data[i].items())])
+
+        if table.draw():
+            print(table.draw())
+
+    except KeyError, AttributeError:
         print(output)
-    """
-
-    data = json.loads(output)
-
-    if args.policy_name:
-        table.header([k for k, v in sorted(data.items())])
-        table.add_row([v for k, v in sorted(data.items())])
-
-    else:
-        for i, _ in enumerate(data):
-            table.header([k for k, v in sorted(data[i].items())])
-            table.add_row([v for k, v in sorted(data[i].items())])
-
-    if table.draw():
-        print(table.draw())

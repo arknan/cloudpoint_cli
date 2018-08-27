@@ -56,39 +56,43 @@ def show(args, endpoint):
 
 
 def pretty_print(args, output):
-    if api.check_attr(args, 'plugins_show_command') and \
-       args.plugins_show_command == "description":
-        print(output)
-        sys.exit(0)
 
-    data = json.loads(output)
-    table = Texttable()
+    try:
+        if api.check_attr(args, 'plugins_show_command') and \
+           args.plugins_show_command == "description":
+            print(output)
+            sys.exit(0)
 
-    if api.check_attr(args, 'available_plugin_name'):
-        table.add_rows(
-            [(k, v) for k, v in sorted(data.items()) if k != "configTemplate"],
-            header=False)
+        data = json.loads(output)
+        table = Texttable()
 
-        for i, _ in enumerate(data["configTemplate"]):
-            table.add_rows([("", "")], header=False)
+        if api.check_attr(args, 'available_plugin_name'):
             table.add_rows(
-                [(k, v) for k, v in sorted(data["configTemplate"][i].items())],
+                [(k, v) for k, v in sorted(data.items()) if k != "configTemplate"],
                 header=False)
 
-    elif api.check_attr(args, 'plugins_show_command') and\
-         args.plugins_show_command == "summary":
-        table.header(["", "onHost", "offHost"])
-        table.add_row(["configured", data["onHost"]["yes"]["configured"],
-                       data["onHost"]["no"]["configured"]])
-        table.add_row(["supported", data["onHost"]["yes"]["supported"],
-                       data["onHost"]["no"]["supported"]])
+            for i, _ in enumerate(data["configTemplate"]):
+                table.add_rows([("", "")], header=False)
+                table.add_rows(
+                    [(k, v) for k, v in sorted(data["configTemplate"][i].items())],
+                    header=False)
 
-    else:
+        elif api.check_attr(args, 'plugins_show_command') and\
+             args.plugins_show_command == "summary":
+            table.header(["", "onHost", "offHost"])
+            table.add_row(["configured", data["onHost"]["yes"]["configured"],
+                           data["onHost"]["no"]["configured"]])
+            table.add_row(["supported", data["onHost"]["yes"]["supported"],
+                           data["onHost"]["no"]["supported"]])
+
+        else:
+            print(output)
+            required = ["displayName", "name", "onHost"]
+            table.header(sorted(required))
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
+
+        print(table.draw())
+    except KeyError, AttributeError:
         print(output)
-        required = ["displayName", "name", "onHost"]
-        table.header(sorted(required))
-        for i, _ in enumerate(data):
-            table.add_row(
-                [v for k, v in sorted(data[i].items()) if k in required])
-
-    print(table.draw())

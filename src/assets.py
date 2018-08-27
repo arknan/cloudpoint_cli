@@ -297,30 +297,34 @@ def replicate(args, endpoint):
 
 def pretty_print(args, output):
 
-    table = Texttable()
+    try:
+        table = Texttable()
 
-    if api.check_attr(args, 'asset_id'):
-        data = json.loads(output)
-        ignore = ['parentId', 'snapMethods', 'plugin', '_links',
-                  'protectionLevels', 'actions']
+        if api.check_attr(args, 'asset_id'):
+            data = json.loads(output)
+            ignore = ['parentId', 'snapMethods', 'plugin', '_links',
+                      'protectionLevels', 'actions']
 
-        table.add_rows(
-            [(k, v) for k, v in sorted(data.items()) if k not in ignore],
-            header=False)
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items()) if k not in ignore],
+                header=False)
 
-    else:
-        try:
-            data = json.loads(output)['items']
-            required = ["id", "type", "location"]
-            table.header(sorted(required))
+        else:
+            try:
+                data = json.loads(output)['items']
+                required = ["id", "type", "location"]
+                table.header(sorted(required))
 
-            for i, _ in enumerate(data):
-                if data[i]['type'] in ['disk', 'host']:
-                    table.add_row([
-                        v for k, v in sorted(data[i].items()) if k in required
-                        ])
-        except KeyError:
-            LOG_C.error(output)
+                for i, _ in enumerate(data):
+                    if data[i]['type'] in ['disk', 'host']:
+                        table.add_row([
+                            v for k, v in sorted(data[i].items()) if k in required
+                            ])
+            except KeyError:
+                LOG_C.error(output)
 
-    if table.draw():
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
+
+    except KeyError, AttributeError:
+        print(output)

@@ -101,16 +101,20 @@ and plugin_name")
 
 def pretty_print(args, output):
 
-    data = json.loads(output)
-    required = ["agentid", "osName", "onHost", "status"]
-    table = Texttable()
-    table.header(sorted(required))
+    try:
+        data = json.loads(output)
+        required = ["agentid", "osName", "onHost", "status"]
+        table = Texttable()
+        table.header(sorted(required))
 
-    if api.check_attr(args, 'agent_id'):
-        table.add_row([v for k, v in sorted(data.items()) if k in required])
-    else:
-        for i, _ in enumerate(data):
-            table.add_row(
-                [v for k, v in sorted(data[i].items()) if k in required])
+        if api.check_attr(args, 'agent_id'):
+            table.add_row([v for k, v in sorted(data.items()) if k in required])
+        else:
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
 
-    print(table.draw())
+        print(table.draw())
+
+    except KeyError, AttributeError:
+        print(output)

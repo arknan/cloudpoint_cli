@@ -34,8 +34,12 @@ def entry_point(args):
 
 def pretty_print(args, output):
 
-    data = json.loads(output)
-    table = Texttable()
-    table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+    try:
+        data = json.loads(output)
+        table = Texttable()
+        table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
 
-    print(table.draw())
+        print(table.draw())
+
+    except KeyError, AttributeError:
+        print(output)
