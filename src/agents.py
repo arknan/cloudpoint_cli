@@ -19,6 +19,7 @@ def entry_point(args):
     if args.agents_command == 'delete':
         delete(args, endpoint)
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
+        pretty_print(output, "delete")
 
     elif args.agents_command == 'show':
         print_args = show(args, endpoint)
@@ -150,8 +151,8 @@ def pretty_print(output, print_args):
                     if k not in ignored], header=False)
 
         else:
-            LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
-            sys.exit(1)
+            table.add_rows(
+                [(k, v) for k, v in sorted(data[i].items())], header=False)
 
         print(table.draw())
 
