@@ -2,7 +2,7 @@
 
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -161,7 +161,7 @@ def show(args, endpoint):
 def pretty_print(args, output):
 
     try:
-        table = Texttable()
+        table = texttable.Texttable()
         data = json.loads(output)
 
         if args.policy_name:
@@ -176,5 +176,5 @@ def pretty_print(args, output):
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

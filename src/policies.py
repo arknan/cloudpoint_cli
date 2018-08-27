@@ -3,7 +3,7 @@
 import json
 import re
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -451,7 +451,7 @@ def unprotected_assets():
 def pretty_print(args, output):
 
     try:
-        table = Texttable()
+        table = texttable.Texttable()
         if args == "protected_assets_0":
             table.add_rows([(k, v) for k, v in sorted(output.items())],
                            header=False)
@@ -491,5 +491,5 @@ def pretty_print(args, output):
 
         print(table.draw())
 
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

@@ -2,7 +2,7 @@
 
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -35,7 +35,7 @@ def pretty_print(args, output):
 
     try:
         data = json.loads(output)
-        table = Texttable()
+        table = texttable.Texttable()
 
         if args.privilege_id:
             ignored = ["links"]
@@ -53,5 +53,5 @@ def pretty_print(args, output):
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

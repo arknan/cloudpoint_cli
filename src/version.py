@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import json
-from texttable import Texttable
+import texttable
 import api
 
 
@@ -16,11 +16,11 @@ def pretty_print(args, output):
 
     try:
         data = json.loads(output)
-        table = Texttable()
+        table = texttable.Texttable()
         table.header([k for k, v in sorted(data.items())])
         table.add_row([v for k, v in sorted(data.items())])
 
         print(table.draw())
 
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

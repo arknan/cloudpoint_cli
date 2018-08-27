@@ -2,7 +2,7 @@
 
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -298,7 +298,7 @@ def replicate(args, endpoint):
 def pretty_print(args, output):
 
     try:
-        table = Texttable()
+        table = texttable.Texttable()
 
         if api.check_attr(args, 'asset_id'):
             data = json.loads(output)
@@ -326,5 +326,5 @@ def pretty_print(args, output):
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

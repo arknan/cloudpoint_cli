@@ -3,7 +3,7 @@
 import json
 import sys
 from getpass import getpass
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -136,7 +136,7 @@ def pretty_print(args, output):
     try:
         data = json.loads(output)
         data_data = json.loads(data['data'])
-        table = Texttable()
+        table = texttable.Texttable()
         print_dict = {}
 
         for k, v in sorted(data.items()):
@@ -151,5 +151,5 @@ def pretty_print(args, output):
         table.add_row([v for k, v in sorted(print_dict.items())])
 
         print(table.draw())
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

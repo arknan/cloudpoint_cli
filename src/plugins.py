@@ -2,7 +2,7 @@
 
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -64,7 +64,7 @@ def pretty_print(args, output):
             sys.exit(0)
 
         data = json.loads(output)
-        table = Texttable()
+        table = texttable.Texttable()
 
         if api.check_attr(args, 'available_plugin_name'):
             table.add_rows(
@@ -94,5 +94,5 @@ def pretty_print(args, output):
                     [v for k, v in sorted(data[i].items()) if k in required])
 
         print(table.draw())
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

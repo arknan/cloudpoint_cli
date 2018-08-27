@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
+import traceback
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
 
 LOG_C = logs.setup(__name__, 'c')
+LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
@@ -19,8 +21,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.agents_command == 'show':
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'agents'")
@@ -50,14 +53,17 @@ def delete(args, endpoint):
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'agent_id'):
         endpoint.append(args.agent_id)
+        print_args = "agent_id"
 
         if api.check_attr(args, 'agents_show_command'):
-
             if args.agents_show_command == "plugins":
                 if api.check_attr(args, 'agent_id'):
                     endpoint.append("plugins/")
+                    print_args = "plugins"
+
                 else:
                     LOG_C.error("Plugins sub-command needs an agent_id")
                     sys.exit(1)
@@ -69,11 +75,13 @@ def show(args, endpoint):
 
             if api.check_attr(args, "configured_plugin_name"):
                 endpoint.append(args.configured_plugin_name)
+                print_args = "plugin_id"
 
                 if api.check_attr(args, 'agents_show_plugins_command'):
                     if api.check_attr(args, 'agent_id') and \
                        api.check_attr(args, "configured_plugin_name"):
                         endpoint.append('/configs/')
+                        print_args = "configs"
                     else:
                         LOG_C.error("Configs sub-command needs an \
 agent_id and plugin_name")
@@ -86,9 +94,11 @@ and plugin_name")
                     sys.exit(1)
 
     else:
+        print_args = "base"
         if api.check_attr(args, 'agents_show_command'):
             if args.agents_show_command == 'summary':
                 endpoint.append("summary")
+                print_args = "summary"
             else:
                 if api.check_attr(args, 'agents_show_plugins_command'):
                     LOG_C.error("Configs sub-command needs an agent_id \
@@ -98,23 +108,52 @@ and plugin_name")
                     LOG_C.error("Plugins sub-command needs an agent_id")
                     sys.exit(1)
 
+    return print_args
 
-def pretty_print(args, output):
+
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
-        required = ["agentid", "osName", "onHost", "status"]
-        table = Texttable()
-        table.header(sorted(required))
+        table = texttable.Texttable()
+        if print_args  == "summary":
+            table.header(["offhost", "onhost"])
+            table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
 
-        if api.check_attr(args, 'agent_id'):
-            table.add_row([v for k, v in sorted(data.items()) if k in required])
-        else:
+        elif print_args == "base":
+            required = ["agentid", "osName", "onHost", "status"]
+            table.header(sorted(required))
             for i, _ in enumerate(data):
                 table.add_row(
                     [v for k, v in sorted(data[i].items()) if k in required])
 
-        print(table.draw())
+        elif print_args == "plugins":
+            table.header(sorted(data[0].keys()))
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items())])
 
-    except(KeyError, AttributeError):
+        elif print_args == "plugin_id":
+            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+            
+        elif print_args == "agent_id":
+            ignored = ["hostname"]
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items()) if k not in ignored],
+                header=False)
+
+        elif print_args == "configs":
+            ignored = ['configHash', 'configId']
+            for i, _ in enumerate(data):
+                table.add_rows(
+                    [(k, v) for k, v in sorted(data[i].items())\
+                    if k not in ignored], header=False)
+
+        print(table.draw())
+        
+        else:
+            LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError):
         print(output)

@@ -2,7 +2,7 @@
 
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -24,5 +24,5 @@ def show(args, endpoint):
 def pretty_print(args, output):
     try:
         print(output)
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

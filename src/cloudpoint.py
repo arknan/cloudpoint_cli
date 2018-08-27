@@ -548,9 +548,8 @@ if __name__ == '__main__':
         if args.command == 'authenticate':
             getattr(api.Command(), 'authenticates')()
         else:
-            output = getattr(globals()[args.command], "entry_point")(args)
-            LOG_F.debug("From %s.entry_point() Received :\n%s",
-                        args.command, output)
-            getattr(globals()[args.command], "pretty_print")(args, output)
+            getattr(globals()[args.command], "entry_point")(args)
+            #LOG_F.debug("From %s.entry_point() Received :\n%s",
+            #            args.command, output)
 
         sys.exit(0)

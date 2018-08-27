@@ -3,7 +3,7 @@
 import json
 import os
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -73,7 +73,7 @@ def pretty_print(args, output):
 
     try:
         data = json.loads(output)
-        table = Texttable()
+        table = texttable.Texttable()
 
         if api.check_attr(args, 'license_id'):
             ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
@@ -96,5 +96,5 @@ def pretty_print(args, output):
             table.add_row(rows)
 
         print(table.draw())
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)

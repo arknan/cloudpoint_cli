@@ -2,7 +2,7 @@
 
 import json
 import sys
-from texttable import Texttable
+import texttable
 import api
 import cloudpoint
 import logs
@@ -43,10 +43,10 @@ def pretty_print(args, output):
     try:
         data = json.loads(output.replace('ldap', ''))
         ignored = ['configKey', 'QueryAttribute']
-        table = Texttable()
+        table = texttable.Texttable()
         table.header([k for k, v in sorted(data.items()) if k not in ignored])
         table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
 
         print(table.draw())
-    except(KeyError, AttributeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
         print(output)
