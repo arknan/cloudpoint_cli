@@ -310,13 +310,17 @@ def pretty_print(args, output):
             header=False)
 
     else:
-        data = json.loads(output)['items']
-        required = ["id", "type", "location"]
-        table.header(sorted(required))
+        try:
+            data = json.loads(output)['items']
+            required = ["id", "type", "location"]
+            table.header(sorted(required))
 
-        for i, _ in enumerate(data):
-            if data[i]['type'] in ['disk', 'host']:
-                table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+            for i, _ in enumerate(data):
+                if data[i]['type'] in ['disk', 'host']:
+                    table.add_row(
+                        [v for k, v in sorted(data[i].items()) if k in required])
+        except KeyError:
+            LOG_C.error(output)
 
-    print(table.draw())
+    if table.draw():
+        print(table.draw())

@@ -32,4 +32,21 @@ def show(args, endpoint):
 
 
 def pretty_print(args, output):
-    print(output)
+    
+    data = json.loads(output)
+    table = Texttable()
+
+    if args.privilege_id:
+        ignored = ["links"]
+        table.add_rows(
+            [(k, v) for k, v in sorted(data.items()) if not k in ignored],
+            header=False)
+    else:
+        required = ["id", "name"]
+        table.header(sorted(required))
+
+        for i, _ in enumerate(data):
+            table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+
+    if table.draw():
+        print(table.draw())
