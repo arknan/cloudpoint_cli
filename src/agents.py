@@ -149,10 +149,11 @@ def pretty_print(output, print_args):
                     [(k, v) for k, v in sorted(data[i].items())\
                     if k not in ignored], header=False)
 
-        print(table.draw())
-        
         else:
             LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
+            sys.exit(1)
+
+        print(table.draw())
 
     except(KeyError, AttributeError, TypeError, NameError,
            texttable.ArraySizeError):
