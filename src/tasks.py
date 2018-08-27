@@ -90,7 +90,8 @@ def pretty_print(args, output):
         table.header(sorted(required))
 
         for i, _ in enumerate(data):
-            table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+            table.add_row(
+                [v for k, v in sorted(data[i].items()) if k in required])
 
     if table.draw():
         print(table.draw())

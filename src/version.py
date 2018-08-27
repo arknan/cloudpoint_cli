@@ -20,4 +20,3 @@ def pretty_print(args, output):
     table.add_row([v for k, v in sorted(data.items())])
 
     print(table.draw())
-

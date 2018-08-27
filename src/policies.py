@@ -452,7 +452,8 @@ def pretty_print(args, output):
 
     table = Texttable()
     if args == "protected_assets_0":
-        table.add_rows([(k,v) for k, v in sorted(output.items())], header=False)
+        table.add_rows([(k, v) for k, v in sorted(output.items())],
+                       header=False)
         print(table.draw())
         sys.exit()
 
@@ -484,6 +485,7 @@ def pretty_print(args, output):
         required = ["name", "id"]
         table.header(sorted(required))
         for i, _ in enumerate(data):
-            table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+            table.add_row(
+                [v for k, v in sorted(data[i].items()) if k in required])
 
     print(table.draw())

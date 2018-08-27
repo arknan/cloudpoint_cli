@@ -159,7 +159,7 @@ def show(args, endpoint):
 
 
 def pretty_print(args, output):
-    
+
     table = Texttable()
 
     """

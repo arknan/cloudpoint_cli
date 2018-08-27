@@ -43,7 +43,7 @@ def pretty_print(args, output):
     data = json.loads(output.replace('ldap', ''))
     ignored = ['configKey', 'QueryAttribute']
     table = Texttable()
-    table.header([k for k, v in sorted(data.items()) if k not in ignored ])
-    table.add_row([v for k, v in sorted(data.items()) if k not in ignored ])
+    table.header([k for k, v in sorted(data.items()) if k not in ignored])
+    table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
 
     print(table.draw())

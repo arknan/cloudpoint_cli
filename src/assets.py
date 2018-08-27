@@ -3,7 +3,6 @@
 import json
 import sys
 from texttable import Texttable
-from pprint import pprint
 import api
 import cloudpoint
 import logs
@@ -137,7 +136,7 @@ def delete_snapshot(args, endpoint):
             output = cloudpoint.run(
                 ['assets', 'delete-snapshot', '-i', snap_id])
             if output:
-                pretty_print(output)
+                pretty_print(args, output)
 
         return "\n"
 
@@ -303,7 +302,7 @@ def pretty_print(args, output):
     if api.check_attr(args, 'asset_id'):
         data = json.loads(output)
         ignore = ['parentId', 'snapMethods', 'plugin', '_links',
-                         'protectionLevels', 'actions']
+                  'protectionLevels', 'actions']
 
         table.add_rows(
             [(k, v) for k, v in sorted(data.items()) if k not in ignore],
@@ -317,8 +316,9 @@ def pretty_print(args, output):
 
             for i, _ in enumerate(data):
                 if data[i]['type'] in ['disk', 'host']:
-                    table.add_row(
-                        [v for k, v in sorted(data[i].items()) if k in required])
+                    table.add_row([
+                        v for k, v in sorted(data[i].items()) if k in required
+                        ])
         except KeyError:
             LOG_C.error(output)
 

@@ -85,13 +85,14 @@ def pretty_print(args, output):
         print(data)
         ignored = ["links", "uri"]
         table.add_rows(
-            [(k, v) for k, v in sorted(data.items()) if not k in ignored],
+            [(k, v) for k, v in sorted(data.items()) if k not in ignored],
             header=False)
     else:
         required = ["id", "email"]
         for i, _ in enumerate(data):
             table.header(sorted(required))
-            table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+            table.add_row(
+                [v for k, v in sorted(data[i].items()) if k in required])
 
     if table.draw():
         print(table.draw())

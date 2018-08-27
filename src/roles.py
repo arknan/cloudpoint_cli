@@ -108,7 +108,7 @@ def show(args, endpoint):
 
 
 def pretty_print(args, output):
-    
+
     table = Texttable()
     data = json.loads(output)
 
@@ -131,7 +131,8 @@ def pretty_print(args, output):
 
         for i, _ in enumerate(data):
             table.header(sorted(required))
-            table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+            table.add_row(
+                [v for k, v in sorted(data[i].items()) if k in required])
 
     if table.draw():
         print(table.draw())

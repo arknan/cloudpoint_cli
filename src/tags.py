@@ -16,6 +16,7 @@ def entry_point(args):
     LOG_C.info("Not Implemented")
     sys.exit(1)
 
+
 def show(args, endpoint):
     pass
 
