@@ -95,7 +95,7 @@ and plugin_name")
                     sys.exit(1)
 
     else:
-        print_args = "base"
+        print_args = "show"
         if api.check_attr(args, 'agents_show_command'):
             if args.agents_show_command == 'summary':
                 endpoint.append("summary")
@@ -121,7 +121,7 @@ def pretty_print(output, print_args):
             table.header(["offhost", "onhost"])
             table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
 
-        elif print_args == "base":
+        elif print_args == "show":
             required = ["agentid", "osName", "onHost", "status"]
             table.header(sorted(required))
             for i, _ in enumerate(data):
@@ -154,8 +154,9 @@ def pretty_print(output, print_args):
             table.add_rows(
                 [(k, v) for k, v in sorted(data[i].items())], header=False)
 
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
 
     except(KeyError, AttributeError, TypeError, NameError,
-           texttable.ArraySizeError):
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
         print(output)

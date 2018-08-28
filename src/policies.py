@@ -32,8 +32,9 @@ def entry_point(args):
 
     elif args.policies_command == 'show':
         endpoint.append('/policies/')
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'policies'")
@@ -326,6 +327,7 @@ def create():
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'policies_show_command'):
 
         if api.check_attr(args, 'policy_id') or \
@@ -337,17 +339,17 @@ policy_id argument")
         if args.policies_show_command == 'protected-assets':
             if api.check_attr(args, 'policies_show_protected_assets_command'):
                 data = protected_assets(ast_only=1)
-                pretty_print("protected_assets_1", data)
+                print_args = "protected_assets_ast_only"
 
             else:
                 data = protected_assets(ast_only=0)
-                pretty_print("protected_assets_0", data)
+                print_args = "protected_assets"
 
         else:
             data = unprotected_assets()
-            pretty_print("unprotected_assets", data)
+            print_args = "unprotected_assets"
 
-        sys.exit(0)
+        return print_args
 
     if api.check_attr(args, 'policy_id') and \
        api.check_attr(args, 'policy_name'):
@@ -357,10 +359,17 @@ policy_id argument")
 
     if api.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
+        print_args = "policy_id"
+
+    elif api.check_attr(args, 'policy_name'):
+        pol_id = pol_name_to_id(args.policy_name)
+        endpoint.append(pol_id)
+        print_args = "policy_name"
+
     else:
-        if api.check_attr(args, 'policy_name'):
-            pol_id = pol_name_to_id(args.policy_name)
-            endpoint.append(pol_id)
+        print_args = "show"
+
+    return print_args
 
 
 def pol_map():
@@ -448,48 +457,52 @@ def unprotected_assets():
     return unprot_asset_list
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable()
-        if args == "protected_assets_0":
+
+        if print_args == "protected_assets":
             table.add_rows([(k, v) for k, v in sorted(output.items())],
                            header=False)
             print(table.draw())
-            sys.exit()
+            sys.exit(0)
 
-        elif args == "protected_assets_1":
+        elif print_args == "protected_assets_ast_only":
             table.header(["PROTECTED ASSETS"])
             for i in output:
                 table.add_row([i])
             print(table.draw())
-            sys.exit()
+            sys.exit(0)
 
-        elif args == "unprotected_assets":
+        elif print_args == "unprotected_assets":
             table.header(["UNPROTECTED ASSETS"])
             for i in output:
                 table.add_row([i])
             print(table.draw())
-            sys.exit()
+            sys.exit(0)
 
-        data = json.loads(output)
-
-        if api.check_attr(args, 'policy_id') or \
-           api.check_attr(args, 'policy_name'):
+        elif print_args == "policy_id" or print_args == "policy_name":
+            data = json.loads(output)
             for k, v in sorted(data.items()):
                 if isinstance(v, dict):
                     table.add_row([k, sorted(v.items())])
                 else:
                     table.add_row([k, v])
 
-        else:
+        elif print_args == "show":
+            data = json.loads(output)
             required = ["name", "id"]
             table.header(sorted(required))
             for i, _ in enumerate(data):
                 table.add_row(
                     [v for k, v in sorted(data[i].items()) if k in required])
+        else:
+            print('helo')
 
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError) as e:
         print(output)

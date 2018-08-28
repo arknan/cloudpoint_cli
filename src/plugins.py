@@ -94,5 +94,5 @@ def pretty_print(args, output):
                     [v for k, v in sorted(data[i].items()) if k in required])
 
         print(table.draw())
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
         print(output)

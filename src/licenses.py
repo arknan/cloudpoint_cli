@@ -96,5 +96,5 @@ def pretty_print(args, output):
             table.add_row(rows)
 
         print(table.draw())
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
         print(output)

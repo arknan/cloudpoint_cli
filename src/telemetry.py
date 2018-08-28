@@ -41,5 +41,5 @@ def pretty_print(args, output):
 
         print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
+    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
         print(output)

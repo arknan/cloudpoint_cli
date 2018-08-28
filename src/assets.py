@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import datetime
 import json
 import sys
 import texttable
@@ -18,31 +19,35 @@ def entry_point(args):
     if args.assets_command == "create-snapshot":
         data = create_snapshot(args, endpoint)
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
+        pretty_print(output, "create-snapshot")
 
     elif args.assets_command == "delete-snapshot":
         output = delete_snapshot(args, endpoint)
+        pretty_print(output, "delete-snapshot")
 
     elif args.assets_command == "policy":
         output = policy(args, endpoint)
+        pretty_print(output, "policy")
 
     elif args.assets_command == 'replicate':
         data = replicate(args, endpoint)
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
+        pretty_print(output, "replicate")
 
     elif args.assets_command == "restore":
         data = restore(args)
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
+        pretty_print(output, "restore")
 
     elif args.assets_command == "show":
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'assets'")
         cloudpoint.run(["assets", "-h"])
         sys.exit(1)
-
-    return output
 
 
 def create_snapshot(args, endpoint):
@@ -196,26 +201,32 @@ def restore(args):
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
+        print_args = "asset_id"
 
         if api.check_attr(args, 'assets_show_command'):
             if args.assets_show_command == "snapshots":
                 endpoint.append("/snapshots")
+                print_args = "snapshots"
 
                 if api.check_attr(args, 'snapshot_id'):
                     endpoint.append(args.snapshot_id)
+                    print_args = "snapshot_id"
 
                     if api.check_attr(args, 'snapshots_command'):
-
                         if args.snapshots_command == "granules":
                             endpoint.append(args.snapshots_command + '/')
+                            print_args = "granules"
 
                             if api.check_attr(args, 'granule_id'):
                                 endpoint.append(args.granule_id)
+                                print_args = "granule_id"
 
                         elif args.snapshots_command == "restore-targets":
                             endpoint.append('/targets')
+                            print_args = "restore-targets"
 
                         else:
                             LOG_FC.critical(
@@ -224,8 +235,10 @@ def show(args, endpoint):
 
             elif args.assets_show_command == "policies":
                 endpoint.append("/policies/")
+                print_args = "policies"
 
     else:
+        print_args = "show"
         if api.check_attr(args, 'assets_show_command'):
             if args.assets_show_command in ['snapshots', 'policies']:
                 LOG_C.error("Argument '%s' needs an asset_id",
@@ -234,10 +247,12 @@ def show(args, endpoint):
 
             elif args.assets_show_command == "summary":
                 endpoint.append('/summary')
+                print_args = "summary"
             else:
                 LOG_FC.critical("INTERNAL ERROR 3 IN '%s'", __file__)
                 sys.exit(1)
 
+    return print_args
 
 def replicate(args, endpoint):
 
@@ -295,12 +310,12 @@ def replicate(args, endpoint):
     return data
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable()
 
-        if api.check_attr(args, 'asset_id'):
+        if print_args == "asset_id":
             data = json.loads(output)
             ignore = ['parentId', 'snapMethods', 'plugin', '_links',
                       'protectionLevels', 'actions']
@@ -309,22 +324,60 @@ def pretty_print(args, output):
                 [(k, v) for k, v in sorted(data.items()) if k not in ignore],
                 header=False)
 
-        else:
-            try:
-                data = json.loads(output)['items']
-                required = ["id", "type", "location"]
-                table.header(sorted(required))
+        elif print_args == "show":
+            data = json.loads(output)['items']
+            required = ["id", "type", "location"]
+            table.header(sorted(required))
 
-                for i, _ in enumerate(data):
-                    if data[i]['type'] in ['disk', 'host']:
-                        table.add_row([
-                            v for k, v in sorted(data[i].items()) if k in required
-                            ])
-            except KeyError:
-                LOG_C.error(output)
+            for i, _ in enumerate(data):
+                if data[i]['type'] in ['disk', 'host']:
+                    table.add_row([
+                        v for k, v in sorted(data[i].items()) if k in required
+                        ])
+
+        elif print_args == "snapshots":
+            
+            data = json.loads(output)['items']
+            required = ["id", "ctime", "type"]
+            table.header(sorted(required))
+
+            for i, _ in enumerate(data):
+                vlist = []
+                for k, v in sorted(data[i].items()):
+                    if k in required:
+                        if k == 'ctime':
+                            vlist.append(datetime.datetime.fromtimestamp(v))
+                        elif k == 'type':
+                            vlist.append(v.split(':')[0])
+                        else:
+                            vlist.append(v)
+                table.add_row([i for i in vlist])
+
+        elif print_args == "snapshot_id":
+            data = json.loads(output)
+            ignored = ["_links", "actions"]
+            vlist = []
+            klist = []
+            for k, v in sorted(data.items()):
+                if k not in ignored:
+                    klist.append(k)
+                    if k == "ctime":
+                        vlist.append(datetime.datetime.fromtimestamp(v))
+                    elif k == "attachment":
+                        vlist.append((data[k].values()))
+                    else:
+                        vlist.append(v)
+
+                    if klist and vlist:
+                        table.add_row([klist.pop(), vlist.pop()])
+
+        else:
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items())], header=False)
 
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
         print(output)
