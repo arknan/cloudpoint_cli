@@ -6,8 +6,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -30,7 +31,7 @@ def entry_point(args):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'available_plugin_name'):
+    if utils.check_attr(args, 'available_plugin_name'):
         plugin_cmd = json.loads(cloudpoint.run(["plugins", "show"]))
         plugin_list = []
         for i, _ in enumerate(plugin_cmd):
@@ -45,9 +46,9 @@ def show(args, endpoint):
             LOG_C.error("Please provide a valid plugin name (ex: mongo)")
             sys.exit(1)
 
-    if (api.check_attr(args, 'plugins_show_command')) and \
+    if (utils.check_attr(args, 'plugins_show_command')) and \
        (args.plugins_show_command == "description"):
-        if api.check_attr(args, 'available_plugin_name'):
+        if utils.check_attr(args, 'available_plugin_name'):
             endpoint.append("description")
             print_args = "description"
 
@@ -55,9 +56,9 @@ def show(args, endpoint):
             LOG_C.error("'description' requires -i flag for 'PLUGIN_NAME'")
             sys.exit(1)
 
-    elif (api.check_attr(args, 'plugins_show_command')) and \
+    elif (utils.check_attr(args, 'plugins_show_command')) and \
          (args.plugins_show_command == "summary"):
-        if api.check_attr(args, 'available_plugin_name'):
+        if utils.check_attr(args, 'available_plugin_name'):
             LOG_C.error("Summary cannot be provided for a specific plugin")
             sys.exit(1)
         else:

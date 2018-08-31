@@ -252,17 +252,3 @@ class Command():
             self.authenticates()
 
         return True
-
-
-def check_attr(args, attr):
-    try:
-        return bool(getattr(args, attr))
-    except (NameError, IndexError, KeyError, AttributeError):
-        return False
-
-
-def get_stty_cols():
-
-    ROWS, COLUMNS = os.popen('stty size', 'r').read().split()
-
-    return int(COLUMNS)

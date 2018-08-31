@@ -6,8 +6,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -79,7 +80,7 @@ with this role")
 
 def delete(args, endpoint):
 
-    if api.check_attr(args, 'role_id'):
+    if utils.check_attr(args, 'role_id'):
         endpoint.append('/' + args.role_id)
     else:
         role_id = input("Enter role id of the role you want to delete : ")
@@ -107,7 +108,7 @@ def modify(endpoint):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'role_id'):
+    if utils.check_attr(args, 'role_id'):
         endpoint.append(args.role_id)
         print_args = "role_id"
     else:

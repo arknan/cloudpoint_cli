@@ -6,8 +6,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -16,7 +17,7 @@ def entry_point(args):
 
     output = None
     endpoint = ['/idm/config/ad']
-    if api.check_attr(args, 'ldap_config_command'):
+    if utils.check_attr(args, 'ldap_config_command'):
         if args.ldap_config_command == 'show':
             print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))

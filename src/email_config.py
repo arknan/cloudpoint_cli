@@ -7,8 +7,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -17,7 +18,7 @@ def entry_point(args):
 
     output = None
     endpoint = ['/email/config']
-    if api.check_attr(args, 'email_config_command'):
+    if utils.check_attr(args, 'email_config_command'):
         if args.email_config_command == 'show':
             print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))
@@ -51,7 +52,7 @@ def show():
 
 def create(args):
 
-    if api.check_attr(args, 'email_config_create_command'):
+    if utils.check_attr(args, 'email_config_create_command'):
         if args.email_config_create_command == 'aws_ses':
             LOG_C.info("Please enter the following AWS details :\n")
             aws_ak = input("Access Key :")

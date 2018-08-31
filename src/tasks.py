@@ -6,8 +6,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -35,12 +36,12 @@ def delete(args, endpoint):
 
     # STATUS based deletion is failing :( Need to check with Engineering
 
-    if api.check_attr(args, 'task_id'):
+    if utils.check_attr(args, 'task_id'):
         endpoint.append(args.task_id)
 
-    elif api.check_attr(args, 'status'):
+    elif utils.check_attr(args, 'status'):
         temp_endpoint = ['?status=' + args.status]
-        if api.check_attr(args, 'older_than'):
+        if utils.check_attr(args, 'older_than'):
             temp_endpoint.append('&olderThan=' + args.older_than)
 
         endpoint.append(''.join(temp_endpoint))
@@ -54,15 +55,15 @@ def show(args, endpoint):
     # MAYBE THE TASKS TYPE FILTER ISN'T WORKING ... PLEASE CHECK WHY LATER
 
     print_args = None
-    if api.check_attr(args, 'task_id'):
-        if api.check_attr(args, 'tasks_show_command'):
+    if utils.check_attr(args, 'task_id'):
+        if utils.check_attr(args, 'tasks_show_command'):
             LOG_C.error("You cannot get summary of a specific task")
             sys.exit(1)
 
         endpoint.append(getattr(args, 'task_id'))
         print_args = "task_id"
 
-    elif api.check_attr(args, 'tasks_show_command'):
+    elif utils.check_attr(args, 'tasks_show_command'):
         endpoint.append('/summary')
         print_args = "summary"
 
@@ -71,7 +72,7 @@ def show(args, endpoint):
         filters = []
         temp_endpoint = []
         for i in 'run_since', 'limit', 'status', 'task_type':
-            if api.check_attr(args, i):
+            if utils.check_attr(args, i):
                 filters.append(i)
 
         if (filters) and (filters[0]):

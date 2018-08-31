@@ -7,8 +7,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -70,9 +71,9 @@ def asset(args):
 
     def validate_policy(args):
 
-        if api.check_attr(args, 'policy_id'):
+        if utils.check_attr(args, 'policy_id'):
             pol_id = args.policy_id
-        elif api.check_attr(args, 'policy_name'):
+        elif utils.check_attr(args, 'policy_name'):
             pol_id = pol_name_to_id(args.policy_name)
         else:
             LOG_C.error("Either provide %s or %s\n",
@@ -82,10 +83,10 @@ def asset(args):
 
         return pol_id
 
-    if api.check_attr(args, 'policies_asset_command'):
-        if api.check_attr(args, 'asset_id'):
-            if api.check_attr(args, 'policy_id') and \
-               api.check_attr(args, 'policy_name'):
+    if utils.check_attr(args, 'policies_asset_command'):
+        if utils.check_attr(args, 'asset_id'):
+            if utils.check_attr(args, 'policy_id') and \
+               utils.check_attr(args, 'policy_name'):
                 LOG_C.error("Either provide %s or %s, not both",
                             "policy_id", "policy_name")
                 sys.exit(1)
@@ -94,7 +95,7 @@ def asset(args):
             output = abstractor(args.asset_id, args.policies_asset_command,
                                 pol_id)
 
-        elif api.check_attr(args, 'file_name'):
+        elif utils.check_attr(args, 'file_name'):
             try:
                 with open(args.file_name, 'r') as infile:
                     file_input = infile.readlines()
@@ -130,20 +131,20 @@ def delete(args, endpoint):
 
     pol_id = None
     pol_nm = None
-    if api.check_attr(args, 'policy_id') and \
-       api.check_attr(args, 'policy_name'):
+    if utils.check_attr(args, 'policy_id') and \
+       utils.check_attr(args, 'policy_name'):
         LOG_C.error("Either provide %s or %s, not both",
                     "policy_id", "policy_name")
         sys.exit(1)
 
-    if api.check_attr(args, 'policy_id'):
+    if utils.check_attr(args, 'policy_id'):
         pol_id = args.policy_id
         pol_nm = pol_id_to_name(pol_id)
         if not pol_nm:
             LOG_C.error("Invalid policy '%s'\n", args.policy_id)
             sys.exit(1)
 
-    elif api.check_attr(args, 'policy_name'):
+    elif utils.check_attr(args, 'policy_name'):
         pol_nm = args.policy_name
         pol_id = pol_name_to_id(pol_nm)
         if not pol_id:
@@ -329,16 +330,16 @@ def create():
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'policies_show_command'):
+    if utils.check_attr(args, 'policies_show_command'):
 
-        if api.check_attr(args, 'policy_id') or \
-           api.check_attr(args, 'policy_name'):
+        if utils.check_attr(args, 'policy_id') or \
+           utils.check_attr(args, 'policy_name'):
             LOG_C.error("protected-assets subcommand doesn't take \
 policy_id argument")
             sys.exit(1)
 
         if args.policies_show_command == 'protected-assets':
-            if api.check_attr(args, 'policies_show_protected_assets_command'):
+            if utils.check_attr(args, 'policies_show_protected_assets_command'):
                 data = protected_assets(ast_only=1)
                 print_args = "protected_assets_ast_only"
 
@@ -352,17 +353,17 @@ policy_id argument")
 
         return print_args
 
-    if api.check_attr(args, 'policy_id') and \
-       api.check_attr(args, 'policy_name'):
+    if utils.check_attr(args, 'policy_id') and \
+       utils.check_attr(args, 'policy_name'):
         LOG_C.error("Either provide %s or %s, not both",
                     "policy_id", "policy_name")
         sys.exit(1)
 
-    if api.check_attr(args, 'policy_id'):
+    if utils.check_attr(args, 'policy_id'):
         endpoint.append(args.policy_id)
         print_args = "policy_id"
 
-    elif api.check_attr(args, 'policy_name'):
+    elif utils.check_attr(args, 'policy_name'):
         pol_id = pol_name_to_id(args.policy_name)
         endpoint.append(pol_id)
         print_args = "policy_name"

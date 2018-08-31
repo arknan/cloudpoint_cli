@@ -7,8 +7,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -62,7 +63,7 @@ def delete(args, endpoint):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'licenses_show_command'):
+    if utils.check_attr(args, 'licenses_show_command'):
         if args.licenses_show_command == "active":
             endpoint.append('/?IsLicenseActive=true')
             print_args = "active"
@@ -71,7 +72,7 @@ def show(args, endpoint):
             endpoint.append('/all/features')
             print_args = "features"
 
-    elif api.check_attr(args, 'license_id'):
+    elif utils.check_attr(args, 'license_id'):
         endpoint.append(args.license_id)
         print_args = "license_id"
 

@@ -7,8 +7,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -37,14 +38,14 @@ def entry_point(args):
 
 def delete(args, endpoint):
 
-    if api.check_attr(args, 'agents_delete_command'):
+    if utils.check_attr(args, 'agents_delete_command'):
         endpoint.append(args.agent_id)
 
-        if api.check_attr(args, 'agents_delete_agent_command'):
+        if utils.check_attr(args, 'agents_delete_agent_command'):
             endpoint.append('/' + args.agents_delete_agent_command)
             endpoint.append('/' + args.plugin_name)
 
-            if api.check_attr(args, 'agents_delete_agent_plugins_command'):
+            if utils.check_attr(args, 'agents_delete_agent_plugins_command'):
                 endpoint.append('/configs')
                 endpoint.append('/' + args.config_id)
     else:
@@ -56,13 +57,13 @@ def delete(args, endpoint):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'agent_id'):
+    if utils.check_attr(args, 'agent_id'):
         endpoint.append(args.agent_id)
         print_args = "agent_id"
 
-        if api.check_attr(args, 'agents_show_command'):
+        if utils.check_attr(args, 'agents_show_command'):
             if args.agents_show_command == "plugins":
-                if api.check_attr(args, 'agent_id'):
+                if utils.check_attr(args, 'agent_id'):
                     endpoint.append("plugins/")
                     print_args = "plugins"
 
@@ -75,13 +76,13 @@ def show(args, endpoint):
                     "Summary cannot be provided for a specific agent")
                 sys.exit(1)
 
-            if api.check_attr(args, "configured_plugin_name"):
+            if utils.check_attr(args, "configured_plugin_name"):
                 endpoint.append(args.configured_plugin_name)
                 print_args = "plugin_id"
 
-                if api.check_attr(args, 'agents_show_plugins_command'):
-                    if api.check_attr(args, 'agent_id') and \
-                       api.check_attr(args, "configured_plugin_name"):
+                if utils.check_attr(args, 'agents_show_plugins_command'):
+                    if utils.check_attr(args, 'agent_id') and \
+                       utils.check_attr(args, "configured_plugin_name"):
                         endpoint.append('/configs/')
                         print_args = "configs"
                     else:
@@ -90,19 +91,19 @@ agent_id and plugin_name")
                         sys.exit(1)
 
             else:
-                if api.check_attr(args, 'agents_show_plugins_command'):
+                if utils.check_attr(args, 'agents_show_plugins_command'):
                     LOG_C.error("Configs sub-command needs an agent_id \
 and plugin_name")
                     sys.exit(1)
 
     else:
         print_args = "show"
-        if api.check_attr(args, 'agents_show_command'):
+        if utils.check_attr(args, 'agents_show_command'):
             if args.agents_show_command == 'summary':
                 endpoint.append("summary")
                 print_args = "summary"
             else:
-                if api.check_attr(args, 'agents_show_plugins_command'):
+                if utils.check_attr(args, 'agents_show_plugins_command'):
                     LOG_C.error("Configs sub-command needs an agent_id \
 and plugin_name")
                     sys.exit(1)
@@ -116,9 +117,15 @@ and plugin_name")
 def pretty_print(output, print_args):
 
     try:
-        data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        data = json.loads(output)
+
+        pformat = utils.print_format()
+        if pformat == 'raw':
+            print_args = 'raw'
+        else:
+            table.set_deco(pformat)
+
         if print_args  == "summary":
             table.header(["offhost", "onhost"])
             table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
@@ -137,22 +144,29 @@ def pretty_print(output, print_args):
                     [v for k, v in sorted(data[i].items())])
 
         elif print_args == "plugin_id":
+            table.header(("Attribute", "Value"))
             table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
             
         elif print_args == "agent_id":
+            table.header(("Attribute", "Value"))
             ignored = ["hostname"]
             table.add_rows(
                 [(k, v) for k, v in sorted(data.items()) if k not in ignored],
                 header=False)
 
         elif print_args == "configs":
+            table.header(("Attribute", "Value"))
             ignored = ['configHash', 'configId']
             for i, _ in enumerate(data):
                 table.add_rows(
                     [(k, v) for k, v in sorted(data[i].items())\
                     if k not in ignored], header=False)
 
+        elif print_args == 'raw':
+            print(output)
+
         else:
+            table.header(("Attribute", "Value"))
             table.add_rows(
                 [(k, v) for k, v in sorted(data[i].items())], header=False)
 

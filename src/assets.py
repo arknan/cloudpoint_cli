@@ -7,8 +7,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -52,7 +53,7 @@ def entry_point(args):
 
 
 def create_snapshot(args, endpoint):
-    if api.check_attr(args, "asset_id"):
+    if utils.check_attr(args, "asset_id"):
         endpoint.append(args.asset_id)
         endpoint.append('/snapshots/')
     else:
@@ -110,14 +111,14 @@ def delete_snapshot(args, endpoint):
 
         return err
 
-    if api.check_attr(args, 'snapshot_id') and \
-       api.check_attr(args, 'file_name'):
+    if utils.check_attr(args, 'snapshot_id') and \
+       utils.check_attr(args, 'file_name'):
         LOG_C.error("Either provide %s or %s, not both", "snapshot_id",
                     "file_name")
         sys.exit(1)
 
     output = None
-    if api.check_attr(args, 'snapshot_id'):
+    if utils.check_attr(args, 'snapshot_id'):
         if del_snap(args.snapshot_id, endpoint):
             output = getattr(api.Command(), "deletes")('/'.join(endpoint))
         else:
@@ -128,7 +129,7 @@ def delete_snapshot(args, endpoint):
 
     else:
         file_input = None
-        if api.check_attr(args, 'file_name'):
+        if utils.check_attr(args, 'file_name'):
             try:
                 with open(args.file_name, 'r') as infile:
                     file_input = infile.readlines()
@@ -149,7 +150,7 @@ def delete_snapshot(args, endpoint):
 
 def policy(args, endpoint):
 
-    if api.check_attr(args, 'assets_policy_command'):
+    if utils.check_attr(args, 'assets_policy_command'):
         endpoint.append(args.asset_id)
         endpoint.append('/policies/')
         endpoint.append(args.policy_id)
@@ -169,7 +170,7 @@ def policy(args, endpoint):
 
 def restore(args):
 
-    if not api.check_attr(args, "snapshot_id"):
+    if not utils.check_attr(args, "snapshot_id"):
         LOG_C.error("Please mention a SNAP_ID for doing restores")
         sys.exit(1)
 
@@ -203,25 +204,25 @@ def restore(args):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'asset_id'):
+    if utils.check_attr(args, 'asset_id'):
         endpoint.append(args.asset_id)
         print_args = "asset_id"
 
-        if api.check_attr(args, 'assets_show_command'):
+        if utils.check_attr(args, 'assets_show_command'):
             if args.assets_show_command == "snapshots":
                 endpoint.append("/snapshots")
                 print_args = "snapshots"
 
-                if api.check_attr(args, 'snapshot_id'):
+                if utils.check_attr(args, 'snapshot_id'):
                     endpoint.append(args.snapshot_id)
                     print_args = "snapshot_id"
 
-                    if api.check_attr(args, 'snapshots_command'):
+                    if utils.check_attr(args, 'snapshots_command'):
                         if args.snapshots_command == "granules":
                             endpoint.append(args.snapshots_command + '/')
                             print_args = "granules"
 
-                            if api.check_attr(args, 'granule_id'):
+                            if utils.check_attr(args, 'granule_id'):
                                 endpoint.append(args.granule_id)
                                 print_args = "granule_id"
 
@@ -240,7 +241,7 @@ def show(args, endpoint):
 
     else:
         print_args = "show"
-        if api.check_attr(args, 'assets_show_command'):
+        if utils.check_attr(args, 'assets_show_command'):
             if args.assets_show_command in ['snapshots', 'policies']:
                 LOG_C.error("Argument '%s' needs an asset_id",
                             args.assets_show_command)
@@ -258,7 +259,7 @@ def show(args, endpoint):
 def replicate(args, endpoint):
 
     snap_id = None
-    if api.check_attr(args, 'snapshot_id'):
+    if utils.check_attr(args, 'snapshot_id'):
         snap_id = args.snapshot_id
     else:
         LOG_C.info("Enter the snapshot ID to replicate and the destination(s)")

@@ -3,8 +3,9 @@
 import json
 import texttable
 import api
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 
 def entry_point(args):
     endpoint = ['/version']

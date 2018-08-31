@@ -7,8 +7,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -76,7 +77,7 @@ def reset_password():
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'user_id'):
+    if utils.check_attr(args, 'user_id'):
         endpoint.append(args.user_id)
         print_args = 'user_id'
     else:

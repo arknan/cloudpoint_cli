@@ -6,8 +6,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -79,20 +80,20 @@ def create():
 def delete(args, endpoint):
 
     report_id = None
-    if api.check_attr(args, 'report_id'):
+    if utils.check_attr(args, 'report_id'):
         report_id = '/' + args.report_id
     else:
         report_id = input("Enter the report id you want to delete : ")
 
     endpoint.append(report_id)
 
-    if not api.check_attr(args, 'reports_delete_command'):
+    if not utils.check_attr(args, 'reports_delete_command'):
         endpoint.append('/data')
 
 
 def re_run(args, endpoint):
     report_id = None
-    if api.check_attr(args, 'report_id'):
+    if utils.check_attr(args, 'report_id'):
         report_id = args.report_id
 
     else:
@@ -105,19 +106,19 @@ def re_run(args, endpoint):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'reports_show_command'):
+    if utils.check_attr(args, 'reports_show_command'):
         if args.reports_show_command == 'report-types':
             endpoint.append('/report-types/')
             print_args = 'report-types'
 
         else:
             endpoint.append('/reports/')
-            if api.check_attr(args, 'report_id'):
+            if utils.check_attr(args, 'report_id'):
                 endpoint.append(args.report_id)
                 print_args = 'report_id'
 
-            if api.check_attr(args, 'reports_show_command'):
-                if api.check_attr(args, 'report_id'):
+            if utils.check_attr(args, 'reports_show_command'):
+                if utils.check_attr(args, 'report_id'):
                     if args.reports_show_command == "preview":
                         endpoint.append('/preview')
                         print_args = 'preview'
@@ -131,7 +132,7 @@ def show(args, endpoint):
     else:
         endpoint.append('/reports/')
         print_args = "show"
-        if api.check_attr(args, 'report_id'):
+        if utils.check_attr(args, 'report_id'):
             endpoint.append(args.report_id)
             print_args = "report_id"
 

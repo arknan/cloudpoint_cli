@@ -6,8 +6,9 @@ import texttable
 import api
 import cloudpoint
 import logs
+import utils
 
-COLUMNS = api.get_stty_cols()
+COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -21,7 +22,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.replication_command == "delete":
-        if not api.check_attr(args, 'replication_delete_command'):
+        if not utils.check_attr(args, 'replication_delete_command'):
             LOG_C.error("No arguments provided for 'delete'")
             cloudpoint.run(["replication", "delete", "-h"])
             sys.exit(1)
@@ -31,7 +32,7 @@ def entry_point(args):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.replication_command == "modify":
-        if not api.check_attr(args, 'replication_modify_command'):
+        if not utils.check_attr(args, 'replication_modify_command'):
             LOG_C.error("No arguments provided for 'modify'")
             cloudpoint.run(["replication", "modify", "-h"])
             sys.exit(1)
@@ -57,7 +58,7 @@ def entry_point(args):
 
 def create(args):
 
-    if not api.check_attr(args, 'replication_create_command'):
+    if not utils.check_attr(args, 'replication_create_command'):
         LOG_C.error("No arguments provided for 'create'")
         cloudpoint.run(["replication", "create", "-h"])
         sys.exit(1)
@@ -151,12 +152,12 @@ def modify(args, endpoint):
 def show(args, endpoint):
 
     print_args = None
-    if api.check_attr(args, 'policy_name'):
+    if utils.check_attr(args, 'policy_name'):
         endpoint.append(getattr(args, 'policy_name'))
         print_args = 'policy_name'
 
-    if api.check_attr(args, 'replication_show_command'):
-        if api.check_attr(args, 'policy_name'):
+    if utils.check_attr(args, 'replication_show_command'):
+        if utils.check_attr(args, 'policy_name'):
             endpoint.append('/rules/')
         else:
             endpoint.append('/default/rules/')
