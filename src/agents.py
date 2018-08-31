@@ -121,8 +121,8 @@ def pretty_print(output, print_args):
         data = json.loads(output)
 
         pformat = utils.print_format()
-        if pformat == 'raw':
-            print_args = 'raw'
+        if pformat == 'json':
+            print_args = 'json'
         else:
             table.set_deco(pformat)
 
@@ -162,7 +162,7 @@ def pretty_print(output, print_args):
                     [(k, v) for k, v in sorted(data[i].items())\
                     if k not in ignored], header=False)
 
-        elif print_args == 'raw':
+        elif print_args == 'json':
             print(output)
 
         else:
