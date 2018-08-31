@@ -28,8 +28,9 @@ def entry_point(args):
                     data['email'])
 
     elif args.users_command == "show":
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'users'")
@@ -72,18 +73,24 @@ def reset_password():
 
 
 def show(args, endpoint):
+
+    print_args = None
     if api.check_attr(args, 'user_id'):
         endpoint.append(args.user_id)
+        print_args = 'user_id'
+    else:
+        print_args = 'show'
+
+    return print_args
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
         table = texttable.Texttable()
 
-        if args.user_id:
-            print(data)
+        if print_args == 'user_id':
             ignored = ["links", "uri"]
             table.add_rows(
                 [(k, v) for k, v in sorted(data.items()) if k not in ignored],

@@ -23,6 +23,7 @@ def entry_point(args):
 
     elif args.telemetry_command == 'status':
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, None)
 
     else:
         LOG_C.error("No arguments provided for 'telemetry'")
@@ -32,7 +33,7 @@ def entry_point(args):
     return output
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)

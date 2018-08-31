@@ -79,7 +79,7 @@ else
         ln -s "$(pwd)"/src/cloudpoint.py /usr/bin/cloudpoint
     fi
 
-    if ! [ "/root/.cloudpoint_cli.config" -ef "$(pwd)/cloudpoint_cli.config"];
+    if ! [ "/root/.cloudpoint_cli.config" -ef "$(pwd)/cloudpoint_cli.config" ];
     then
         if [ -L "/root/.cloudpoint_cli.config" ];
         then

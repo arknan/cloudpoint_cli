@@ -14,8 +14,10 @@ def entry_point(args):
 
     endpoint = ['/plugins/']
     if args.plugins_command == 'show':
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
+
     else:
         LOG_C.error("No arguments provided for 'plugins'")
         cloudpoint.run(["plugins", "-h"])
@@ -26,6 +28,7 @@ def entry_point(args):
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'available_plugin_name'):
         plugin_cmd = json.loads(cloudpoint.run(["plugins", "show"]))
         plugin_list = []
@@ -35,6 +38,8 @@ def show(args, endpoint):
                     plugin_list.append(v)
         if args.available_plugin_name in plugin_list:
             endpoint.append(args.available_plugin_name)
+            print_args = 'available_plugin_name'
+
         else:
             LOG_C.error("Please provide a valid plugin name (ex: mongo)")
             sys.exit(1)
@@ -43,9 +48,12 @@ def show(args, endpoint):
        (args.plugins_show_command == "description"):
         if api.check_attr(args, 'available_plugin_name'):
             endpoint.append("description")
+            print_args = "description"
+
         else:
             LOG_C.error("'description' requires -i flag for 'PLUGIN_NAME'")
             sys.exit(1)
+
     elif (api.check_attr(args, 'plugins_show_command')) and \
          (args.plugins_show_command == "summary"):
         if api.check_attr(args, 'available_plugin_name'):
@@ -53,20 +61,25 @@ def show(args, endpoint):
             sys.exit(1)
         else:
             endpoint.append("summary")
+            print_args = "summary"
+
+    else:
+        print_args = "show"
+
+    return print_args
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
-        if api.check_attr(args, 'plugins_show_command') and \
-           args.plugins_show_command == "description":
+        if pretty_print == "description":
             print(output)
             sys.exit(0)
 
         data = json.loads(output)
         table = texttable.Texttable()
 
-        if api.check_attr(args, 'available_plugin_name'):
+        if print_args == 'available_plugin_name':
             table.add_rows(
                 [(k, v) for k, v in sorted(data.items()) if k != "configTemplate"],
                 header=False)
@@ -77,8 +90,7 @@ def pretty_print(args, output):
                     [(k, v) for k, v in sorted(data["configTemplate"][i].items())],
                     header=False)
 
-        elif api.check_attr(args, 'plugins_show_command') and\
-             args.plugins_show_command == "summary":
+        elif print_args == "summary":
             table.header(["", "onHost", "offHost"])
             table.add_row(["configured", data["onHost"]["yes"]["configured"],
                            data["onHost"]["no"]["configured"]])
@@ -86,7 +98,6 @@ def pretty_print(args, output):
                            data["onHost"]["no"]["supported"]])
 
         else:
-            print(output)
             required = ["displayName", "name", "onHost"]
             table.header(sorted(required))
             for i, _ in enumerate(data):

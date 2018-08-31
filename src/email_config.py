@@ -18,8 +18,9 @@ def entry_point(args):
     endpoint = ['/email/config']
     if api.check_attr(args, 'email_config_command'):
         if args.email_config_command == 'show':
-            show()
+            print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+            pretty_print(output, print_args)
 
         elif args.email_config_command == 'create':
             data = create(args)
@@ -131,7 +132,7 @@ def create(args):
     return data
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)

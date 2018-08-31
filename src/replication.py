@@ -41,9 +41,10 @@ def entry_point(args):
 
     elif args.replication_command == "show":
         endpoint.append('/replication/')
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(
             api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'replication'")
@@ -148,8 +149,10 @@ def modify(args, endpoint):
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'policy_name'):
         endpoint.append(getattr(args, 'policy_name'))
+        print_args = 'policy_name'
 
     if api.check_attr(args, 'replication_show_command'):
         if api.check_attr(args, 'policy_name'):
@@ -157,14 +160,20 @@ def show(args, endpoint):
         else:
             endpoint.append('/default/rules/')
 
+        print_args = "rules"
+    else:
+        print_args = "show"
 
-def pretty_print(args, output):
+    return print_args
+
+
+def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable()
         data = json.loads(output)
 
-        if args.policy_name:
+        if print_args == 'policy_name':
             table.header([k for k, v in sorted(data.items())])
             table.add_row([v for k, v in sorted(data.items())])
 

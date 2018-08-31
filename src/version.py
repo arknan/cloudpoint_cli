@@ -8,11 +8,10 @@ import api
 def entry_point(args):
     endpoint = ['/version']
     output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+    pretty_print(output, None)
 
-    return output
 
-
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)

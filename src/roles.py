@@ -27,8 +27,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
 
     elif args.roles_command == "show":
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'roles'")
@@ -103,17 +104,24 @@ def modify(endpoint):
 
 
 def show(args, endpoint):
+
+    print_args = None
     if api.check_attr(args, 'role_id'):
         endpoint.append(args.role_id)
+        print_args = "role_id"
+    else:
+        print_args = "show"
+
+    return print_args
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable()
         data = json.loads(output)
 
-        if args.role_id:
+        if print_args == "role_id":
             ignored = ["links", "uri"]
             for k, v in sorted(data.items()):
                 if isinstance(v, list) and v:

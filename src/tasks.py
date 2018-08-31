@@ -18,8 +18,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.tasks_command == 'show':
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'tasks'")
@@ -51,17 +52,21 @@ def show(args, endpoint):
 
     # MAYBE THE TASKS TYPE FILTER ISN'T WORKING ... PLEASE CHECK WHY LATER
 
+    print_args = None
     if api.check_attr(args, 'task_id'):
         if api.check_attr(args, 'tasks_show_command'):
             LOG_C.error("You cannot get summary of a specific task")
             sys.exit(1)
 
         endpoint.append(getattr(args, 'task_id'))
+        print_args = "task_id"
 
     elif api.check_attr(args, 'tasks_show_command'):
         endpoint.append('/summary')
+        print_args = "summary"
 
     else:
+        print_args = "show"
         filters = []
         temp_endpoint = []
         for i in 'run_since', 'limit', 'status', 'task_type':
@@ -77,14 +82,16 @@ def show(args, endpoint):
 
         endpoint.append(''.join(temp_endpoint))
 
+    return print_args
 
-def pretty_print(args, output):
+
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
         table = texttable.Texttable()
 
-        if args.task_id:
+        if print_args == "task_id":
             table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
         else:
             required = ["name", "status", "taskid"]

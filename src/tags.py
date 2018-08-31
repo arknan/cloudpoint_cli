@@ -21,7 +21,7 @@ def show(args, endpoint):
     pass
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
     try:
         print(output)
     except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):

@@ -14,9 +14,10 @@ def entry_point(args):
 
     endpoint = ['/authorization/privilege/']
     if args.privileges_command == 'show':
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(
             api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'privileges'")
@@ -27,17 +28,25 @@ def entry_point(args):
 
 
 def show(args, endpoint):
+
+    print_args = None
     if args.privilege_id:
         endpoint.append(args.privilege_id)
+        print_args = "privilege_id"
+
+    else:
+        print_args = "show"
+
+    return print_args
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
         table = texttable.Texttable()
 
-        if args.privilege_id:
+        if print_args == "privilege_id":
             ignored = ["links"]
             table.add_rows(
                 [(k, v) for k, v in sorted(data.items()) if k not in ignored],

@@ -25,8 +25,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
 
     elif args.licenses_command == 'show':
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'licenses'")
@@ -59,26 +60,36 @@ def delete(args, endpoint):
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'licenses_show_command'):
         if args.licenses_show_command == "active":
             endpoint.append('/?IsLicenseActive=true')
+            print_args = "active"
+
         elif args.licenses_show_command == "features":
             endpoint.append('/all/features')
+            print_args = "features"
 
-    if api.check_attr(args, 'license_id'):
+    elif api.check_attr(args, 'license_id'):
         endpoint.append(args.license_id)
+        print_args = "license_id"
+
+    else:
+        print_args = "show"
+
+    return print_args
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
         table = texttable.Texttable()
 
-        if api.check_attr(args, 'license_id'):
+        if print_args == "license_id":
             ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
                        'IsLicenseActive', 'SerialId', 'SvcPolicy']
-            table.add_row(("License Key ID", args.license_id))
+            table.add_row(("License Key ID", list(data.keys())[0]))
             for k, v in sorted(data.items()):
                 table.add_rows([(i, j) for i, j in sorted(
                     data[k].items()) if i not in ignored], header=False)

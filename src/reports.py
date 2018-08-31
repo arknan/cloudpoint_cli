@@ -30,8 +30,9 @@ def entry_point(args):
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), None)
 
     elif args.reports_command == 'show':
-        show(args, endpoint)
+        print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'reports'")
@@ -102,38 +103,46 @@ def re_run(args, endpoint):
 
 def show(args, endpoint):
 
+    print_args = None
     if api.check_attr(args, 'reports_show_command'):
         if args.reports_show_command == 'report-types':
             endpoint.append('/report-types/')
+            print_args = 'report-types'
 
         else:
             endpoint.append('/reports/')
             if api.check_attr(args, 'report_id'):
                 endpoint.append(args.report_id)
+                print_args = 'report_id'
 
             if api.check_attr(args, 'reports_show_command'):
                 if api.check_attr(args, 'report_id'):
                     if args.reports_show_command == "preview":
                         endpoint.append('/preview')
+                        print_args = 'preview'
                     else:
                         endpoint.append('/data')
+                        print_args = "data"
                 else:
                     LOG_C.error("Specify a REPORT_ID for getting %s",
                                 args.reports_show_command)
                     sys.exit(1)
     else:
         endpoint.append('/reports/')
+        print_args = "show"
         if api.check_attr(args, 'report_id'):
             endpoint.append(args.report_id)
+            print_args = "report_id"
 
+    return print_args
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
         table = texttable.Texttable()
 
-        if args.report_id:
+        if print_args == "report_id":
             table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
         else:
             required = ["reportId", "status"]

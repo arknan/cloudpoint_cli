@@ -313,7 +313,8 @@ def replicate(args, endpoint):
 def pretty_print(output, print_args):
 
     try:
-        table = texttable.Texttable()
+        table = texttable.Texttable(max_width=0)
+        table.set_deco(0)
 
         if print_args == "asset_id":
             data = json.loads(output)
@@ -330,7 +331,7 @@ def pretty_print(output, print_args):
             table.header(sorted(required))
 
             for i, _ in enumerate(data):
-                if data[i]['type'] in ['disk', 'host']:
+                if data[i]['type'] in ['disk', 'host', "filesystem"]:
                     table.add_row([
                         v for k, v in sorted(data[i].items()) if k in required
                         ])
@@ -371,7 +372,19 @@ def pretty_print(output, print_args):
                     if klist and vlist:
                         table.add_row([klist.pop(), vlist.pop()])
 
+        elif print_args == "granules":
+            data = json.loads(output)["items"]
+            required = ["id", "name"]
+            table.header(sorted(required))
+            for i, _ in enumerate(data):
+                table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+
+        elif print_args == "granule_id":
+            data = json.loads(output)
+            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+
         else:
+            data = json.loads(output)
             table.add_rows(
                 [(k, v) for k, v in sorted(data.items())], header=False)
 

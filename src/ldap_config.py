@@ -17,8 +17,9 @@ def entry_point(args):
     endpoint = ['/idm/config/ad']
     if api.check_attr(args, 'ldap_config_command'):
         if args.ldap_config_command == 'show':
-            show()
+            print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))
+            pretty_print(output, print_args)
 
         else:
             LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
@@ -38,7 +39,7 @@ def show():
     pass
 
 
-def pretty_print(args, output):
+def pretty_print(output, print_args):
 
     try:
         data = json.loads(output.replace('ldap', ''))
