@@ -8,6 +8,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -135,9 +136,11 @@ def create(args):
 def pretty_print(output, print_args):
 
     try:
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
+
         data = json.loads(output)
         data_data = json.loads(data['data'])
-        table = texttable.Texttable()
         print_dict = {}
 
         for k, v in sorted(data.items()):

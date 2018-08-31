@@ -7,6 +7,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 

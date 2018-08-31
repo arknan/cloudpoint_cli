@@ -8,6 +8,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -84,7 +85,8 @@ def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
-        table = texttable.Texttable()
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
 
         if print_args == "license_id":
             ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',

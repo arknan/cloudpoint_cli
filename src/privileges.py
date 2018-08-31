@@ -7,6 +7,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -44,7 +45,8 @@ def pretty_print(output, print_args):
 
     try:
         data = json.loads(output)
-        table = texttable.Texttable()
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
 
         if print_args == "privilege_id":
             ignored = ["links"]

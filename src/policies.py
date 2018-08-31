@@ -8,6 +8,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -460,7 +461,8 @@ def unprotected_assets():
 def pretty_print(output, print_args):
 
     try:
-        table = texttable.Texttable()
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
 
         if print_args == "protected_assets":
             table.add_rows([(k, v) for k, v in sorted(output.items())],

@@ -8,6 +8,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -313,8 +314,8 @@ def replicate(args, endpoint):
 def pretty_print(output, print_args):
 
     try:
-        table = texttable.Texttable(max_width=0)
-        table.set_deco(0)
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
 
         if print_args == "asset_id":
             data = json.loads(output)
@@ -331,7 +332,7 @@ def pretty_print(output, print_args):
             table.header(sorted(required))
 
             for i, _ in enumerate(data):
-                if data[i]['type'] in ['disk', 'host', "filesystem"]:
+                if data[i]['type'] in ['disk', 'host', "filesystem", "application"]:
                     table.add_row([
                         v for k, v in sorted(data[i].items()) if k in required
                         ])

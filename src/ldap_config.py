@@ -7,6 +7,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 LOG_FC = logs.setup(__name__)
 
@@ -42,9 +43,11 @@ def show():
 def pretty_print(output, print_args):
 
     try:
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
+
         data = json.loads(output.replace('ldap', ''))
         ignored = ['configKey', 'QueryAttribute']
-        table = texttable.Texttable()
         table.header([k for k, v in sorted(data.items()) if k not in ignored])
         table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
 

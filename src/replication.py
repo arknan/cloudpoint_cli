@@ -7,6 +7,7 @@ import api
 import cloudpoint
 import logs
 
+COLUMNS = api.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
 
 
@@ -170,7 +171,8 @@ def show(args, endpoint):
 def pretty_print(output, print_args):
 
     try:
-        table = texttable.Texttable()
+        table = texttable.Texttable(max_width=COLUMNS)
+        table.set_deco(texttable.Texttable.HEADER)
         data = json.loads(output)
 
         if print_args == 'policy_name':

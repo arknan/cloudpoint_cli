@@ -3,6 +3,7 @@
 
 import configparser
 import json
+import os
 import sys
 from getpass import getpass
 import logs
@@ -258,3 +259,10 @@ def check_attr(args, attr):
         return bool(getattr(args, attr))
     except (NameError, IndexError, KeyError, AttributeError):
         return False
+
+
+def get_stty_cols():
+
+    ROWS, COLUMNS = os.popen('stty size', 'r').read().split()
+
+    return int(COLUMNS)
