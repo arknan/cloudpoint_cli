@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import traceback
+import datetime
 import json
 import sys
 import texttable
@@ -119,47 +119,73 @@ def pretty_print(output, print_args):
     try:
         table = texttable.Texttable(max_width=COLUMNS)
         data = json.loads(output)
-
         pformat = utils.print_format()
+
         if pformat == 'json':
             print_args = 'json'
         else:
             table.set_deco(pformat)
 
         if print_args  == "summary":
-            table.header(["offhost", "onhost"])
+            table.header(["OFFHOST", "ONHOST"])
             table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
 
         elif print_args == "show":
             required = ["agentid", "osName", "onHost", "status"]
-            table.header(sorted(required))
             for i, _ in enumerate(data):
-                table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                klist = []
+                vlist = []
+                for k, v in sorted(data[i].items()):
+                    if k in required:
+                        klist.append(k.upper())
+                        if k == "onHost":
+                            vlist.append(str(bool(v)))
+                        elif k == "osName":
+                            vlist.append(v.capitalize())
+                        else:
+                            vlist.append(v)
+
+                if klist and vlist:
+                    table.add_rows((klist, vlist))
 
         elif print_args == "plugins":
-            table.header(sorted(data[0].keys()))
+            table.header([k.upper() for k in sorted(data[0].keys())])
+            table.set_cols_dtype(['t', 't', 't'])
             for i, _ in enumerate(data):
                 table.add_row(
                     [v for k, v in sorted(data[i].items())])
 
         elif print_args == "plugin_id":
             table.header(("Attribute", "Value"))
-            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+            table.set_cols_dtype(['t', 't'])
+            table.add_rows([(k.upper(), v) for k, v in sorted(data.items())], header=False)
             
         elif print_args == "agent_id":
             table.header(("Attribute", "Value"))
             ignored = ["hostname"]
-            table.add_rows(
-                [(k, v) for k, v in sorted(data.items()) if k not in ignored],
-                header=False)
+            klist = []
+            vlist = []
+            for k, v in sorted(data.items()):
+                if k not in ignored:
+                    klist.append(k.upper())
+                    if k == "onHost":
+                        vlist.append(str(bool(v)))
+                    elif k == "osName":
+                        vlist.append(v.capitalize())
+                    elif k == "lastMessage":
+                        vlist.append(datetime.datetime.fromtimestamp(v))
+                    else:
+                        vlist.append(v)
+
+                if klist and vlist:
+                    table.add_row([klist.pop(), vlist.pop()])
 
         elif print_args == "configs":
             table.header(("Attribute", "Value"))
             ignored = ['configHash', 'configId']
             for i, _ in enumerate(data):
                 table.add_rows(
-                    [(k, v) for k, v in sorted(data[i].items())\
+                    [(k.upper(), v) for k, v in sorted(data[i].items())
                     if k not in ignored], header=False)
 
         elif print_args == 'json':
@@ -168,7 +194,7 @@ def pretty_print(output, print_args):
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data[i].items())], header=False)
+                [(k.upper(), v) for k, v in sorted(data[i].items())], header=False)
 
         if table.draw():
             print(table.draw())

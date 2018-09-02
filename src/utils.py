@@ -31,7 +31,7 @@ def print_format():
 
     config = configparser.ConfigParser()
     config.read('/root/.cloudpoint_cli.config')
-    pformat = 'minimal'
+    pformat = 'tabular'
     try:
         pformat = config['GLOBAL']['print_format']
     except KeyError:
