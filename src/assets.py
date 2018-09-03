@@ -3,6 +3,7 @@
 import datetime
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -11,6 +12,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
@@ -234,10 +236,24 @@ def show(args, endpoint):
                             LOG_FC.critical(
                                 "INTERNAL ERROR 2 IN %s", __file__)
                             sys.exit(1)
+                else:
+                    if utils.check_attr(args, 'snapshots_command'):
+                        if args.snapshots_command in ['granules', 'restore-targets']:
+                            LOG_C.error("Argument '%s' needs a snapshot_id",
+                                        args.snapshots_command)
+                            sys.exit(1)
 
             elif args.assets_show_command == "policies":
                 endpoint.append("/policies/")
                 print_args = "policies"
+
+            elif args.assets_show_command == "summary":
+                LOG_C.error("Summary cannot be provided for a particular asset")
+                sys.exit(1)
+            else:
+                LOG_FC.critical(
+                    "INTERNAL ERROR 3 IN %s", __file__)
+                sys.exit(1)
 
     else:
         print_args = "show"
@@ -251,7 +267,7 @@ def show(args, endpoint):
                 endpoint.append('/summary')
                 print_args = "summary"
             else:
-                LOG_FC.critical("INTERNAL ERROR 3 IN '%s'", __file__)
+                LOG_FC.critical("INTERNAL ERROR 4 IN '%s'", __file__)
                 sys.exit(1)
 
     return print_args
@@ -316,21 +332,70 @@ def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print_args = 'json'
+        else:
+            table.set_deco(pformat)
 
         if print_args == "asset_id":
             data = json.loads(output)
             ignore = ['parentId', 'snapMethods', 'plugin', '_links',
                       'protectionLevels', 'actions']
+            table.header(["Attribute", "Value"])
 
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items()) if k not in ignore],
+                [(k.capitalize(), v) for k, v in sorted(data.items()) if k not in ignore],
                 header=False)
+
+        elif print_args == "granules":
+            data = json.loads(output)["items"]
+            required = ["id", "name"]
+            table.header([k.capitalize() for k in sorted(required)])
+            for i, _ in enumerate(data):
+                table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+
+        elif print_args == "granule_id":
+            data = json.loads(output)
+            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+
+        elif print_args == 'json':
+            print(output)
+
+        elif print_args == 'policies':
+            data = json.loads(output)
+            table.header(["Attribute", "Value"])
+            for i, _ in enumerate(data):
+                klist = []
+                vlist = []
+                for k, v in sorted(data[i].items()):
+                    klist.append(k.capitalize())
+                    if k in ['appConsist', 'replicate']:
+                        vlist.append(str(v))
+                    elif k == 'retention':
+                        vlist.append(str(v['value']) + ' ' + v['unit'])
+                    else:
+                        vlist.append(v)
+
+                    if klist and vlist:
+                        table.add_row([klist.pop(), vlist.pop()])
+
+        elif print_args == "restore-targets":
+            data = json.loads(output)['items']
+            required = ["displayName"]
+            table.header(["Available Restore Targets"])
+            for i, _ in enumerate(data):
+                vlist = []
+                for k, v in data[i].items():
+                    if k in required:
+                        table.add_row([v])
+
 
         elif print_args == "show":
             data = json.loads(output)['items']
             required = ["id", "type", "location"]
-            table.header(sorted(required))
+            table.header([k.upper() for k in sorted(required)])
 
             for i, _ in enumerate(data):
                 if data[i]['type'] in ['disk', 'host', "filesystem", "application"]:
@@ -342,7 +407,7 @@ def pretty_print(output, print_args):
             
             data = json.loads(output)['items']
             required = ["id", "ctime", "type"]
-            table.header(sorted(required))
+            table.header([k.capitalize() for k in sorted(required)])
 
             for i, _ in enumerate(data):
                 vlist = []
@@ -354,39 +419,29 @@ def pretty_print(output, print_args):
                             vlist.append(v.split(':')[0])
                         else:
                             vlist.append(v)
-                table.add_row([i for i in vlist])
+                table.add_row((vlist))
 
         elif print_args == "snapshot_id":
             data = json.loads(output)
-            ignored = ["_links", "actions"]
+            ignored = ["_links", "actions", "snapSource"]
+            table.header(["Attribute", "Value"])
+            table.set_cols_dtype(['t', 't'])
             vlist = []
             klist = []
             for k, v in sorted(data.items()):
                 if k not in ignored:
-                    klist.append(k)
+                    klist.append(k.capitalize())
                     if k == "ctime":
                         vlist.append(datetime.datetime.fromtimestamp(v))
                     elif k == "attachment":
                         vlist.append((data[k].values()))
+                    elif k == 'type':
+                        vlist.append(v.split(':')[0])
                     else:
                         vlist.append(v)
 
                     if klist and vlist:
                         table.add_row([klist.pop(), vlist.pop()])
-
-        elif print_args == "granules":
-            data = json.loads(output)["items"]
-            required = ["id", "name"]
-            table.header(sorted(required))
-            for i, _ in enumerate(data):
-                table.add_row([v for k, v in sorted(data[i].items()) if k in required])
-
-        elif print_args == "granule_id":
-            data = json.loads(output)
-            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
-
-        elif print_args == 'json':
-            print(output)
 
         else:
             data = json.loads(output)
@@ -396,6 +451,6 @@ def pretty_print(output, print_args):
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError,
-           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except Exception:
+        LOG_F.critical(traceback.format_exc())
         print(output)

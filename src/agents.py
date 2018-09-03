@@ -3,6 +3,7 @@
 import datetime
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -11,6 +12,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
@@ -126,41 +128,7 @@ def pretty_print(output, print_args):
         else:
             table.set_deco(pformat)
 
-        if print_args  == "summary":
-            table.header(["OFFHOST", "ONHOST"])
-            table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
-
-        elif print_args == "show":
-            required = ["agentid", "osName", "onHost", "status"]
-            for i, _ in enumerate(data):
-                klist = []
-                vlist = []
-                for k, v in sorted(data[i].items()):
-                    if k in required:
-                        klist.append(k.upper())
-                        if k == "onHost":
-                            vlist.append(str(bool(v)))
-                        elif k == "osName":
-                            vlist.append(v.capitalize())
-                        else:
-                            vlist.append(v)
-
-                if klist and vlist:
-                    table.add_rows((klist, vlist))
-
-        elif print_args == "plugins":
-            table.header([k.upper() for k in sorted(data[0].keys())])
-            table.set_cols_dtype(['t', 't', 't'])
-            for i, _ in enumerate(data):
-                table.add_row(
-                    [v for k, v in sorted(data[i].items())])
-
-        elif print_args == "plugin_id":
-            table.header(("Attribute", "Value"))
-            table.set_cols_dtype(['t', 't'])
-            table.add_rows([(k.upper(), v) for k, v in sorted(data.items())], header=False)
-            
-        elif print_args == "agent_id":
+        if print_args == "agent_id":
             table.header(("Attribute", "Value"))
             ignored = ["hostname"]
             klist = []
@@ -191,6 +159,40 @@ def pretty_print(output, print_args):
         elif print_args == 'json':
             print(output)
 
+        elif print_args == "show":
+            required = ["agentid", "osName", "onHost", "status"]
+            for i, _ in enumerate(data):
+                klist = []
+                vlist = []
+                for k, v in sorted(data[i].items()):
+                    if k in required:
+                        klist.append(k.upper())
+                        if k == "onHost":
+                            vlist.append(str(bool(v)))
+                        elif k == "osName":
+                            vlist.append(v.capitalize())
+                        else:
+                            vlist.append(v)
+
+                if klist and vlist:
+                    table.add_rows((klist, vlist))
+
+        elif print_args  == "summary":
+            table.header(["OFFHOST", "ONHOST"])
+            table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
+
+        elif print_args == "plugins":
+            table.header([k.upper() for k in sorted(data[0].keys())])
+            table.set_cols_dtype(['t', 't', 't'])
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items())])
+
+        elif print_args == "plugin_id":
+            table.header(("Attribute", "Value"))
+            table.set_cols_dtype(['t', 't'])
+            table.add_rows([(k.upper(), v) for k, v in sorted(data.items())], header=False)
+            
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
@@ -199,6 +201,6 @@ def pretty_print(output, print_args):
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError,
-           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except Exception:
+        LOG_F.critical(traceback.format_exc())
         print(output)
