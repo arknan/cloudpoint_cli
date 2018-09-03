@@ -6,12 +6,13 @@ Near Future :
 4) In 'CREATE' operations, you should provide a dialogue interface as well as the ability to provide a JSON
     formatted file as user input.  
 5) Figure out what to do additionally for snapshot restores(dest param)  
-6) Have to work on assets - granules  
+~~6) Have to work on assets - granules~~  
 7) Policy modification ..  
 ~~8) Move away from ID's to names ! (dont make customers use policy_id ... instead let them use policy_name)~~  
 9) Need to add filters in REPORT CREATION  
 10) Modifying REPORTS doesn't have the right method listed in the guide  
 ~~11) Policy creation~~
+12) Add a -q for quiet, --format for formatting outputs
 
 Way out :
 ==================
