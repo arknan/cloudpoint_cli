@@ -238,7 +238,8 @@ def show(args, endpoint):
                             sys.exit(1)
                 else:
                     if utils.check_attr(args, 'snapshots_command'):
-                        if args.snapshots_command in ['granules', 'restore-targets']:
+                        if args.snapshots_command in ['granules',
+                                                      'restore-targets']:
                             LOG_C.error("Argument '%s' needs a snapshot_id",
                                         args.snapshots_command)
                             sys.exit(1)
@@ -248,7 +249,7 @@ def show(args, endpoint):
                 print_args = "policies"
 
             elif args.assets_show_command == "summary":
-                LOG_C.error("Summary cannot be provided for a particular asset")
+                LOG_C.error("Summary can't be provided for a particular asset")
                 sys.exit(1)
             else:
                 LOG_FC.critical(
@@ -271,6 +272,7 @@ def show(args, endpoint):
                 sys.exit(1)
 
     return print_args
+
 
 def replicate(args, endpoint):
 
@@ -346,19 +348,21 @@ def pretty_print(output, print_args):
             table.header(["Attribute", "Value"])
 
             table.add_rows(
-                [(k.capitalize(), v) for k, v in sorted(data.items()) if k not in ignore],
-                header=False)
+                [(k.capitalize(), v) for k, v in sorted(data.items())
+                 if k not in ignore], header=False)
 
         elif print_args == "granules":
             data = json.loads(output)["items"]
             required = ["id", "name"]
             table.header([k.capitalize() for k in sorted(required)])
             for i, _ in enumerate(data):
-                table.add_row([v for k, v in sorted(data[i].items()) if k in required])
+                table.add_row([v for k, v in sorted(data[i].items())
+                               if k in required])
 
         elif print_args == "granule_id":
             data = json.loads(output)
-            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+            table.add_rows([(k, v) for k, v in sorted(data.items())],
+                           header=False)
 
         elif print_args == 'json':
             print(output)
@@ -391,20 +395,20 @@ def pretty_print(output, print_args):
                     if k in required:
                         table.add_row([v])
 
-
         elif print_args == "show":
             data = json.loads(output)['items']
             required = ["id", "type", "location"]
             table.header([k.upper() for k in sorted(required)])
 
             for i, _ in enumerate(data):
-                if data[i]['type'] in ['disk', 'host', "filesystem", "application"]:
-                    table.add_row([
-                        v for k, v in sorted(data[i].items()) if k in required
-                        ])
+                if data[i]['type'] in ['disk', 'host', "filesystem",
+                                       "application"]:
+                    table.add_row(
+                        [v for k, v in sorted(data[i].items())
+                         if k in required])
 
         elif print_args == "snapshots":
-            
+
             data = json.loads(output)['items']
             required = ["id", "ctime", "type"]
             table.header([k.capitalize() for k in sorted(required)])
@@ -443,6 +447,14 @@ def pretty_print(output, print_args):
                     if klist and vlist:
                         table.add_row([klist.pop(), vlist.pop()])
 
+        elif print_args == 'summary':
+            data = json.loads(output)
+            table.header(["Type", "Vendor", "Total", "Protected", "Snapshots"])
+            for k, v in sorted(data.items()):
+                for key, value in sorted(data[k].items()):
+                    table.add_row(
+                        (k.capitalize(), key, value['total'],
+                         value['protected'], value['snapshots']))
         else:
             data = json.loads(output)
             table.add_rows(
@@ -451,6 +463,7 @@ def pretty_print(output, print_args):
         if table.draw():
             print(table.draw())
 
-    except Exception:
-        LOG_F.critical(traceback.format_exc())
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_FC.critical(traceback.format_exc())
         print(output)

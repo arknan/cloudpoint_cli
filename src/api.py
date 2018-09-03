@@ -3,7 +3,6 @@
 
 import configparser
 import json
-import os
 import sys
 from getpass import getpass
 import logs

@@ -95,7 +95,8 @@ def pretty_print(output, print_args):
         table.set_deco(texttable.Texttable.HEADER)
 
         if print_args == "task_id":
-            table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+            table.add_rows([(k, v) for k, v in sorted(data.items())],
+                           header=False)
         else:
             required = ["name", "status", "taskid"]
             table.header(sorted(required))

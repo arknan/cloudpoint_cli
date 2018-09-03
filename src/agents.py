@@ -154,7 +154,7 @@ def pretty_print(output, print_args):
             for i, _ in enumerate(data):
                 table.add_rows(
                     [(k.upper(), v) for k, v in sorted(data[i].items())
-                    if k not in ignored], header=False)
+                     if k not in ignored], header=False)
 
         elif print_args == 'json':
             print(output)
@@ -177,7 +177,7 @@ def pretty_print(output, print_args):
                 if klist and vlist:
                     table.add_rows((klist, vlist))
 
-        elif print_args  == "summary":
+        elif print_args == "summary":
             table.header(["OFFHOST", "ONHOST"])
             table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
 
@@ -191,16 +191,20 @@ def pretty_print(output, print_args):
         elif print_args == "plugin_id":
             table.header(("Attribute", "Value"))
             table.set_cols_dtype(['t', 't'])
-            table.add_rows([(k.upper(), v) for k, v in sorted(data.items())], header=False)
-            
+            table.add_rows(
+                [(k.upper(), v) for k, v in sorted(data.items())],
+                header=False)
+
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k.upper(), v) for k, v in sorted(data[i].items())], header=False)
+                [(k.upper(), v) for k, v in sorted(data[i].items())],
+                header=False)
 
         if table.draw():
             print(table.draw())
 
-    except Exception:
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
         LOG_F.critical(traceback.format_exc())
         print(output)

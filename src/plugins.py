@@ -84,14 +84,14 @@ def pretty_print(output, print_args):
 
         if print_args == 'available_plugin_name':
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items()) if k != "configTemplate"],
-                header=False)
+                [(k, v) for k, v in sorted(data.items())
+                 if k != "configTemplate"], header=False)
 
             for i, _ in enumerate(data["configTemplate"]):
                 table.add_rows([("", "")], header=False)
                 table.add_rows(
-                    [(k, v) for k, v in sorted(data["configTemplate"][i].items())],
-                    header=False)
+                    [(k, v) for k, v in sorted(
+                        data["configTemplate"][i].items())], header=False)
 
         elif print_args == "summary":
             table.header(["", "onHost", "offHost"])

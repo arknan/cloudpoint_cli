@@ -21,7 +21,7 @@ def check_attr(args, attr):
 
 
 def get_stty_cols():
-    
+
     ROWS, COLS = os.popen('stty size', 'r').read().split()
 
     return int(COLS)

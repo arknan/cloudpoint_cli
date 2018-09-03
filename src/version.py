@@ -7,6 +7,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 
+
 def entry_point(args):
     endpoint = ['/version']
     output = getattr(api.Command(), 'gets')('/'.join(endpoint))

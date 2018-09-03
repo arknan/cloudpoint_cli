@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import json
+# import json
 import sys
-import texttable
-import api
-import cloudpoint
+# import texttable
+# import api
+# import cloudpoint
 import logs
 import utils
 
@@ -15,6 +15,7 @@ LOG_C = logs.setup(__name__, 'c')
 def entry_point(args):
 
     endpoint = ["classifications/tags"]
+    show(args, endpoint)
     LOG_C.info("Not Implemented")
     sys.exit(1)
 

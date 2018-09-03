@@ -339,7 +339,8 @@ policy_id argument")
             sys.exit(1)
 
         if args.policies_show_command == 'protected-assets':
-            if utils.check_attr(args, 'policies_show_protected_assets_command'):
+            if utils.check_attr(
+                    args, 'policies_show_protected_assets_command'):
                 data = protected_assets(ast_only=1)
                 print_args = "protected_assets_ast_only"
 
