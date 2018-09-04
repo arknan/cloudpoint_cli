@@ -52,17 +52,14 @@ def pretty_print(output, print_args):
         pformat = utils.print_format()
         
         if pformat == 'json':
-            print_args = 'json'
-        else:
-            table.set_deco(pformat)
-
-        if print_args == 'json':
             print(output)
             sys.exit(0)
         else:
-            ignored = ['configKey', 'QueryAttribute']
-            table.header([k for k, v in sorted(data.items()) if k not in ignored])
-            table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
+            table.set_deco(pformat)
+
+        ignored = ['configKey', 'QueryAttribute']
+        table.header([k for k, v in sorted(data.items()) if k not in ignored])
+        table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
 
         if table.draw():
             print(table.draw())

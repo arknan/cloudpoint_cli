@@ -93,15 +93,12 @@ def pretty_print(output, print_args):
         pformat = utils.print_format()
 
         if pformat == 'json':
-            print_args = 'json'
+            print(output)
+            sys.exit(0)
         else:
             table.set_deco(pformat)
 
-        if print_args == 'json':
-            print(output)
-            sys.exit(0)
-
-        elif print_args == "license_id":
+        if print_args == "license_id":
             table.header(["Attribute", "Value"])
             table.set_cols_dtype(['t', 't'])
             ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',

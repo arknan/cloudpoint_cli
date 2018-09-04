@@ -340,7 +340,8 @@ def pretty_print(output, print_args):
         pformat = utils.print_format()
 
         if pformat == 'json':
-            print_args = 'json'
+            print(output)
+            sys.exit(0)
         else:
             table.set_deco(pformat)
 
@@ -366,9 +367,6 @@ def pretty_print(output, print_args):
             data = json.loads(output)
             table.add_rows([(k, v) for k, v in sorted(data.items())],
                            header=False)
-
-        elif print_args == 'json':
-            print(output)
 
         elif print_args == 'policies':
             data = json.loads(output)

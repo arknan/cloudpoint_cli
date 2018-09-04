@@ -3,6 +3,7 @@
 import json
 import re
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -11,19 +12,22 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
 
     endpoint = []
+    output = None
+    print_args = None
+
     if args.policies_command == 'asset':
         output = asset(args)
 
     elif args.policies_command == 'create':
         endpoint.append('/policies/')
         data = create()
-        print("endpoint is {}\nDATA IS {}".format(endpoint, data))
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
 
     elif args.policies_command == 'delete':
@@ -36,14 +40,13 @@ def entry_point(args):
         endpoint.append('/policies/')
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'policies'")
         cloudpoint.run(["policies", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def asset(args):
@@ -331,28 +334,34 @@ def show(args, endpoint):
 
     print_args = None
     if utils.check_attr(args, 'policies_show_command'):
-
-        if utils.check_attr(args, 'policy_id') or \
-           utils.check_attr(args, 'policy_name'):
-            LOG_C.error("protected-assets subcommand doesn't take \
-policy_id argument")
-            sys.exit(1)
-
         if args.policies_show_command == 'protected-assets':
-            if utils.check_attr(
-                    args, 'policies_show_protected_assets_command'):
-                data = protected_assets(ast_only=1)
-                print_args = "protected_assets_ast_only"
-
+            if utils.check_attr(args, 'policy_id') or \
+               utils.check_attr(args, 'policy_name'):
+                LOG_C.error("protected-assets subcommand doesn't need \
+policy_id argument")
+                sys.exit(1)
             else:
-                data = protected_assets(ast_only=0)
-                print_args = "protected_assets"
+                if utils.check_attr(
+                        args, 'policies_show_protected_assets_command'):
+                    data = protected_assets(ast_only=1)
+                    print_args = "protected_assets_ast_only"
+
+                else:
+                    data = protected_assets(ast_only=0)
+                    print_args = "protected_assets"
 
         else:
-            data = unprotected_assets()
-            print_args = "unprotected_assets"
+            if utils.check_attr(args, 'policy_id') or \
+               utils.check_attr(args, 'policy_name'):
+                LOG_C.error("unprotected-assets subcommand doesn't need \
+policy_id argument")
+                sys.exit(1)
+            else:
+                data = unprotected_assets()
+                print_args = "unprotected_assets"
 
-        return print_args
+        pretty_print(data, print_args)
+        sys.exit(0)
 
     if utils.check_attr(args, 'policy_id') and \
        utils.check_attr(args, 'policy_name'):
@@ -464,49 +473,54 @@ def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+        
+        if pformat == 'json':
+            print(output)
+        else:
+            table.set_deco(pformat)
 
         if print_args == "protected_assets":
+            table.header(["Policy Name", "Protected Assets"])
             table.add_rows([(k, v) for k, v in sorted(output.items())],
                            header=False)
-            print(table.draw())
-            sys.exit(0)
 
         elif print_args == "protected_assets_ast_only":
             table.header(["PROTECTED ASSETS"])
             for i in output:
                 table.add_row([i])
-            print(table.draw())
-            sys.exit(0)
 
         elif print_args == "unprotected_assets":
             table.header(["UNPROTECTED ASSETS"])
             for i in output:
                 table.add_row([i])
-            print(table.draw())
-            sys.exit(0)
 
         elif print_args == "policy_id" or print_args == "policy_name":
             data = json.loads(output)
+            table.set_cols_dtype(['t', 't'])
             for k, v in sorted(data.items()):
-                if isinstance(v, dict):
-                    table.add_row([k, sorted(v.items())])
+                if k in ["retention"]:
+                    table.add_row((k, str(v['value']) + ' ' + str(v['unit'])))
                 else:
                     table.add_row([k, v])
 
         elif print_args == "show":
             data = json.loads(output)
             required = ["name", "id"]
-            table.header(sorted(required))
+            table.header(required)
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                    [v for k, v in reversed(sorted(data[i].items())) if k in required])
         else:
-            print('helo')
+            data = json.loads(output)
+            table.header(("Attribute", "Value"))
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items())], header=False)
 
         if table.draw():
             print(table.draw())
 
     except(KeyError, AttributeError, TypeError, NameError,
-           texttable.ArraySizeError, json.decoder.JSONDecodeError) as e:
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

@@ -125,7 +125,8 @@ def pretty_print(output, print_args):
         pformat = utils.print_format()
 
         if pformat == 'json':
-            print_args = 'json'
+            print(output)
+            sys.exit(0)
         else:
             table.set_deco(pformat)
 
@@ -156,9 +157,6 @@ def pretty_print(output, print_args):
                 table.add_rows(
                     [(k.upper(), v) for k, v in sorted(data[i].items())
                      if k not in ignored], header=False)
-
-        elif print_args == 'json':
-            print(output)
 
         elif print_args == "show":
             required = ["agentid", "osName", "onHost", "status"]

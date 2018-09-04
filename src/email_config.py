@@ -145,27 +145,24 @@ def pretty_print(output, print_args):
         pformat = utils.print_format()
 
         if pformat == 'json':
-            print_args = 'json'
-        else:
-            table.set_deco(pformat)
-
-        if print_args == 'json':
             print(output)
             sys.exit(0)
         else:
-            data_data = json.loads(data['data'])
-            print_dict = {}
+            table.set_deco(pformat)
 
-            for k, v in sorted(data.items()):
-                if k not in ['data', 'configKey']:
-                    print_dict[k] = v
+        data_data = json.loads(data['data'])
+        print_dict = {}
 
-            for k, v in sorted(data_data.items()):
-                if k not in ['authentication']:
-                    print_dict[k] = v
+        for k, v in sorted(data.items()):
+            if k not in ['data', 'configKey']:
+                print_dict[k] = v
 
-            table.header([k for k, v in sorted(print_dict.items())])
-            table.add_row([v for k, v in sorted(print_dict.items())])
+        for k, v in sorted(data_data.items()):
+            if k not in ['authentication']:
+                print_dict[k] = v
+
+        table.header([k for k, v in sorted(print_dict.items())])
+        table.add_row([v for k, v in sorted(print_dict.items())])
 
         if table.draw():
             print(table.draw())
