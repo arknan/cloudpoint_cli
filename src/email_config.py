@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+from getpass import getpass
 import json
 import sys
-from getpass import getpass
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -11,6 +12,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
@@ -138,23 +140,36 @@ def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
-
         data = json.loads(output)
-        data_data = json.loads(data['data'])
-        print_dict = {}
+        pformat = utils.print_format()
 
-        for k, v in sorted(data.items()):
-            if k not in ['data', 'configKey']:
-                print_dict[k] = v
+        if pformat == 'json':
+            print_args = 'json'
+        else:
+            table.set_deco(pformat)
 
-        for k, v in sorted(data_data.items()):
-            if k not in ['authentication']:
-                print_dict[k] = v
+        if print_args == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            data_data = json.loads(data['data'])
+            print_dict = {}
 
-        table.header([k for k, v in sorted(print_dict.items())])
-        table.add_row([v for k, v in sorted(print_dict.items())])
+            for k, v in sorted(data.items()):
+                if k not in ['data', 'configKey']:
+                    print_dict[k] = v
 
-        print(table.draw())
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+            for k, v in sorted(data_data.items()):
+                if k not in ['authentication']:
+                    print_dict[k] = v
+
+            table.header([k for k, v in sorted(print_dict.items())])
+            table.add_row([v for k, v in sorted(print_dict.items())])
+
+        if table.draw():
+            print(table.draw())
+
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

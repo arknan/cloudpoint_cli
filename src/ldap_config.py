@@ -2,6 +2,7 @@
 
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,6 +11,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
@@ -45,13 +47,26 @@ def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
-
         data = json.loads(output.replace('ldap', ''))
-        ignored = ['configKey', 'QueryAttribute']
-        table.header([k for k, v in sorted(data.items()) if k not in ignored])
-        table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
+        pformat = utils.print_format()
+        
+        if pformat == 'json':
+            print_args = 'json'
+        else:
+            table.set_deco(pformat)
 
-        print(table.draw())
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        if print_args == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            ignored = ['configKey', 'QueryAttribute']
+            table.header([k for k, v in sorted(data.items()) if k not in ignored])
+            table.add_row([v for k, v in sorted(data.items()) if k not in ignored])
+
+        if table.draw():
+            print(table.draw())
+
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

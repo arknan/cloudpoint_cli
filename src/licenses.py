@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -11,6 +12,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
@@ -85,18 +87,30 @@ def show(args, endpoint):
 def pretty_print(output, print_args):
 
     try:
-        data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        data = json.loads(output)
+        pformat = utils.print_format()
 
-        if print_args == "license_id":
+        if pformat == 'json':
+            print_args = 'json'
+        else:
+            table.set_deco(pformat)
+
+        if print_args == 'json':
+            print(output)
+            sys.exit(0)
+
+        elif print_args == "license_id":
+            table.header(["Attribute", "Value"])
+            table.set_cols_dtype(['t', 't'])
             ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
-                       'IsLicenseActive', 'SerialId', 'SvcPolicy']
+                       'IsLicenseActive', 'SerialId', 'SvcPolicy', 'WarnPolicy']
             table.add_row(("License Key ID", list(data.keys())[0]))
             for k, v in sorted(data.items()):
                 table.add_rows([(i, j) for i, j in sorted(
                     data[k].items()) if i not in ignored], header=False)
-        else:
+
+        elif print_args == 'show' or print_args == 'active':
             required = ["EndDate", "LicenseState", "ProductEdition"]
             headers = ["License Key ID"]
             rows = sorted(data.keys())
@@ -109,6 +123,26 @@ def pretty_print(output, print_args):
             table.header(headers)
             table.add_row(rows)
 
-        print(table.draw())
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        elif print_args == 'features':
+            table.header(["Attribute", "Value"])
+            table.set_cols_dtype(['t', 't'])
+            for k, v in sorted(data.items()):
+                for i, j in sorted(data[k].items()):
+                    if i in ['MeterCount', 'MeterType', 'ProductEdition']:
+                        table.add_row((i, j))
+                    else:
+                        table.add_row((i, bool(j)))
+
+        else:
+            table.header(["Attribute", "Value"])
+            for k, v in sorted(data.items()):
+                table.add_rows([(i, j) for i, j in sorted(
+                    data[k].items())], header=False)
+
+        if table.draw():
+            print(table.draw())
+
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)
