@@ -400,6 +400,9 @@ def create_parser():
         "report-data", help="Show data collected by a specific report")
     parser_reports_show_report_types = subparser_reports_show.add_parser(
         "report-types", help="Show available report types")
+    parser_reports_show_report_types.add_argument(
+        "-i", "--report-type-id", 
+        help="Get information on a specific report type")
 
     """ ROLE RELATED PARSING """
     parser_roles = subparser_main.add_parser(

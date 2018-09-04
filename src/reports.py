@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import datetime
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,11 +12,14 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
 
     endpoint = []
+    output = None
+    print_args = None
 
     if args.reports_command == 'create':
         endpoint.append('/reports/')
@@ -34,14 +39,13 @@ def entry_point(args):
     elif args.reports_command == 'show':
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'reports'")
         cloudpoint.run(["reports", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def create():
@@ -108,8 +112,16 @@ def show(args, endpoint):
     print_args = None
     if utils.check_attr(args, 'reports_show_command'):
         if args.reports_show_command == 'report-types':
+            if utils.check_attr(args, 'report_id'):
+                LOG_C.error("Do not specify a report_id for report-types")
+                sys.exit(1)
+
             endpoint.append('/report-types/')
             print_args = 'report-types'
+
+            if utils.check_attr(args, 'report_type_id'):
+                endpoint.append(args.report_type_id)
+                print_args = 'report_type_id'
 
         else:
             endpoint.append('/reports/')
@@ -142,22 +154,62 @@ def show(args, endpoint):
 def pretty_print(output, print_args):
 
     try:
-        data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
 
         if print_args == "report_id":
-            table.add_rows([(k, v) for k, v in sorted(data.items())],
-                           header=False)
-        else:
-            required = ["reportId", "status"]
-            table.header(sorted(required))
+            data = json.loads(output)
+            for k, v in sorted(data.items()):
+                if k == 'lastRun':
+                    table.add_row((k, datetime.datetime.fromtimestamp(v)))
+                elif k == 'columns':
+                    table.add_row([k, ', '.join(v)])
+                else:
+                    table.add_row((k, v))
+
+        elif print_args == 'show':
+            data = json.loads(output)
+            required = ["reportId", "reportType", "status"]
+            table.header([i.capitalize() for i in sorted(required)])
             for i, _ in enumerate(data):
                 table.add_row(
                     [v for k, v in sorted(data[i].items()) if k in required])
 
+        elif print_args == 'report-types':
+            data = json.loads(output)
+            table.header(["ReportType", "Filters"])
+            for i, _ in enumerate(data):
+                table.add_row((data[i]["reportType"], data[i]['filters']))
+
+        elif print_args == 'report_type_id':
+            data = json.loads(output)
+            table.header(["Valid Columns", "Valid Column Id's"])
+            for i, _ in enumerate(data['columns']):
+                vlist = []
+                for k, v in sorted(data['columns'][i].items()):
+                    vlist.append(v)
+                table.add_row(vlist)
+
+        elif print_args in ['preview', 'data']:
+            print(output)
+            sys.exit(0)
+
+        else:
+            data = json.loads(output)
+            table.header(("Attribute", "Value"))
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items())], header=False)
+
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

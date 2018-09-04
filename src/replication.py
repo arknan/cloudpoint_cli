@@ -2,6 +2,7 @@
 
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,11 +11,14 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
 
     endpoint = []
+    output = None
+    print_args = None
 
     if args.replication_command == "create":
         endpoint.append('/replication/default/rules/')
@@ -46,14 +50,13 @@ def entry_point(args):
         print_args = show(args, endpoint)
         output = getattr(
             api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'replication'")
         cloudpoint.run(["replication", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def create(args):
@@ -152,17 +155,19 @@ def modify(args, endpoint):
 def show(args, endpoint):
 
     print_args = None
-    if utils.check_attr(args, 'policy_name'):
-        endpoint.append(getattr(args, 'policy_name'))
-        print_args = 'policy_name'
-
     if utils.check_attr(args, 'replication_show_command'):
         if utils.check_attr(args, 'policy_name'):
+            endpoint.append(args.policy_name)
             endpoint.append('/rules/')
         else:
             endpoint.append('/default/rules/')
 
         print_args = "rules"
+
+    elif utils.check_attr(args, 'policy_name'):
+        endpoint.append(args.policy_name)
+        print_args = 'policy_name'
+
     else:
         print_args = "show"
 
@@ -173,20 +178,44 @@ def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
         data = json.loads(output)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
 
         if print_args == 'policy_name':
             table.header([k for k, v in sorted(data.items())])
             table.add_row([v for k, v in sorted(data.items())])
 
-        else:
+        elif print_args == 'show':
             for i, _ in enumerate(data):
                 table.header([k for k, v in sorted(data[i].items())])
                 table.add_row([v for k, v in sorted(data[i].items())])
 
+        elif print_args == 'rules':
+            table.header(["Source", "Destination"])
+            for i, _ in enumerate(data):
+                vlist = []
+                for k, v in reversed(sorted(data[i].items())):
+                    if k == 'destination':
+                        vlist.append(', '.join(v))
+                    else:
+                        vlist.append(v)
+                table.add_row(vlist)
+
+        else:
+            table.header(("Attribute", "Value"))
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items())], header=False)
+
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

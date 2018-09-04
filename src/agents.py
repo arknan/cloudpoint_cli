@@ -197,8 +197,7 @@ def pretty_print(output, print_args):
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k.upper(), v) for k, v in sorted(data[i].items())],
-                header=False)
+                [(k, v) for k, v in sorted(data.items())], header=False)
 
         if table.draw():
             print(table.draw())
