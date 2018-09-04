@@ -2,6 +2,7 @@
 
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,6 +11,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
@@ -18,14 +20,13 @@ def entry_point(args):
     if args.plugins_command == 'show':
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'plugins'")
         cloudpoint.run(["plugins", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def show(args, endpoint):
@@ -42,31 +43,25 @@ def show(args, endpoint):
             endpoint.append(args.available_plugin_name)
             print_args = 'available_plugin_name'
 
-        else:
-            LOG_C.error("Please provide a valid plugin name (ex: mongo)")
-            sys.exit(1)
+        if (utils.check_attr(args, 'plugins_show_command')):
+            if (args.plugins_show_command == "description"):
+                endpoint.append("description")
+                print_args = "description"
 
-    if (utils.check_attr(args, 'plugins_show_command')) and \
-       (args.plugins_show_command == "description"):
-        if utils.check_attr(args, 'available_plugin_name'):
-            endpoint.append("description")
-            print_args = "description"
-
-        else:
-            LOG_C.error("'description' requires -i flag for 'PLUGIN_NAME'")
-            sys.exit(1)
-
-    elif (utils.check_attr(args, 'plugins_show_command')) and \
-         (args.plugins_show_command == "summary"):
-        if utils.check_attr(args, 'available_plugin_name'):
-            LOG_C.error("Summary cannot be provided for a specific plugin")
-            sys.exit(1)
-        else:
-            endpoint.append("summary")
-            print_args = "summary"
+            elif (args.plugins_show_command == "summary"):
+                LOG_C.error("Summary cannot be provided for a specific plugin")
+                sys.exit(1)
 
     else:
-        print_args = "show"
+        if (utils.check_attr(args, 'plugins_show_command')):
+            if (args.plugins_show_command == "description"):
+                 LOG_C.error("'description' requires -i flag for 'PLUGIN_NAME'")
+                 sys.exit(1)
+            elif (args.plugins_show_command == "summary"):
+                 endpoint.append("summary")
+                 print_args = "summary"
+        else:
+            print_args = "show"
 
     return print_args
 
@@ -74,15 +69,18 @@ def show(args, endpoint):
 def pretty_print(output, print_args):
 
     try:
-        if pretty_print == "description":
+        table = texttable.Texttable(max_width=COLUMNS)
+        data = json.loads(output)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
             print(output)
             sys.exit(0)
-
-        data = json.loads(output)
-        table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        else:
+            table.set_deco(pformat)
 
         if print_args == 'available_plugin_name':
+            table.set_cols_dtype(['t', 't'])
             table.add_rows(
                 [(k, v) for k, v in sorted(data.items())
                  if k != "configTemplate"], header=False)
@@ -93,6 +91,18 @@ def pretty_print(output, print_args):
                     [(k, v) for k, v in sorted(
                         data["configTemplate"][i].items())], header=False)
 
+        elif print_args == 'description':
+            print(output)
+            sys.exit(0)
+
+        elif print_args == "show":
+            required = ["displayName", "name", "onHost", "version"]
+            table.header(sorted(required))
+            table.set_cols_dtype(['t', 't', 't', 't'])
+            for i, _ in enumerate(data):
+                table.add_row(
+                    [v for k, v in sorted(data[i].items()) if k in required])
+
         elif print_args == "summary":
             table.header(["", "onHost", "offHost"])
             table.add_row(["configured", data["onHost"]["yes"]["configured"],
@@ -101,12 +111,15 @@ def pretty_print(output, print_args):
                            data["onHost"]["no"]["supported"]])
 
         else:
-            required = ["displayName", "name", "onHost"]
-            table.header(sorted(required))
-            for i, _ in enumerate(data):
-                table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+            table.header(("Attribute", "Value"))
+            table.add_rows(
+                [(k.upper(), v) for k, v in sorted(data[i].items())],
+                header=False)
 
-        print(table.draw())
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        if table.draw():
+            print(table.draw())
+
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

@@ -19,39 +19,42 @@ LOG_FC = logs.setup(__name__)
 def entry_point(args):
 
     endpoint = ['/assets/']
+    print_args = None
+    output = None
 
     if args.assets_command == "create-snapshot":
+        print_args = "create-snapshot"
         data = create_snapshot(args, endpoint)
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
-        pretty_print(output, "create-snapshot")
 
     elif args.assets_command == "delete-snapshot":
+        print_args = "delete-snapshot"
         output = delete_snapshot(args, endpoint)
-        pretty_print(output, "delete-snapshot")
 
     elif args.assets_command == "policy":
+        print_args = "policy"
         output = policy(args, endpoint)
-        pretty_print(output, "policy")
 
     elif args.assets_command == 'replicate':
+        print_args = "replicate"
         data = replicate(args, endpoint)
         output = getattr(api.Command(), 'posts')('/'.join(endpoint), data)
-        pretty_print(output, "replicate")
 
     elif args.assets_command == "restore":
+        print_args = "restore"
         data = restore(args)
         output = getattr(api.Command(), 'puts')('/'.join(endpoint), data)
-        pretty_print(output, "restore")
 
     elif args.assets_command == "show":
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'assets'")
         cloudpoint.run(["assets", "-h"])
         sys.exit(1)
+
+    return output, print_args
 
 
 def create_snapshot(args, endpoint):

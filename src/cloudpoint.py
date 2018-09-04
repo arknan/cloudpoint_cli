@@ -526,7 +526,7 @@ def run(pass_args=None):
     LOG_F.debug("cloudpoint.run called with %s", pass_args)
     parser = create_parser()
     args = parser.parse_args(pass_args)
-    output = getattr(globals()[args.command], "entry_point")(args)
+    output, _ = getattr(globals()[args.command], "entry_point")(args)
     return output
 
 
@@ -548,8 +548,13 @@ if __name__ == '__main__':
         if args.command == 'authenticate':
             getattr(api.Command(), 'authenticates')()
         else:
-            getattr(globals()[args.command], "entry_point")(args)
-            #LOG_F.debug("From %s.entry_point() Received :\n%s",
-            #            args.command, output)
+            output, print_args = (
+                getattr(globals()[args.command], "entry_point")(args))
+
+            LOG_F.debug("From %s.entry_point() Received :\n%s\n%s\n%s\n%s",
+                        args.command, "OUTPUT", output, "PRINT_ARGS",
+                        )
+            getattr(
+                globals()[args.command], "pretty_print")(output, print_args)
 
         sys.exit(0)

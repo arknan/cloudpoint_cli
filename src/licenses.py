@@ -19,6 +19,8 @@ LOG_FC = logs.setup(__name__)
 def entry_point(args):
 
     endpoint = ['/licenses/']
+    output = None
+    print_args = None
 
     if args.licenses_command == "add":
         data = add(args)
@@ -31,14 +33,13 @@ def entry_point(args):
     elif args.licenses_command == 'show':
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'licenses'")
         cloudpoint.run(["licenses", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def add(args):

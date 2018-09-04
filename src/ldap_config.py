@@ -17,13 +17,14 @@ LOG_FC = logs.setup(__name__)
 
 def entry_point(args):
 
-    output = None
     endpoint = ['/idm/config/ad']
+    output = None
+    print_args = None
+
     if utils.check_attr(args, 'ldap_config_command'):
         if args.ldap_config_command == 'show':
             print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-            pretty_print(output, print_args)
 
         else:
             LOG_FC.critical("INTERNAL ERROR 1 IN '%s'", __file__)
@@ -34,7 +35,7 @@ def entry_point(args):
         cloudpoint.run(["ldap_config", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def show():

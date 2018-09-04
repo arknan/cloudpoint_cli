@@ -19,23 +19,24 @@ LOG_FC = logs.setup(__name__)
 def entry_point(args):
 
     endpoint = ['/agents/']
+    print_args = None
+    output = None
 
     if args.agents_command == 'delete':
+        print_args = "delete"
         delete(args, endpoint)
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
-        pretty_print(output, "delete")
 
     elif args.agents_command == 'show':
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'agents'")
         cloudpoint.run(["agents", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def delete(args, endpoint):
