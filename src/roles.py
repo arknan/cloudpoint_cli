@@ -58,7 +58,7 @@ def create():
         roles_list.append(row["name"])
     LOG_C.info(
         "Please choose a role type. Valid role types include:\n%s", roles_list)
-    role_type = (str(input("Role type to associate: "))).upper()
+    role_type = (str(input("Role type to associate: "))).capitalize()
 
     if role_type not in valid_privileges:
         LOG_C.error("That is not a valid role type !")

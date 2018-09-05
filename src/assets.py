@@ -399,7 +399,7 @@ def pretty_print(output, print_args):
         elif print_args == "show":
             data = json.loads(output)['items']
             required = ["id", "type", "location"]
-            table.header([k.upper() for k in sorted(required)])
+            table.header([k.capitalize() for k in sorted(required)])
 
             for i, _ in enumerate(data):
                 if data[i]['type'] in ['disk', 'host', "filesystem",

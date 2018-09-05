@@ -137,7 +137,7 @@ def pretty_print(output, print_args):
             vlist = []
             for k, v in sorted(data.items()):
                 if k not in ignored:
-                    klist.append(k.upper())
+                    klist.append(k.capitalize())
                     if k == "onHost":
                         vlist.append(str(bool(v)))
                     elif k == "osName":
@@ -155,7 +155,7 @@ def pretty_print(output, print_args):
             ignored = ['configHash', 'configId']
             for i, _ in enumerate(data):
                 table.add_rows(
-                    [(k.upper(), v) for k, v in sorted(data[i].items())
+                    [(k.capitalize(), v) for k, v in sorted(data[i].items())
                      if k not in ignored], header=False)
 
         elif print_args == "show":
@@ -165,7 +165,7 @@ def pretty_print(output, print_args):
                 vlist = []
                 for k, v in sorted(data[i].items()):
                     if k in required:
-                        klist.append(k.upper())
+                        klist.append(k.capitalize())
                         if k == "onHost":
                             vlist.append(str(bool(v)))
                         elif k == "osName":
@@ -181,7 +181,7 @@ def pretty_print(output, print_args):
             table.add_row([data["onHost"]["no"], data["onHost"]["yes"]])
 
         elif print_args == "plugins":
-            table.header([k.upper() for k in sorted(data[0].keys())])
+            table.header([k.capitalize() for k in sorted(data[0].keys())])
             table.set_cols_dtype(['t', 't', 't'])
             for i, _ in enumerate(data):
                 table.add_row(
@@ -191,7 +191,7 @@ def pretty_print(output, print_args):
             table.header(("Attribute", "Value"))
             table.set_cols_dtype(['t', 't'])
             table.add_rows(
-                [(k.upper(), v) for k, v in sorted(data.items())],
+                [(k.capitalize(), v) for k, v in sorted(data.items())],
                 header=False)
 
         else:
