@@ -2,6 +2,7 @@
 
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,11 +11,14 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
 
     endpoint = ['/authorization/role']
+    output = None
+    print_args = None
 
     if args.roles_command == "create":
         data = create()
@@ -31,14 +35,13 @@ def entry_point(args):
     elif args.roles_command == "show":
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'roles'")
         cloudpoint.run(["roles", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def create():
@@ -121,33 +124,57 @@ def pretty_print(output, print_args):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
         data = json.loads(output)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
 
         if print_args == "role_id":
-            ignored = ["links", "uri"]
+            #print(output)
+            asset_list = []
+            ignored = ["_links", "uri", "href", "actions", "hostId", 
+                       "parentId", "snapMethods", "links"]
+            required = ["name", "id", "privileges", "subjects", "autoTag", "assets"]
+            table.header(["Attribute", "Value"])
+            table.set_cols_dtype(['t', 't'])
             for k, v in sorted(data.items()):
-                if isinstance(v, list) and v:
-                    for i, _ in enumerate(v):
-                        if isinstance(v[i], dict):
-                            for key, value in sorted(v[i].items()):
-                                if key not in ignored and k not in ignored:
-                                    table.add_row([k, (key, value)])
-                        else:
-                            table.add_row([k, v])
+                if k in required:
+                    if isinstance(v, list) and v:
+                        for i, _ in enumerate(v):
+                            if isinstance(v[i], dict):
+                                for key, value in sorted(v[i].items()):
+                                    if key in required:
+                                        if k == 'assets':
+                                            asset_list.append(value)
+                                        else:
+                                            table.add_row([k.capitalize(),
+                                                           value])
+                    else:
+                        table.add_row([k.capitalize(), v])
+                if k == 'assets' and asset_list:
+                    table.add_row(("Assets", ', '.join(asset_list)))
 
-                else:
-                    table.add_row([k, v])
-        else:
-            required = ["id", "name"]
+        elif print_args == 'show':
+            required = ["name", "id"]
+            table.header((required))
 
             for i, _ in enumerate(data):
-                table.header(sorted(required))
                 table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                    [v for k, v in reversed(sorted(data[i].items())) if k in required])
+
+        else:
+            table.header(("Attribute", "Value"))
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items())],header=False)
 
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)
