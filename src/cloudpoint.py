@@ -466,7 +466,7 @@ def create_parser():
         "-l", "--limit", help="Limit number of results to <LIMIT>")
     parser_tasks_show.add_argument(
         "-r", "--run-since",
-        help="Filter on tasks started in last <RUN_SINCE> no. of hours")
+        help="Filter on tasks started in last <RUN_SINCE> hours")
     parser_tasks_show.add_argument(
         "-s", "--status", metavar='<STATUS>',
         help="Filter on status, valid values for status are :\

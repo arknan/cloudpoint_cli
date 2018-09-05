@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 
 import json
+import traceback
 import texttable
 import api
+import logs
 import utils
 
 COLUMNS = utils.get_stty_cols()
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
     endpoint = ['/version']
+    output = None
+    print_args = None
+
     output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-    pretty_print(output, None)
+
+    return output, print_args
 
 
 def pretty_print(output, print_args):
@@ -19,12 +26,21 @@ def pretty_print(output, print_args):
     try:
         data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
 
         table.header([k for k, v in sorted(data.items())])
         table.add_row([v for k, v in sorted(data.items())])
 
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

@@ -2,6 +2,7 @@
 
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,11 +11,14 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
 
     endpoint = ['/telemetry/']
+    output = None
+    print_args = None
 
     if args.telemetry_command == 'disable':
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
@@ -25,14 +29,13 @@ def entry_point(args):
 
     elif args.telemetry_command == 'status':
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, None)
 
     else:
         LOG_C.error("No arguments provided for 'telemetry'")
         cloudpoint.run(["telemetry", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def pretty_print(output, print_args):
@@ -40,10 +43,21 @@ def pretty_print(output, print_args):
     try:
         data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
+
+        table.header(["Attribute", "Value"])
         table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
 
-        print(table.draw())
+        if table.draw():
+            print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

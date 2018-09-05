@@ -466,5 +466,5 @@ def pretty_print(output, print_args):
 
     except(KeyError, AttributeError, TypeError, NameError,
            texttable.ArraySizeError, json.decoder.JSONDecodeError):
-        LOG_FC.critical(traceback.format_exc())
+        LOG_F.critical(traceback.format_exc())
         print(output)

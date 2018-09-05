@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import datetime
 import json
 import sys
 from getpass import getpass
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -11,12 +13,15 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 LOG_FC = logs.setup(__name__)
 
 
 def entry_point(args):
 
     endpoint = ['/idm/user/']
+    output = None
+    print_args = None
 
     if args.users_command == "create":
         data = create()
@@ -32,14 +37,13 @@ def entry_point(args):
     elif args.users_command == "show":
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'users'")
         cloudpoint.run(["users", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 # def create(args, endpoint):
@@ -91,13 +95,24 @@ def pretty_print(output, print_args):
     try:
         data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
 
         if print_args == 'user_id':
             ignored = ["links", "uri"]
-            table.add_rows(
-                [(k, v) for k, v in sorted(data.items()) if k not in ignored],
-                header=False)
+            table.header(["Attribute", "Value"])
+            for k, v in sorted(data.items()):
+                if k not in ignored:
+                    if k in ['creationTime', 'lastLoginTime',
+                             'lastModificationTime'] and v:
+                        table.add_row((k, datetime.datetime.fromtimestamp(float(v))))
+                    else:
+                        table.add_row((k, v))
         else:
             required = ["id", "email"]
             for i, _ in enumerate(data):
@@ -108,5 +123,7 @@ def pretty_print(output, print_args):
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)

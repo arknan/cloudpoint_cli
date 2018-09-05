@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import datetime
 import json
 import sys
+import traceback
 import texttable
 import api
 import cloudpoint
@@ -10,11 +12,14 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
 
     endpoint = ['/tasks/']
+    output = None
+    print_args = None
     if args.tasks_command == 'delete':
         delete(args, endpoint)
         output = getattr(api.Command(), 'deletes')('/'.join(endpoint))
@@ -22,14 +27,13 @@ def entry_point(args):
     elif args.tasks_command == 'show':
         print_args = show(args, endpoint)
         output = getattr(api.Command(), 'gets')('/'.join(endpoint))
-        pretty_print(output, print_args)
 
     else:
         LOG_C.error("No arguments provided for 'tasks'")
         cloudpoint.run(["tasks", "-h"])
         sys.exit(1)
 
-    return output
+    return output, print_args
 
 
 def delete(args, endpoint):
@@ -92,21 +96,43 @@ def pretty_print(output, print_args):
     try:
         data = json.loads(output)
         table = texttable.Texttable(max_width=COLUMNS)
-        table.set_deco(texttable.Texttable.HEADER)
+        pformat = utils.print_format()
+
+        if pformat == 'json':
+            print(output)
+            sys.exit(0)
+        else:
+            table.set_deco(pformat)
 
         if print_args == "task_id":
-            table.add_rows([(k, v) for k, v in sorted(data.items())],
-                           header=False)
-        else:
+            print(output)
+            table.header(["Attribute", "Value"])
+            table.set_cols_dtype(['t', 't'])
+            for k, v in sorted(data.items()):
+                if k == 'ctime':
+                    table.add_row((k.capitalize(),
+                                   datetime.datetime.fromtimestamp(v)))
+                elif k == 'asset':
+                    pass
+                else:
+                    table.add_row((k.capitalize(), v))
+        elif print_args == 'show':
             required = ["name", "status", "taskid"]
-            table.header(sorted(required))
+            table.header([i.capitalize() for i in sorted(required)])
 
             for i, _ in enumerate(data):
                 table.add_row(
                     [v for k, v in sorted(data[i].items()) if k in required])
 
+        else:
+            table.header(("Attribute", "Value"))
+            table.add_rows(
+                [(k, v) for k, v in sorted(data.items())], header=False)
+
         if table.draw():
             print(table.draw())
 
-    except(KeyError, AttributeError, TypeError, NameError, texttable.ArraySizeError, json.decoder.JSONDecodeError):
+    except(KeyError, AttributeError, TypeError, NameError,
+           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+        LOG_F.critical(traceback.format_exc())
         print(output)
