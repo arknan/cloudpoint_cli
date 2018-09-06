@@ -134,19 +134,17 @@ def pretty_print(output, print_args):
             table.set_deco(pformat)
 
         if print_args == "role_id":
-            #print(output)
             asset_list = []
-            ignored = ["_links", "uri", "href", "actions", "hostId", 
-                       "parentId", "snapMethods", "links"]
-            required = ["name", "id", "privileges", "subjects", "autoTag", "assets"]
+            required = ["name", "id", "privileges", "subjects", "autoTag",
+                        "assets"]
             table.header(["Attribute", "Value"])
             table.set_cols_dtype(['t', 't'])
-            for k, v in sorted(data.items()):
+            for k, val in sorted(data.items()):
                 if k in required:
-                    if isinstance(v, list) and v:
-                        for i, _ in enumerate(v):
-                            if isinstance(v[i], dict):
-                                for key, value in sorted(v[i].items()):
+                    if isinstance(val, list) and val:
+                        for i, _ in enumerate(val):
+                            if isinstance(val[i], dict):
+                                for key, value in sorted(val[i].items()):
                                     if key in required:
                                         if k == 'assets':
                                             asset_list.append(value)
@@ -154,7 +152,7 @@ def pretty_print(output, print_args):
                                             table.add_row([k.capitalize(),
                                                            value])
                     else:
-                        table.add_row([k.capitalize(), v])
+                        table.add_row([k.capitalize(), val])
                 if k == 'assets' and asset_list:
                     table.add_row(("Assets", ', '.join(asset_list)))
 
@@ -164,12 +162,14 @@ def pretty_print(output, print_args):
 
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in reversed(sorted(data[i].items())) if k in required])
+                    [value for key, value in reversed(sorted(data[i].items()))
+                     if key in required])
 
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())],header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())

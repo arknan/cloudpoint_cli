@@ -135,17 +135,17 @@ def pretty_print(output, print_args):
             ignored = ["hostname"]
             klist = []
             vlist = []
-            for k, v in sorted(data.items()):
-                if k not in ignored:
-                    klist.append(k.capitalize())
-                    if k == "onHost":
-                        vlist.append(str(bool(v)))
-                    elif k == "osName":
-                        vlist.append(v.capitalize())
-                    elif k == "lastMessage":
-                        vlist.append(datetime.datetime.fromtimestamp(v))
+            for key, value in sorted(data.items()):
+                if key not in ignored:
+                    klist.append(key.capitalize())
+                    if key == "onHost":
+                        vlist.append(str(bool(value)))
+                    elif key == "osName":
+                        vlist.append(value.capitalize())
+                    elif key == "lastMessage":
+                        vlist.append(datetime.datetime.fromtimestamp(value))
                     else:
-                        vlist.append(v)
+                        vlist.append(value)
 
                 if klist and vlist:
                     table.add_row([klist.pop(), vlist.pop()])
@@ -163,15 +163,15 @@ def pretty_print(output, print_args):
             for i, _ in enumerate(data):
                 klist = []
                 vlist = []
-                for k, v in sorted(data[i].items()):
-                    if k in required:
-                        klist.append(k.capitalize())
-                        if k == "onHost":
-                            vlist.append(str(bool(v)))
-                        elif k == "osName":
-                            vlist.append(v.capitalize())
+                for key, value in sorted(data[i].items()):
+                    if key in required:
+                        klist.append(key.capitalize())
+                        if key == "onHost":
+                            vlist.append(str(bool(value)))
+                        elif key == "osName":
+                            vlist.append(value.capitalize())
                         else:
-                            vlist.append(v)
+                            vlist.append(value)
 
                 if klist and vlist:
                     table.add_rows((klist, vlist))

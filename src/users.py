@@ -106,19 +106,22 @@ def pretty_print(output, print_args):
         if print_args == 'user_id':
             ignored = ["links", "uri"]
             table.header(["Attribute", "Value"])
-            for k, v in sorted(data.items()):
-                if k not in ignored:
-                    if k in ['creationTime', 'lastLoginTime',
-                             'lastModificationTime'] and v:
-                        table.add_row((k, datetime.datetime.fromtimestamp(float(v))))
+            for key, value in sorted(data.items()):
+                if key not in ignored:
+                    if key in ['creationTime', 'lastLoginTime',
+                               'lastModificationTime'] and value:
+                        table.add_row(
+                            (key, datetime.datetime.fromtimestamp(
+                                float(value))))
                     else:
-                        table.add_row((k, v))
+                        table.add_row((key, value))
         else:
             required = ["id", "email"]
             for i, _ in enumerate(data):
                 table.header(sorted(required))
                 table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                    [value for key, value in sorted(data[i].items())
+                     if key in required])
 
         if table.draw():
             print(table.draw())

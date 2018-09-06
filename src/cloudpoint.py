@@ -108,7 +108,7 @@ def create_parser():
         "-i", "--snapshot-id", help="Delete a specific snapshot_id")
     parser_assets_delete_snapshot.add_argument(
         "-f", "--file-name", help="File containing snapshot_ids to be deleted")
-    # CREATE [PUT/POST] PARSING - ROUND 2 
+    # CREATE [PUT/POST] PARSING - ROUND 2
     parser_assets_policy = subparser_assets.add_parser(
         "policy", help="Assign/Remove a policy to/from an asset")
     parser_assets_policy.add_argument(
@@ -309,8 +309,9 @@ def create_parser():
         subparser_policies_show_protected_assets.add_parser(
             "assets-only",
             help="Show a list of protected assets, not their policy")
-    parser_policies_show_unprotected_assets = subparser_policies_show.add_parser(
-        "unprotected-assets", help="Show all unprotected assets")
+    parser_policies_show_unprotected_assets =\
+        subparser_policies_show.add_parser(
+            "unprotected-assets", help="Show all unprotected assets")
 
     """ PRIVILEGE RELATED PARSING """
     parser_privileges = subparser_main.add_parser(
@@ -401,7 +402,7 @@ def create_parser():
     parser_reports_show_report_types = subparser_reports_show.add_parser(
         "report-types", help="Show available report types")
     parser_reports_show_report_types.add_argument(
-        "-i", "--report-type-id", 
+        "-i", "--report-type-id",
         help="Get information on a specific report type")
 
     """ ROLE RELATED PARSING """
@@ -555,8 +556,8 @@ if __name__ == '__main__':
                 getattr(globals()[args.command], "entry_point")(args))
 
             LOG_F.debug("From %s.entry_point() Received :\n%s\n%s\n%s\n%s",
-                        args.command, "OUTPUT", output, "PRINT_ARGS",
-                        )
+                        args.command, "OUTPUT = ", output, "PRINT_ARGS",
+                        print_args)
             getattr(
                 globals()[args.command], "pretty_print")(output, print_args)
 

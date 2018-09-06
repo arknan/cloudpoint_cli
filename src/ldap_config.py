@@ -23,7 +23,6 @@ def entry_point(args):
 
     if utils.check_attr(args, 'ldap_config_command'):
         if args.ldap_config_command == 'show':
-            print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
         else:
@@ -50,7 +49,7 @@ def pretty_print(output, print_args):
         table = texttable.Texttable(max_width=COLUMNS)
         data = json.loads(output.replace('ldap', ''))
         pformat = utils.print_format()
-        
+
         if pformat == 'json':
             print(output)
             sys.exit(0)

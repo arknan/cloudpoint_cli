@@ -101,22 +101,22 @@ def pretty_print(output, print_args):
         if print_args == "license_id":
             table.header(["Attribute", "Value"])
             table.set_cols_dtype(['t', 't'])
-            ignored = ['FulfillmentId', 'CountPolicy', 'GracePolicy',
-                       'IsLicenseActive', 'SerialId', 'SvcPolicy', 'WarnPolicy']
+            ignored = ['FulfillmentId', 'CountPolicy', 'IsLicenseActive',
+                       'SerialId', 'SvcPolicy', 'WarnPolicy', 'GracePolicy']
             table.add_row(("License Key ID", list(data.keys())[0]))
-            for k, v in sorted(data.items()):
+            for key, value in sorted(data.items()):
                 table.add_rows([(i, j) for i, j in sorted(
-                    data[k].items()) if i not in ignored], header=False)
+                    data[key].items()) if i not in ignored], header=False)
 
-        elif print_args == 'show' or print_args == 'active':
+        elif print_args in ['show', 'active']:
             required = ["EndDate", "LicenseState", "ProductEdition"]
             headers = ["License Key ID"]
             rows = sorted(data.keys())
             for i in sorted(data.keys()):
-                for k, v in sorted(data[i].items()):
-                    if k in required:
-                        headers.append(k)
-                        rows.append(v)
+                for key, value in sorted(data[i].items()):
+                    if key in required:
+                        headers.append(key)
+                        rows.append(value)
 
             table.header(headers)
             table.add_row(rows)
@@ -124,8 +124,8 @@ def pretty_print(output, print_args):
         elif print_args == 'features':
             table.header(["Attribute", "Value"])
             table.set_cols_dtype(['t', 't'])
-            for k, v in sorted(data.items()):
-                for i, j in sorted(data[k].items()):
+            for key, value in sorted(data.items()):
+                for i, j in sorted(data[key].items()):
                     if i in ['MeterCount', 'MeterType', 'ProductEdition']:
                         table.add_row((i, j))
                     else:
@@ -133,9 +133,9 @@ def pretty_print(output, print_args):
 
         else:
             table.header(["Attribute", "Value"])
-            for k, v in sorted(data.items()):
+            for key, value in sorted(data.items()):
                 table.add_rows([(i, j) for i, j in sorted(
-                    data[k].items())], header=False)
+                    data[key].items())], header=False)
 
         if table.draw():
             print(table.draw())

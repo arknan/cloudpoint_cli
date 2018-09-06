@@ -188,29 +188,30 @@ def pretty_print(output, print_args):
             table.set_deco(pformat)
 
         if print_args == 'policy_name':
-            table.header([k for k, v in sorted(data.items())])
-            table.add_row([v for k, v in sorted(data.items())])
+            table.header([key for key, _ in sorted(data.items())])
+            table.add_row([value for _, value in sorted(data.items())])
 
         elif print_args == 'show':
             for i, _ in enumerate(data):
-                table.header([k for k, v in sorted(data[i].items())])
-                table.add_row([v for k, v in sorted(data[i].items())])
+                table.header([key for key, _ in sorted(data[i].items())])
+                table.add_row([value for _, value in sorted(data[i].items())])
 
         elif print_args == 'rules':
             table.header(["Source", "Destination"])
             for i, _ in enumerate(data):
                 vlist = []
-                for k, v in reversed(sorted(data[i].items())):
-                    if k == 'destination':
-                        vlist.append(', '.join(v))
+                for key, value in reversed(sorted(data[i].items())):
+                    if key == 'destination':
+                        vlist.append(', '.join(value))
                     else:
-                        vlist.append(v)
+                        vlist.append(value)
                 table.add_row(vlist)
 
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())], header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())

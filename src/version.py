@@ -34,8 +34,8 @@ def pretty_print(output, print_args):
         else:
             table.set_deco(pformat)
 
-        table.header([k for k, v in sorted(data.items())])
-        table.add_row([v for k, v in sorted(data.items())])
+        table.header([key for key, _ in sorted(data.items())])
+        table.add_row([value for _, value in sorted(data.items())])
 
         if table.draw():
             print(table.draw())

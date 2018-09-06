@@ -165,13 +165,14 @@ def pretty_print(output, print_args):
 
         if print_args == "report_id":
             data = json.loads(output)
-            for k, v in sorted(data.items()):
-                if k == 'lastRun':
-                    table.add_row((k, datetime.datetime.fromtimestamp(v)))
-                elif k == 'columns':
-                    table.add_row([k, ', '.join(v)])
+            for key, value in sorted(data.items()):
+                if key == 'lastRun':
+                    table.add_row(
+                        (key, datetime.datetime.fromtimestamp(value)))
+                elif key == 'columns':
+                    table.add_row([key, ', '.join(value)])
                 else:
-                    table.add_row((k, v))
+                    table.add_row((key, value))
 
         elif print_args == 'show':
             data = json.loads(output)
@@ -179,7 +180,8 @@ def pretty_print(output, print_args):
             table.header([i.capitalize() for i in sorted(required)])
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                    [value for key, value in sorted(data[i].items())
+                     if key in required])
 
         elif print_args == 'report-types':
             data = json.loads(output)
@@ -192,8 +194,8 @@ def pretty_print(output, print_args):
             table.header(["Valid Columns", "Valid Column Id's"])
             for i, _ in enumerate(data['columns']):
                 vlist = []
-                for k, v in sorted(data['columns'][i].items()):
-                    vlist.append(v)
+                for _, value in sorted(data['columns'][i].items()):
+                    vlist.append(value)
                 table.add_row(vlist)
 
         elif print_args in ['preview', 'data']:
@@ -204,7 +206,8 @@ def pretty_print(output, print_args):
             data = json.loads(output)
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())], header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())

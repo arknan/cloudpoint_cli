@@ -36,30 +36,30 @@ def show(args, endpoint):
         plugin_cmd = json.loads(cloudpoint.run(["plugins", "show"]))
         plugin_list = []
         for i, _ in enumerate(plugin_cmd):
-            for k, v in sorted(plugin_cmd[i].items()):
-                if k == "name":
-                    plugin_list.append(v)
+            for key, value in sorted(plugin_cmd[i].items()):
+                if key == "name":
+                    plugin_list.append(value)
         if args.available_plugin_name in plugin_list:
             endpoint.append(args.available_plugin_name)
             print_args = 'available_plugin_name'
 
-        if (utils.check_attr(args, 'plugins_show_command')):
-            if (args.plugins_show_command == "description"):
+        if utils.check_attr(args, 'plugins_show_command'):
+            if args.plugins_show_command == "description":
                 endpoint.append("description")
                 print_args = "description"
 
-            elif (args.plugins_show_command == "summary"):
+            elif args.plugins_show_command == "summary":
                 LOG_C.error("Summary cannot be provided for a specific plugin")
                 sys.exit(1)
 
     else:
-        if (utils.check_attr(args, 'plugins_show_command')):
-            if (args.plugins_show_command == "description"):
-                 LOG_C.error("'description' requires -i flag for 'PLUGIN_NAME'")
-                 sys.exit(1)
-            elif (args.plugins_show_command == "summary"):
-                 endpoint.append("summary")
-                 print_args = "summary"
+        if utils.check_attr(args, 'plugins_show_command'):
+            if args.plugins_show_command == "description":
+                LOG_C.error("'description' requires -i flag for 'PLUGIN_NAME'")
+                sys.exit(1)
+            elif args.plugins_show_command == "summary":
+                endpoint.append("summary")
+                print_args = "summary"
         else:
             print_args = "show"
 
@@ -82,13 +82,13 @@ def pretty_print(output, print_args):
         if print_args == 'available_plugin_name':
             table.set_cols_dtype(['t', 't'])
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())
-                 if k != "configTemplate"], header=False)
+                [(key, value) for key, value in sorted(data.items())
+                 if key != "configTemplate"], header=False)
 
             for i, _ in enumerate(data["configTemplate"]):
                 table.add_rows([("", "")], header=False)
                 table.add_rows(
-                    [(k, v) for k, v in sorted(
+                    [(key, value) for key, value in sorted(
                         data["configTemplate"][i].items())], header=False)
 
         elif print_args == 'description':
@@ -101,7 +101,8 @@ def pretty_print(output, print_args):
             table.set_cols_dtype(['t', 't', 't', 't'])
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                    [value for key, value in sorted(data[i].items())
+                     if key in required])
 
         elif print_args == "summary":
             table.header(["", "onHost", "offHost"])
@@ -113,7 +114,8 @@ def pretty_print(output, print_args):
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())], header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())

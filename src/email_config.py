@@ -24,7 +24,6 @@ def entry_point(args):
 
     if utils.check_attr(args, 'email_config_command'):
         if args.email_config_command == 'show':
-            print_args = show()
             output = getattr(api.Command(), 'gets')('/'.join(endpoint))
 
         elif args.email_config_command == 'create':
@@ -153,16 +152,16 @@ def pretty_print(output, print_args):
         data_data = json.loads(data['data'])
         print_dict = {}
 
-        for k, v in sorted(data.items()):
-            if k not in ['data', 'configKey']:
-                print_dict[k] = v
+        for key, value in sorted(data.items()):
+            if key not in ['data', 'configKey']:
+                print_dict[k] = value
 
-        for k, v in sorted(data_data.items()):
-            if k not in ['authentication']:
-                print_dict[k] = v
+        for key, value in sorted(data_data.items()):
+            if key not in ['authentication']:
+                print_dict[k] = value
 
-        table.header([k for k, v in sorted(print_dict.items())])
-        table.add_row([v for k, v in sorted(print_dict.items())])
+        table.header([k for k, _ in sorted(print_dict.items())])
+        table.add_row([value for _, value in sorted(print_dict.items())])
 
         if table.draw():
             print(table.draw())

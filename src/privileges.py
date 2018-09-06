@@ -64,7 +64,8 @@ def pretty_print(output, print_args):
             table.header(["Attribute", "Value"])
             table.set_cols_dtype(['t', 't'])
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items()) if k not in ignored],
+                [(key, value) for key, value in sorted(data.items())
+                 if key not in ignored],
                 header=False)
         else:
             required = ["name", "id"]
@@ -72,7 +73,8 @@ def pretty_print(output, print_args):
 
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in reversed(sorted(data[i].items())) if k in required])
+                    [value for key, value in reversed(sorted(data[i].items()))
+                     if key in required])
 
         if table.draw():
             print(table.draw())

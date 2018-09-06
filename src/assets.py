@@ -352,21 +352,22 @@ def pretty_print(output, print_args):
             table.header(["Attribute", "Value"])
 
             table.add_rows(
-                [(k.capitalize(), v) for k, v in sorted(data.items())
-                 if k not in ignore], header=False)
+                [(key.capitalize(), value) for key, value in
+                 sorted(data.items()) if key not in ignore], header=False)
 
         elif print_args == "granules":
             data = json.loads(output)["items"]
             required = ["id", "name"]
             table.header([k.capitalize() for k in sorted(required)])
             for i, _ in enumerate(data):
-                table.add_row([v for k, v in sorted(data[i].items())
-                               if k in required])
+                table.add_row([value for key, value in sorted(data[i].items())
+                               if key in required])
 
         elif print_args == "granule_id":
             data = json.loads(output)
-            table.add_rows([(k, v) for k, v in sorted(data.items())],
-                           header=False)
+            table.add_rows(
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         elif print_args == 'policies':
             data = json.loads(output)
@@ -374,14 +375,14 @@ def pretty_print(output, print_args):
             for i, _ in enumerate(data):
                 klist = []
                 vlist = []
-                for k, v in sorted(data[i].items()):
-                    klist.append(k.capitalize())
-                    if k in ['appConsist', 'replicate']:
-                        vlist.append(str(v))
-                    elif k == 'retention':
-                        vlist.append(str(v['value']) + ' ' + v['unit'])
+                for key, value in sorted(data[i].items()):
+                    klist.append(key.capitalize())
+                    if key in ['appConsist', 'replicate']:
+                        vlist.append(str(value))
+                    elif key == 'retention':
+                        vlist.append(str(value['value']) + ' ' + value['unit'])
                     else:
-                        vlist.append(v)
+                        vlist.append(value)
 
                     if klist and vlist:
                         table.add_row([klist.pop(), vlist.pop()])
@@ -392,9 +393,9 @@ def pretty_print(output, print_args):
             table.header(["Available Restore Targets"])
             for i, _ in enumerate(data):
                 vlist = []
-                for k, v in data[i].items():
-                    if k in required:
-                        table.add_row([v])
+                for key, value in data[i].items():
+                    if key in required:
+                        table.add_row([value])
 
         elif print_args == "show":
             data = json.loads(output)['items']
@@ -405,8 +406,8 @@ def pretty_print(output, print_args):
                 if data[i]['type'] in ['disk', 'host', "filesystem",
                                        "application"]:
                     table.add_row(
-                        [v for k, v in sorted(data[i].items())
-                         if k in required])
+                        [value for key, value in sorted(data[i].items())
+                         if key in required])
 
         elif print_args == "snapshots":
 
@@ -416,14 +417,15 @@ def pretty_print(output, print_args):
 
             for i, _ in enumerate(data):
                 vlist = []
-                for k, v in sorted(data[i].items()):
-                    if k in required:
-                        if k == 'ctime':
-                            vlist.append(datetime.datetime.fromtimestamp(v))
-                        elif k == 'type':
-                            vlist.append(v.split(':')[0])
+                for key, value in sorted(data[i].items()):
+                    if key in required:
+                        if key == 'ctime':
+                            vlist.append(
+                                datetime.datetime.fromtimestamp(value))
+                        elif key == 'type':
+                            vlist.append(value.split(':')[0])
                         else:
-                            vlist.append(v)
+                            vlist.append(value)
                 table.add_row((vlist))
 
         elif print_args == "snapshot_id":
@@ -433,17 +435,17 @@ def pretty_print(output, print_args):
             table.set_cols_dtype(['t', 't'])
             vlist = []
             klist = []
-            for k, v in sorted(data.items()):
-                if k not in ignored:
-                    klist.append(k.capitalize())
-                    if k == "ctime":
-                        vlist.append(datetime.datetime.fromtimestamp(v))
-                    elif k == "attachment":
-                        vlist.append((data[k].values()))
-                    elif k == 'type':
-                        vlist.append(v.split(':')[0])
+            for key, value in sorted(data.items()):
+                if key not in ignored:
+                    klist.append(key.capitalize())
+                    if key == "ctime":
+                        vlist.append(datetime.datetime.fromtimestamp(value))
+                    elif key == "attachment":
+                        vlist.append((data[key].values()))
+                    elif key == 'type':
+                        vlist.append(value.split(':')[0])
                     else:
-                        vlist.append(v)
+                        vlist.append(value)
 
                     if klist and vlist:
                         table.add_row([klist.pop(), vlist.pop()])
@@ -451,7 +453,7 @@ def pretty_print(output, print_args):
         elif print_args == 'summary':
             data = json.loads(output)
             table.header(["Type", "Vendor", "Total", "Protected", "Snapshots"])
-            for k, v in sorted(data.items()):
+            for k, _ in sorted(data.items()):
                 for key, value in sorted(data[k].items()):
                     table.add_row(
                         (k.capitalize(), key, value['total'],
@@ -459,7 +461,8 @@ def pretty_print(output, print_args):
         else:
             data = json.loads(output)
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())], header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())

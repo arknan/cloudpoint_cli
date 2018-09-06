@@ -474,7 +474,7 @@ def pretty_print(output, print_args):
     try:
         table = texttable.Texttable(max_width=COLUMNS)
         pformat = utils.print_format()
-        
+
         if pformat == 'json':
             print(output)
         else:
@@ -495,14 +495,15 @@ def pretty_print(output, print_args):
             for i in output:
                 table.add_row([i])
 
-        elif print_args == "policy_id" or print_args == "policy_name":
+        elif print_args in ["policy_id", "policy_name"]:
             data = json.loads(output)
             table.set_cols_dtype(['t', 't'])
-            for k, v in sorted(data.items()):
-                if k in ["retention"]:
-                    table.add_row((k, str(v['value']) + ' ' + str(v['unit'])))
+            for key, value in sorted(data.items()):
+                if key in ["retention"]:
+                    table.add_row(
+                        (key, str(value['value']) + ' ' + str(value['unit'])))
                 else:
-                    table.add_row([k, v])
+                    table.add_row([key, value])
 
         elif print_args == "show":
             data = json.loads(output)
@@ -510,12 +511,14 @@ def pretty_print(output, print_args):
             table.header(required)
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in reversed(sorted(data[i].items())) if k in required])
+                    [value for key, value in reversed(sorted(data[i].items()))
+                     if key in required])
         else:
             data = json.loads(output)
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())], header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())

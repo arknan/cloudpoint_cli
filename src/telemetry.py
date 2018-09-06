@@ -52,7 +52,9 @@ def pretty_print(output, print_args):
             table.set_deco(pformat)
 
         table.header(["Attribute", "Value"])
-        table.add_rows([(k, v) for k, v in sorted(data.items())], header=False)
+        table.add_rows(
+            [(key, value) for key, value in sorted(data.items())],
+            header=False)
 
         if table.draw():
             print(table.draw())

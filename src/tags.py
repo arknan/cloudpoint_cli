@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-# import json
+import json
 import sys
-# import traceback
-# import texttable
+import traceback
+import texttable
 # import api
 # import cloudpoint
 import logs
@@ -11,7 +11,7 @@ import utils
 
 COLUMNS = utils.get_stty_cols()
 LOG_C = logs.setup(__name__, 'c')
-# LOG_F = logs.setup(__name__, 'f')
+LOG_F = logs.setup(__name__, 'f')
 
 
 def entry_point(args):
@@ -31,5 +31,5 @@ def pretty_print(output, print_args):
         print(output)
     except(KeyError, AttributeError, TypeError, NameError,
            texttable.ArraySizeError, json.decoder.JSONDecodeError):
-        # LOG_F.critical(traceback.format_exc())
+        LOG_F.critical(traceback.format_exc())
         print(output)

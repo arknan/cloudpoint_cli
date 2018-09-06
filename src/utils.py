@@ -2,6 +2,9 @@
 
 import configparser
 import os
+import logs
+
+LOG_C = logs.setup(__name__, 'c')
 
 print_mapping = {
     'json': 'json',
@@ -31,13 +34,16 @@ def print_format():
 
     config = configparser.ConfigParser()
     config.read('/root/.cloudpoint_cli.config')
-    pformat = 'tabular'
+    pformat = None
     try:
         pformat = config['GLOBAL']['print_format']
     except KeyError:
         pass
 
-    if pformat in print_mapping:
-        return print_mapping[pformat]
-    else:
-        return print_mapping['minimal']
+    if pformat not in print_mapping:
+        LOG_C.error('%s in CloudPoint config file is not a valid value',
+                    pformat)
+        LOG_C.error('Using "tabular" as the default output format')
+        pformat = 'tabular'
+
+    return print_mapping[pformat]

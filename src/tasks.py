@@ -108,26 +108,29 @@ def pretty_print(output, print_args):
             print(output)
             table.header(["Attribute", "Value"])
             table.set_cols_dtype(['t', 't'])
-            for k, v in sorted(data.items()):
-                if k == 'ctime':
-                    table.add_row((k.capitalize(),
-                                   datetime.datetime.fromtimestamp(v)))
-                elif k == 'asset':
+            for key, value in sorted(data.items()):
+                if key == 'ctime':
+                    table.add_row((key.capitalize(),
+                                   datetime.datetime.fromtimestamp(value)))
+                elif key == 'asset':
                     pass
                 else:
-                    table.add_row((k.capitalize(), v))
+                    table.add_row((key.capitalize(), value))
+
         elif print_args == 'show':
             required = ["name", "status", "taskid"]
             table.header([i.capitalize() for i in sorted(required)])
 
             for i, _ in enumerate(data):
                 table.add_row(
-                    [v for k, v in sorted(data[i].items()) if k in required])
+                    [value for key, value in sorted(data[i].items())
+                     if key in required])
 
         else:
             table.header(("Attribute", "Value"))
             table.add_rows(
-                [(k, v) for k, v in sorted(data.items())], header=False)
+                [(key, value) for key, value in sorted(data.items())],
+                header=False)
 
         if table.draw():
             print(table.draw())
