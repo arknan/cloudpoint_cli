@@ -26,7 +26,7 @@ def show(args, endpoint):
     pass
 
 
-def pretty_print(output, print_args):
+def pretty_print(output, print_args, pformat=utils.print_format()):
     try:
         print(output)
     except(KeyError, AttributeError, TypeError, NameError,

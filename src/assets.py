@@ -333,11 +333,10 @@ def replicate(args, endpoint):
     return data
 
 
-def pretty_print(output, print_args):
+def pretty_print(output, print_args, pformat=utils.print_format()):
 
     try:
         table = texttable.Texttable(max_width=COLUMNS)
-        pformat = utils.print_format()
 
         if pformat == 'json':
             print(output)

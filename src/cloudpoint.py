@@ -24,6 +24,7 @@ import tags
 import tasks
 import telemetry
 import users
+import utils
 import version
 
 LOG_F = logs.setup(__name__, 'f')
@@ -75,6 +76,10 @@ def create_parser():
     parser_agents_show.add_argument(
         "-i", "--agent-id",
         help="Show information related to a specific agent")
+    parser_agents_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_agents_show = parser_agents_show.add_subparsers(
         dest="agents_show_command", metavar='<positional argument>')
     parser_agents_show_plugins = subparser_agents_show.add_parser(
@@ -82,8 +87,16 @@ def create_parser():
     parser_agents_show_plugins.add_argument(
         "-i", "--plugin-name", dest="configured_plugin_name",
         help="Show plugin information for a specific agent plugin")
+    parser_agents_show_plugins.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     parser_agents_show_summary = subparser_agents_show.add_parser(
         "summary", help="Show summary of agents")
+    parser_agents_show_summary.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_agents_show_plugins = parser_agents_show_plugins.add_subparsers(
         dest="agents_show_plugins_command", metavar='<positional argument>')
     parser_agents_show_plugins_configs =\
@@ -141,15 +154,27 @@ def create_parser():
     parser_assets_show.add_argument(
         "-i", "--asset-id",
         help="Show information related to a specific asset")
+    parser_assets_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_assets_show = parser_assets_show.add_subparsers(
         dest="assets_show_command", metavar='<positional argument>')
     parser_assets_show_policies = subparser_assets_show.add_parser(
         "policies", help="Show policies associated with an asset")
+    parser_assets_show_policies.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     parser_assets_show_snapshots = subparser_assets_show.add_parser(
         "snapshots", help="Show related snapshots for an asset")
     parser_assets_show_snapshots.add_argument(
         "-i", "--snapshot-id",
         help="Show snapshot information for a specific snapshot")
+    parser_assets_show_snapshots.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_assets_show_snapshots = \
         parser_assets_show_snapshots.add_subparsers(
             dest="snapshots_command", metavar='<positional argument>')
@@ -158,12 +183,24 @@ def create_parser():
             "granules", help="Show granules for a snapshot of an asset")
     parser_assets_show_snapshots_granules.add_argument(
         "-i", "--granule-id", help="Show information on a particular granule")
+    parser_assets_show_snapshots_granules.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     parser_assets_show_snapshots_restore_targets = \
         subparser_assets_show_snapshots.add_parser(
             "restore-targets",
             help="Show restore target locations for a specific snapshot asset")
+    parser_assets_show_snapshots_restore_targets.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     parser_assets_show_summary = subparser_assets_show.add_parser(
         "summary", help="Show summary of assets")
+    parser_assets_show_summary.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ AUTHENTICATION RELATED PARSING """
     parser_authenticate = subparser_main.add_parser(
@@ -177,6 +214,10 @@ def create_parser():
     # SHOW [GET] PARSING
     parser_email_config_show = subparser_email_config.add_parser(
         "show", help="Show SMTP related details")
+    parser_email_config_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     # CREATE [PUT/POST] PARSING
     parser_email_config_create = subparser_email_config.add_parser(
         "create", help="Add email/smtp related settings")
@@ -203,6 +244,10 @@ def create_parser():
     # SHOW [GET] PARSING
     parser_ldap_config_show = subparser_ldap_config.add_parser(
         "show", help="Show LDAP related details")
+    parser_ldap_config_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ LICENSE RELATED PARSING """
     parser_licenses = subparser_main.add_parser(
@@ -226,12 +271,24 @@ def create_parser():
     parser_licenses_show.add_argument(
         "-i", "--license-id", dest="license_id",
         help="Show information on a specific license id")
+    parser_licenses_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_licenses_show = parser_licenses_show.add_subparsers(
         dest="licenses_show_command", metavar='<positional argument>')
     parser_licenses_show_active = subparser_licenses_show.add_parser(
         "active", help="Show information on all active licenses")
+    parser_licenses_show_active.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     parser_licenses_show_features = subparser_licenses_show.add_parser(
         "features", help="Show information on all licensed features")
+    parser_licenses_show_features.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ PLUGIN RELATED PARSING """
     parser_plugins = subparser_main.add_parser(
@@ -244,6 +301,10 @@ def create_parser():
     parser_plugins_show.add_argument(
         "-n", "--plugin-name", dest="available_plugin_name",
         help="Show information on a specific available plugin")
+    parser_plugins_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_plugins_show = parser_plugins_show.add_subparsers(
         dest="plugins_show_command", metavar='<positional argument>')
     parser_plugins_show_description = subparser_plugins_show.add_parser(
@@ -251,6 +312,10 @@ def create_parser():
         help="Get plugin description for a specific plugin name")
     parser_plugins_show_summary = subparser_plugins_show.add_parser(
         "summary", help="Show summary information for plugins")
+    parser_plugins_show_summary.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ POLICY RELATED PARSING """
     parser_policies = subparser_main.add_parser(
@@ -296,11 +361,19 @@ def create_parser():
     parser_policies_show.add_argument(
         "-n", "--policy-name",
         help="Show information on a particular policy name")
+    parser_policies_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_policies_show = parser_policies_show.add_subparsers(
         dest="policies_show_command", metavar='<positional argument>')
     parser_policies_show_protected_assets = subparser_policies_show.add_parser(
         "protected-assets",
         help="Show all protected assets and policies protecting them")
+    parser_policies_show_protected_assets.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_policies_show_protected_assets = \
         parser_policies_show_protected_assets.add_subparsers(
             dest="policies_show_protected_assets_command",
@@ -309,21 +382,33 @@ def create_parser():
         subparser_policies_show_protected_assets.add_parser(
             "assets-only",
             help="Show a list of protected assets, not their policy")
+    parser_policies_show_protected_assets_assets_only.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     parser_policies_show_unprotected_assets =\
         subparser_policies_show.add_parser(
             "unprotected-assets", help="Show all unprotected assets")
+    parser_policies_show_unprotected_assets.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ PRIVILEGE RELATED PARSING """
     parser_privileges = subparser_main.add_parser(
         "privileges", help="Privilege related operations")
-    subparser_priviliges = parser_privileges.add_subparsers(
+    subparser_privileges = parser_privileges.add_subparsers(
         dest="privileges_command", metavar='<positional argument>')
     # SHOW [GET] PARSING
-    parser_priviliges_show = subparser_priviliges.add_parser(
+    parser_privileges_show = subparser_privileges.add_parser(
         "show", help="Show privilege related information")
-    parser_priviliges_show.add_argument(
+    parser_privileges_show.add_argument(
         "-i", "--privilege-id",
         help="Get information on a particular privilege")
+    parser_privileges_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ REPLICATION RELATED PARSING """
     parser_replication = subparser_main.add_parser(
@@ -360,10 +445,18 @@ def create_parser():
     parser_replication_show.add_argument(
         "-i", "--policy-name",
         help="Get information on a specific replication rule")
+    parser_replication_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_replication_show = parser_replication_show.add_subparsers(
         dest="replication_show_command", metavar='positional argument>')
     parser_replication_show_rules = subparser_replication_show.add_parser(
         "rules", help="Show replication rules for a policy")
+    parser_replication_show_rules.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ REPORT RELATED PARSING """
     parser_reports = subparser_main.add_parser(
@@ -393,6 +486,10 @@ def create_parser():
         "show", help="Show information on reports")
     parser_reports_show.add_argument(
         "-i", "--report-id", help="Get information on a specific report ID")
+    parser_reports_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_reports_show = parser_reports_show.add_subparsers(
         dest="reports_show_command", metavar='<positional argument>')
     parser_reports_show_preview = subparser_reports_show.add_parser(
@@ -404,6 +501,10 @@ def create_parser():
     parser_reports_show_report_types.add_argument(
         "-i", "--report-type-id",
         help="Get information on a specific report type")
+    parser_reports_show_report_types.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ ROLE RELATED PARSING """
     parser_roles = subparser_main.add_parser(
@@ -431,6 +532,10 @@ def create_parser():
         "show", help="Show role related information")
     parser_roles_show.add_argument(
         "-i", "--role-id", help="Get information on a specific role ID")
+    parser_roles_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ TAG RELATED PARSING """
     parser_tags = subparser_main.add_parser(
@@ -440,6 +545,10 @@ def create_parser():
     # SHOW [GET] PARSING
     parser_tags_show = subparser_tags.add_parser(
         "show", help="Show Classification tags related information")
+    parser_tags_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ TASK RELATED PARSING """
     parser_tasks = subparser_main.add_parser(
@@ -480,10 +589,18 @@ def create_parser():
         metavar='TASK_TYPE', choices=[
             'create-snapshot', 'create-group-snapshot', 'delete-snapshot',
             'delete-group-snapshots', 'restore'])
+    parser_tasks_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
     subparser_tasks_show = parser_tasks_show.add_subparsers(
         dest="tasks_show_command", metavar='<positional argument>')
     parser_tasks_show_summary = subparser_tasks_show.add_parser(
         "summary", help="Get summary information of all tasks")
+    parser_tasks_show_summary.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ TELEMETRY RELATED PARSING """
     parser_telemetry = subparser_main.add_parser(
@@ -518,10 +635,18 @@ def create_parser():
     parser_users_show.add_argument(
         "-i", "--user-id",
         help="Get information on a particular CloudPoint user")
+    parser_users_show.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     """ VERSION RELATED PARSING """
     parser_version = subparser_main.add_parser(
         "version", help="Get CloudPoint's current version")
+    parser_version.add_argument(
+        "-o", "--output-format", help="Specify an output format for this command's output. \
+Valid values are : [json, unix, minimal, tabular]",
+        choices=['json', 'unix', 'minimal', 'tabular'], metavar='<FORMAT>')
 
     return parser_main
 
@@ -547,8 +672,12 @@ if __name__ == '__main__':
         parser_main.print_help()
         sys.exit(1)
     else:
+        output = None
+        print_args = None
+        pformat = None
         args = parser_main.parse_args()
         LOG_F.debug("Calling %s.entry_point() with %s", args.command, args)
+
         if args.command == 'authenticate':
             getattr(api.Command(), 'authenticates')()
         else:
@@ -558,7 +687,12 @@ if __name__ == '__main__':
             LOG_F.debug("From %s.entry_point() Received :\n%s\n%s\n%s\n%s",
                         args.command, "OUTPUT = ", output, "PRINT_ARGS",
                         print_args)
-            getattr(
-                globals()[args.command], "pretty_print")(output, print_args)
+            if utils.check_attr(args, 'output_format'):
+                pformat = utils.print_mapping[args.output_format]
+                getattr(globals()[args.command], "pretty_print")(
+                    output, print_args, pformat=pformat)
+            else:
+                getattr(globals()[args.command], "pretty_print")(
+                    output, print_args)
 
         sys.exit(0)
