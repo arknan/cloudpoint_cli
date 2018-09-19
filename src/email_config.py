@@ -153,11 +153,11 @@ def pretty_print(output, print_args, pformat=utils.print_format()):
 
         for key, value in sorted(data.items()):
             if key not in ['data', 'configKey']:
-                print_dict[k] = value
+                print_dict[key] = value
 
         for key, value in sorted(data_data.items()):
             if key not in ['authentication']:
-                print_dict[k] = value
+                print_dict[key] = value
 
         table.header([k for k, _ in sorted(print_dict.items())])
         table.add_row([value for _, value in sorted(print_dict.items())])
@@ -168,4 +168,4 @@ def pretty_print(output, print_args, pformat=utils.print_format()):
     except(KeyError, AttributeError, TypeError, NameError,
            texttable.ArraySizeError, json.decoder.JSONDecodeError):
         LOG_F.critical(traceback.format_exc())
-        print(output)
+        print(output, e)
