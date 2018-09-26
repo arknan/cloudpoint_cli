@@ -181,7 +181,11 @@ def pretty_print(output, print_args, pformat=utils.print_format()):
 
         elif print_args == "plugins":
             table.header([k.capitalize() for k in sorted(data[0].keys())])
-            table.set_cols_dtype(['t', 't', 't'])
+            # Bug fix for CP 2.1
+            if len(data[0].items()) == 3:
+                table.set_cols_dtype(['t', 't', 't'])
+            elif len(data[0].items()) == 4:
+                table.set_cols_dtype(['t', 't', 't', 't'])
             for i, _ in enumerate(data):
                 table.add_row(
                     [v for k, v in sorted(data[i].items())])
