@@ -41,4 +41,3 @@ coverage.xml
 # Miscellaneous
 .gitattributes
 _config.yml
-cloudpoint_cli.config
