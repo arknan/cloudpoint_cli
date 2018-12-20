@@ -29,7 +29,10 @@ def show(args, endpoint):
 def pretty_print(output, print_args, pformat=utils.print_format()):
     try:
         print(output)
-    except(KeyError, AttributeError, TypeError, NameError,
-           texttable.ArraySizeError, json.decoder.JSONDecodeError):
+
+    except KeyboardInterrupt:
+        sys.exit(0)
+
+    except Exception:
         LOG_F.critical(traceback.format_exc())
         print(output)
